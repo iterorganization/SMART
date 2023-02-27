@@ -1,0 +1,25 @@
+<parameters>
+
+    <!-- Pellet mass in Atomic Units (2.5 for 50:50 DT) -->
+    <YAM> 2.5e0 </YAM>
+
+    <!-- Vpel [km/s] -->
+    <YVP> 0.3e2 </YVP>
+
+    <!-- Pellet size [mm3] -->
+    <YVOL> 92.e0 </YVOL>
+
+    <!-- Angle to normal to LCS -->
+    <YCOS0> 0.8e0 </YCOS0>
+
+    <!-- Efficiency of loss in the tube 1 corresponds to 100% intact pellet -->
+    <YEFF> 1.e0 </YEFF>
+
+    <!-- Ratio of distance along the trajectory to that mapped on the mid-plane -->
+    <YDL> 1.67e0 </YDL>
+
+    <!-- Switch between distinct pellets and permanent pellet model -->
+    <yswitch> 1.e0 </yswitch>
+
+</parameters>
+

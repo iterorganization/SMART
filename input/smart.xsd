@@ -1,0 +1,86 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	   elementFormDefault="qualified">
+   <xs:annotation>
+     <xs:documentation>Code parameters for SMART</xs:documentation>
+   </xs:annotation>
+ 
+   <xs:simpleType name="integer_minmaxInclusive_010">
+     <xs:restriction base="xs:integer">
+       <xs:minInclusive value="1"/>
+       <xs:maxInclusive value="10"/>
+     </xs:restriction>
+   </xs:simpleType>
+
+  <xs:simpleType name="float_minInclusive_dot0001">
+     <xs:restriction base="xs:float">
+       <xs:minInclusive value="0.0001"/>
+     </xs:restriction>
+   </xs:simpleType>
+
+   <!-- document element -->
+   <xs:element name="parameters">
+     <xs:complexType>
+       <xs:all>
+         <xs:element ref="YAM" minOccurs="0"/>
+         <xs:element ref="YVP" minOccurs="0"/>
+         <xs:element ref="YVOL" minOccurs="0"/>
+         <xs:element ref="YCOS0" minOccurs="0"/>
+         <xs:element ref="YEFF" minOccurs="0"/>
+         <xs:element ref="YDL" minOccurs="0"/>
+         <xs:element ref="yswitch" minOccurs="0"/>
+       </xs:all>
+     </xs:complexType>
+   </xs:element>
+ 
+
+   <!-- Pellet mass in atomic units (2.5 for 50:50 DT) -->
+   <xs:element name="YAM" type="float_minInclusive_dot0001">
+      <xs:annotation>
+          <xs:documentation>Pellet mass in Atomic Units (2.5 for 50:50 DT)</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Vpel [km/s] -->
+   <xs:element name="YVP" type="float_minInclusive_dot0001">
+      <xs:annotation>
+          <xs:documentation>Vpel [km/s]</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Pellet size [mm3] -->
+   <xs:element name="YVOL" type="float_minInclusive_dot0001">
+      <xs:annotation>
+          <xs:documentation>Pellet size [mm3]</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Angle to normal to LCS -->
+   <xs:element name="YCOS0" type="float_minInclusive_dot0001">
+      <xs:annotation>
+          <xs:documentation>Angle to normal to LCS</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Efficiency of loss in the tube 1 corresponds to 100% intact pellet -->
+   <xs:element name="YEFF" type="float_minInclusive_dot0001">
+      <xs:annotation>
+          <xs:documentation>Efficiency of loss in the tube 1 corresponds to 100% intact pellet</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Ratio of distance along the trajectory to that mapped on the mid-plane -->
+   <xs:element name="YDL" type="float_minInclusive_dot0001">
+      <xs:annotation>
+          <xs:documentation>Ratio of distance along the trajectory to that mapped on the mid-plane</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Switch between distinct pellets and permanent pellet model -->
+   <xs:element name="yswitch" type="float_minInclusive_dot0001">
+      <xs:annotation>
+          <xs:documentation>Switch between distinct pellets and permanent pellet model</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+</xs:schema>
+ 

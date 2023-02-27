@@ -1,0 +1,2 @@
+#
+*.o *.mod *.a *.exe smart.xml smart.yaml

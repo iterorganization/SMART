@@ -1,0 +1,39 @@
+---
+actor_description:
+    actor_name: smart
+    actor_type: python
+    data_type: legacy
+code_description:
+    arguments:
+    -   intent: IN
+        name: eq_in
+        type: equilibrium
+    -   intent: IN
+        name: cp_in
+        type: core_profiles
+    -   intent: OUT
+        name: cp_out
+        type: core_profiles
+    documentation: 'Pellet Ablation Model: SMART'
+    implementation:
+        code_parameters:
+            parameters: ./input/smart.xml
+            schema: ./input/smart.xsd
+        code_path: ./libsmart.a
+        data_type: legacy
+        include_path: ./mod_smart.mod
+        programming_language: fortran
+        root_dir: .
+        subroutines:
+            finalize: ''
+            init: ''
+            main: smart
+    settings:
+        compiler_cmd: __COMPILER__
+        extra_libraries:
+            path_defined: []
+            pkg_config_defined:
+            - xmllib
+        mpi_compiler_cmd: ''
+        open_mp_switch: ''
+...

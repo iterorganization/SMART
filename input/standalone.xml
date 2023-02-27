@@ -1,0 +1,25 @@
+<parameters>
+
+    <!-- INPUT/OUTPUT SHOT NUMBER -->
+    <shot> 131047 </shot>
+
+    <!-- INPUT RUN NUMBER -->
+    <run_in> 10 </run_in>
+
+    <!-- OUTPUT RUN NUMBER -->
+    <run_out> 99 </run_out>
+
+    <!-- INPUT DATABASE NAME TO READ FROM EXTERNAL DATABASE -->
+    <input_db>public</input_db>
+
+    <!-- INPUT MACHINE NAME TO READ FROM EXTERNAL DATABASE -->
+    <input_machine>ITER</input_machine>
+
+    <!-- LOCAL DATABASE NAME TO WRITE INTO LOCAL IMAS DATABASE -->
+    <local_db>user_environment_variable</local_db>
+
+    <!-- LOCAL MACHINE NAME TO WRITE INTO LOCAL IMAS DATABASE -->
+    <local_machine>ITER</local_machine>
+
+</parameters>
+
