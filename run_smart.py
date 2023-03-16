@@ -3,7 +3,8 @@
 # ------------------------------------
 
 # NEEDED MODULES
-import imas,os,yaml
+import imas,os,yaml,datetime
+import numpy as np
 from smart.actor import smart as smart_actor
 
 # INPUT/OUTPUT CONFIGURATION
@@ -21,6 +22,7 @@ else:
 output_database     = config['output_database']
 run_out             = config['run_out']
 time_slice          = config['time_slice']
+use_pellets_ids     = config['use_pellets_ids']
 
 # DISPLAY SIMULATION INFORMATION
 print('---------------------------------')
@@ -45,6 +47,21 @@ input_equilibrium = input.get_slice('equilibrium',time_slice,1)
 input_core_profiles = input.get_slice('core_profiles',time_slice,1)
 input.close()
 
+# PELLETS WRITTEN ON THE FLY (TO BE LATER FILLED VIA WAVEFORM-COOKER OR TAKEN FROM PCSSP)
+input_pellets = imas.pellets()
+if use_pellets_ids == 1:
+    input_pellets.ids_properties.homogeneous_time = 1
+    input_pellets.ids_properties.provider = os.getenv('USER')
+    input_pellets.ids_properties.creation_date = datetime.datetime.now().strftime("%y-%m-%d")
+    input_pellets.time.resize(1)
+    input_pellets.time[0] = 0.
+    input_pellets.time_slice.resize(1)
+    input_pellets.time_slice[0].pellet.resize(1)
+    input_pellets.time_slice[0].pellet[0].shape.size = np.array([92.e-9])
+    input_pellets.time_slice[0].pellet[0].species.resize(1)
+    input_pellets.time_slice[0].pellet[0].species[0].a = 2.5 # (2.5 for 50:50 DT)
+    input_pellets.time_slice[0].pellet[0].velocity_initial = 0.3e5
+
 # IF LOCAL DATABASE DOES NOT EXIST: CREATE IT
 local_database = os.getenv("HOME") + "/public/imasdb/" + output_database + "/3/0"
 if os.path.isdir(local_database) == False:
@@ -65,7 +82,7 @@ smart.initialize(code_parameters=code_parameters)
 # EXECUTE SMART
 print('=> Execute SMART')
 try:
-    output_core_profiles = smart(input_equilibrium, input_core_profiles)
+    output_core_profiles = smart(input_equilibrium, input_core_profiles, input_pellets)
 except Exception as error_message:
     print('ERROR in run_smart',str(error_message))
     exit(1)
@@ -75,8 +92,10 @@ except Exception as error_message:
 smart.finalize()
 
 # SAVE IDS INTO OUTPUT FILE
-print('=> Append IDS slice to local database')
+print('=> Save IDSs to local database')
 output.put(output_core_profiles)
+output.put(input_equilibrium)
+output.put(input_pellets)
     
 output.close()
 print('Done exporting.')

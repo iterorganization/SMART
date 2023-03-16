@@ -1,0 +1,26 @@
+# Start from clean environment
+module purge
+
+# IMAS and iWrap
+module load IMAS iWrap
+
+# For waveform editions
+#module load Waveform-Cooker
+
+# For debugging, just in case
+module load TotalView
+
+# Actor folder
+export ACTOR_FOLDER=~/public/PYTHON_ACTORS
+mkdir -p $ACTOR_FOLDER
+
+# Need to remove the stack limit to avoid segmentation fault inside codes
+ulimit -Ss unlimited
+
+# Libraries needed for the compilation of the H&CD codes themselves
+module load XMLlib/3.3.1-intel-2020b
+
+# EXTEND PYTHON PATH AND AVOID DOUBLONS
+export PYTHONPATH=$ACTOR_FOLDER:$PYTHONPATH
+export PYTHONPATH="$(perl -e 'print join(":", grep { not $seen{$_}++ } split(/:/, $ENV{PYTHONPATH}))')"
+

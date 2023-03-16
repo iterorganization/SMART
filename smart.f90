@@ -2,7 +2,7 @@ module mod_smart
 
 contains
 
-  subroutine smart(eq_in, cp_in, cp_out, codeparam, error_flag, error_message)
+  subroutine smart(eq_in, cp_in, pellets_in, cp_out, codeparam, error_flag, error_message)
 
     ! ---------------------------------------
     ! PELLET ABLATION MODEL FROM ASTRA: SMART
@@ -10,7 +10,7 @@ contains
     ! IDS OUTPUT: CORE_PROFILES
     ! ---------------------------------------
 
-    use ids_schemas, only: ids_equilibrium, ids_core_profiles
+    use ids_schemas, only: ids_equilibrium, ids_core_profiles, ids_pellets
     use ids_schemas, only: ids_parameters_input, ids_is_valid
     use ids_routines, only: ids_copy
     use mod_codeparam_smart
@@ -19,9 +19,11 @@ contains
 
     type(ids_equilibrium) :: eq_in
     type(ids_core_profiles) :: cp_in, cp_out
+    type(ids_pellets) :: pellets_in
     type(ids_parameters_input) :: codeparam
     type(type_smart_data) :: smart_in
     integer, intent(out) :: error_flag
+    logical:: from_pellets_ids = .False.
     character(len=:), pointer, intent(out) :: error_message
      
     integer :: i, j, i_time, j_time, n_xcp, n_xeq, n_ion, nrd, NA1
@@ -43,14 +45,27 @@ contains
     write(*,*) '======================================='
     write(*,*) 'START OF PELLET ABLATION MODEL: SMART'
 
+    ! CHECK IF INPUT PELLETS IDS IS FILLED: IF SO, USE IT INSTEAD OF CODEPARAM
+    ! FOR PELLET DESCRIPTION
+    if(pellets_in%ids_properties%homogeneous_time.ge.0) from_pellets_ids = .True.
+    
     ! CHECK IF INPUT IDS IS VALID
-    if (ids_is_valid(eq_in%ids_properties%homogeneous_time) .and. &
-        size(eq_in%time)>0                                  .and. &
-        ids_is_valid(cp_in%ids_properties%homogeneous_time) .and. &
+    if (ids_is_valid(eq_in%ids_properties%homogeneous_time)      .and. &
+        size(eq_in%time)>0                                       .and. &
+        ids_is_valid(cp_in%ids_properties%homogeneous_time)      .and. &
         size(cp_in%time)>0) then
 
        call assign_codeparam(codeparam%parameters_value,smart_in)
 
+       if(from_pellets_ids.eq..true.) then ! REPLACE PELLET INFORMATION
+          write(*,*) 'Input pellets IDS detected'
+          smart_in%YAM  = pellets_in%time_slice(1)%pellet(1)%species(1)%a
+          smart_in%YVP  = pellets_in%time_slice(1)%pellet(1)%velocity_initial*1.e-3
+          smart_in%YVOL = pellets_in%time_slice(1)%pellet(1)%shape%size(1)*1e9
+       else
+          write(*,*) 'Input pellets IDS NOT detected'
+       endif
+       
        write(*,*) '------------------------------------'
        write(*,*) 'Parameters read from input xml file:'
        write(*,'(a25,f7.3)') ' YAM                   = ', smart_in%YAM

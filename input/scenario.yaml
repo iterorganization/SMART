@@ -38,6 +38,8 @@ dt_required: 0.2
 # Parameter to remove Access Layer warnings when reading/writing obsolete data
 warnoff: 1
 
+use_pellets_ids: 1
+
 
 
 

@@ -11,6 +11,9 @@ code_description:
     -   intent: IN
         name: cp_in
         type: core_profiles
+    -   intent: IN
+        name: pellets_in
+        type: pellets
     -   intent: OUT
         name: cp_out
         type: core_profiles
@@ -26,8 +29,11 @@ code_description:
         root_dir: .
         subroutines:
             finalize: ''
+            get_state: ''
+            get_timestamp: ''
             init: ''
             main: smart
+            set_state: ''
     settings:
         compiler_cmd: __COMPILER__
         extra_libraries:
