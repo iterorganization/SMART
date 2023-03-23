@@ -113,8 +113,8 @@ contains
     allocate(ametre(n_xeq), shife(n_xeq), VOLe(n_xeq), &
              FPe(n_xeq), XEQ(n_xeq), RHO(n_xeq))
 
-    BTOR = dabs(cp_in%vacuum_toroidal_field%b0(i_time))
-    RTOR = cp_in%vacuum_toroidal_field%r0
+    BTOR = dabs(eq_in%vacuum_toroidal_field%b0(i_time))
+    RTOR = eq_in%vacuum_toroidal_field%r0
 
     ne(:) = cp_in%profiles_1d(i_time)%electrons%density(:)/denA2D
     Te(:) = cp_in%profiles_1d(i_time)%electrons%temperature(:)/temA2D
