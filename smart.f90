@@ -2,6 +2,7 @@ module mod_smart
 
 contains
 
+
   subroutine smart(eq_in, cp_in, pellets_in, cp_out, codeparam, error_flag, error_message)
 
     ! ---------------------------------------
@@ -27,6 +28,7 @@ contains
     character(len=:), pointer, intent(out) :: error_message
      
     integer :: i, j, i_time, j_time, n_xcp, n_xeq, n_ion, nrd, NA1
+    integer, dimension(3) :: ipx
     double precision ::                                         &
         denA2D, temA2D, presA2D, cuA2D,                         &
         HRO, ROC, BTOR, GP, SHIFT, ABC, RTOR, ALFA,             &
@@ -89,7 +91,7 @@ contains
 
     !== pelTRY.f
 
-    i_time = size(cp_in%profiles_1d(:)%time)
+    i_time = size(cp_in%time)
     j_time = size(eq_in%time_slice)
 
     n_xcp  = size(cp_in%profiles_1d(i_time)%grid%rho_tor_norm)
@@ -113,14 +115,46 @@ contains
     allocate(ametre(n_xeq), shife(n_xeq), VOLe(n_xeq), &
              FPe(n_xeq), XEQ(n_xeq), RHO(n_xeq))
 
-    BTOR = dabs(eq_in%vacuum_toroidal_field%b0(i_time))
-    RTOR = eq_in%vacuum_toroidal_field%r0
+    ! INITIALIZATION OF ION DENSITY
+    F1(:) = 0.0
+    F2(:) = 0.0
+    F3(:) = 0.0
+
+    ! BTOR, RTOR
+    if (size(cp_in%vacuum_toroidal_field%b0) > 0) then
+        BTOR = dabs(cp_in%vacuum_toroidal_field%b0(i_time))
+        RTOR = cp_in%vacuum_toroidal_field%r0
+    else if (size(eq_in%vacuum_toroidal_field%b0) > 0) then
+        BTOR = dabs(eq_in%vacuum_toroidal_field%b0(j_time))
+        RTOR = eq_in%vacuum_toroidal_field%r0
+    else
+       error_flag = -1
+       allocate(character(50):: error_message)
+       error_message = 'Error in SMART: not find B0 in input IDS'
+       return
+    endif
+
+    ! H/D/T Indices in IDS/core_profiles
+    call set_ion_index(cp_in, smart_in%YAM, i_time, ipx, error_flag)
+    if (error_flag .eq. -1) then
+       allocate(character(50):: error_message)
+       error_message = 'Error in SMART: ion atomic number/nuclear charge'
+       return
+    else if (error_flag .eq. -2) then
+       allocate(character(50):: error_message)
+       error_message = 'Error in SMART: parameter YAM'
+       return
+    endif
+
 
     ne(:) = cp_in%profiles_1d(i_time)%electrons%density(:)/denA2D
     Te(:) = cp_in%profiles_1d(i_time)%electrons%temperature(:)/temA2D
-    F1(:) = cp_in%profiles_1d(i_time)%ion(1)%density(:)/denA2D
-    F2(:) = cp_in%profiles_1d(i_time)%ion(2)%density(:)/denA2D
-    F3(:) = cp_in%profiles_1d(i_time)%ion(3)%density(:)/denA2D
+    if (ipx(1) > 0) &
+        F1(:) = cp_in%profiles_1d(i_time)%ion(ipx(1))%density(:)/denA2D
+    if (ipx(2) > 0) &
+        F2(:) = cp_in%profiles_1d(i_time)%ion(ipx(2))%density(:)/denA2D
+    if (ipx(3) > 0) &
+        F3(:) = cp_in%profiles_1d(i_time)%ion(ipx(3))%density(:)/denA2D
     Ti(:) = cp_in%profiles_1d(i_time)%ion(1)%temperature(:)/temA2D
     MU(:) = 1./cp_in%profiles_1d(i_time)%q(:)
     XEQ(:)= eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(:)
@@ -169,9 +203,12 @@ contains
     !== conversion to IMAS units
     cp_out%profiles_1d(i_time)%electrons%density(:) = ne(:)*denA2D
     cp_out%profiles_1d(i_time)%electrons%temperature(:) = Te(:)*temA2D
-    cp_out%profiles_1d(i_time)%ion(1)%density(:) = F1(:)*denA2D
-    cp_out%profiles_1d(i_time)%ion(2)%density(:) = F2(:)*denA2D
-    cp_out%profiles_1d(i_time)%ion(3)%density(:) = F3(:)*denA2D
+    if (ipx(1) > 0) &
+        cp_out%profiles_1d(i_time)%ion(ipx(1))%density(:) = F1(:)*denA2D
+    if (ipx(2) > 0) &
+        cp_out%profiles_1d(i_time)%ion(ipx(2))%density(:) = F2(:)*denA2D
+    if (ipx(3) > 0) &
+        cp_out%profiles_1d(i_time)%ion(ipx(3))%density(:) = F3(:)*denA2D
     do j=1, n_ion
         cp_out%profiles_1d(i_time)%ion(j)%temperature(:) = Ti(:)*temA2D
     enddo
@@ -187,5 +224,75 @@ contains
     write(*,*) ' '
 
   end subroutine smart
+
+
+  subroutine set_ion_index(cp, YAM, i_time, ipx, ierr)
+
+    ! ---------------------------------------
+    ! H/D/T INDICES IN CORE_PROFILES
+    ! ---------------------------------------
+
+    use ids_schemas, only: ids_core_profiles
+    implicit none
+    ! Dummy arguments 
+    type(ids_core_profiles) :: cp
+    integer :: i_time, ierr
+    integer, dimension(3) :: ipx
+    double precision :: YAM
+    ! Local arguments 
+    integer :: nion, i, ia, iz
+    double precision, parameter :: eps = 1.0d-5
+
+    ipx = [0, 0, 0]   ! Default Index 
+    nion = size(cp%profiles_1d(i_time)%ion)
+    
+    ! Index array for H/D/T
+    ierr = -1
+    do i=1, nion
+        ia = nint(cp%profiles_1d(i_time)%ion(i)%element(1)%a)
+        iz = nint(cp%profiles_1d(i_time)%ion(i)%element(1)%z_n)
+
+        ! Return in case of value error on ia/iz
+        if ((ia <= 0) .or. (iz <= 0)) return
+
+        if ((ia == 1) .and. (iz == 1)) then      ! H
+            ipx(1) = i
+        else if ((ia == 2) .and. (iz == 1)) then ! D
+            ipx(2) = i
+        else if ((ia == 3) .and. (iz == 1)) then ! T
+            ipx(3) = i
+        endif
+    enddo
+
+    ! H/D/T not found 
+    if (sum(ipx) <= 0) return
+
+    ! Consistency check between YAM and ipx
+    ierr = -2
+    ! H
+    if (abs(YAM-1.d0) < eps) then
+        if (ipx(1) == 0) return
+    ! D
+    else if(abs(YAM-2.d0) < eps) then
+        if (ipx(2) == 0) return
+    ! T
+    else if(abs(YAM-3.d0) < eps) then
+        if (ipx(3) == 0) return
+    ! H/D
+    else if ((YAM > 1.d0) .and. (YAM < 2.d0)) then
+        if ((ipx(1) == 0) .or. (ipx(2) == 0)) return
+    ! D/T
+    else if ((YAM > 2.d0) .and. (YAM < 3.d0)) then
+        if ((ipx(2) == 0) .or. (ipx(3) == 0)) return
+    ! Value Error of YAM
+    else
+        return 
+    endif
+
+    ! Normal End
+    ierr = 0
+
+  end subroutine set_ion_index
+
 
 end module mod_smart

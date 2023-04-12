@@ -18,12 +18,12 @@ IMAS actor for Simplified Mass Ablation and Relocation Treatment of high-field-s
 
 * Download the program
 ```
-$ git clone ssh://git@git.iter.org/...
+$ git clone ssh://git@git.iter.org/fuel/smart.git
 ```
 * Setup environment and build the actor
 ```
 $ cd smart
-$ ml IMAS iWrap XMLlib
+$ source config_sdcc.sh
 $ make
 ```
 

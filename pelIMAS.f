@@ -95,6 +95,9 @@ c=====================================================================
 	double precision YRP,YVP,YKC1,YEFF,YCOS0,YNp,YSIG,YHRO
 	double precision Zp,an,Eion,at,ap,am,coeff,ycoef,yshape,ALFA
 	double precision YDABL,YDDEP,YVOL,yswitch
+c>11-APR-2023 H.M
+	double precision, parameter :: eps = 1.0d-5
+c<11-APR-2023 H.M
 !,YPELSRS(*)
         double precision, allocatable :: 
      >  YTE(:),YTI(:),YNTE(:),YNTI(:),YXJ(:),YX12(:),
@@ -468,33 +471,36 @@ c Ni
 c
 cc	goto 777
 
-	if(YAM.eq.1.d0)	then
-	NI(J)=NI(J)-F1(J) 
-	F1(J)=F1(J)+YDNI
-	NI(J)=NI(J)+F1(J)
-	endif
-	if(YAM.gt.1.d0.and.YAM.lt.2.d0)	then
+c>11-APR-2023 H.M
+c       H
+	if (abs(YAM-1.d0).lt.eps) then
+       	NI(J)=NI(J)-F1(J) 
+       	F1(J)=F1(J)+YDNI
+       	NI(J)=NI(J)+F1(J)
+c       D
+	else if (abs(YAM-2.d0).lt.eps) then
+       	NI(J)=NI(J)-F2(J) 
+       	F2(J)=F2(J)+YDNI
+       	NI(J)=NI(J)+F2(J)
+c       T
+	else if (abs(YAM-3.d0).lt.eps) then
+       	NI(J)=NI(J)-F3(J) 
+	F3(J)=F3(J)+YDNI
+	NI(J)=NI(J)+F3(J)
+c       H/D
+	else if (YAM.gt.1.d0.and.YAM.lt.2.d0) then
 	NI(J)=NI(J)-F1(J)-F2(J) 
 	F1(J)=F1(J)+(2.d0-YAM)*YDNI
 	F2(J)=F2(J)+(YAM-1.d0)*YDNI
 	NI(J)=NI(J)+F1(J)+F2(J)
-	endif	
-	if(YAM.eq.2.d0)	then
-	NI(J)=NI(J)-F2(J) 
-	F2(J)=F2(J)+YDNI
-	NI(J)=NI(J)+F2(J)
-	endif
-	if(YAM.eq.3.d0)	then
-	NI(J)=NI(J)-F3(J) 
-	F3(J)=F3(J)+YDNI
-	NI(J)=NI(J)+F3(J)
-	endif
-	if(YAM.gt.2.d0.and.YAM.lt.3.d0)	then
+c       D/T
+	else if (YAM.gt.2.d0.and.YAM.lt.3.d0) then
 	NI(J)=NI(J)-F3(J)-F2(J) 
 	F3(J)=F3(J)+(YAM-2.d0)*YDNI
 	F2(J)=F2(J)+(3.d0-YAM)*YDNI
 	NI(J)=NI(J)+F3(J)+F2(J)
 	endif
+c<11-APR-2023 H.M
 cc 777	continue
 c
 cc	CAR9(J)	=CAR9(J)+YDNI

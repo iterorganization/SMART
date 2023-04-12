@@ -28,7 +28,7 @@ F90INC+=`pkg-config xmllib --cflags`
 OBJS_ACTOR = codeparam_smart.o smart.o pelIMAS.o SMTH.o
 OBJS_STDA  = codeparam_standalone.o smart.o standalone.o pelIMAS.o SMTH.o
 
-all: lib exe actor
+all: lib actor
 
 lib: libsmart.a
 

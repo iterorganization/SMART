@@ -5,8 +5,8 @@ C copy of SMTH() (see in for/surv.f), but in/out names can be the same
 	implicit none
 !	include	'for/parameter.inc'
 	integer	NO,N,J,I,NRD
-	double precision	ALFA,XO(*),FO(*),XN(*),FN(*),P(NRD),YFN(NRD)
-	double precision	YF,YX,YP,YQ,YD,FJ
+	double precision ALFA,XO(*),FO(*),XN(*),FN(*),P(NRD),YFN(NRD)
+	double precision YF,YX,YP,YQ,YD,FJ
 	if (N .gt. NRD .or. NO .le. 0)	then
 		write(*,*)' >>> SMTH: array is out of limits'
 !		call	a_stop
