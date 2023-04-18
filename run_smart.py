@@ -104,7 +104,8 @@ smart.finalize()
 print('=> Save IDSs to local database')
 output.put(output_core_profiles)
 output.put(input_equilibrium)
-output.put(input_pellets)
+if use_pellets_ids == 1:
+    output.put(input_pellets)
     
 output.close()
 print('Done exporting.')
