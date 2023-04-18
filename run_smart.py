@@ -6,6 +6,7 @@
 import imas,os,yaml,datetime
 import numpy as np
 from smart.actor import smart as smart_actor
+#from imas_rt_mapping import imas_rt_mapper
 
 # INPUT/OUTPUT CONFIGURATION
 file = open('input/scenario.yaml', 'r')
@@ -22,6 +23,7 @@ else:
 output_database     = config['output_database']
 run_out             = config['run_out']
 time_slice          = config['time_slice']
+debug               = config['debug']
 use_pellets_ids     = config['use_pellets_ids']
 
 # DISPLAY SIMULATION INFORMATION
@@ -62,6 +64,9 @@ if use_pellets_ids == 1:
     input_pellets.time_slice[0].pellet[0].species[0].a = 2.5 # (2.5 for 50:50 DT)
     input_pellets.time_slice[0].pellet[0].velocity_initial = 0.3e5
 
+#real_time_data = imas_rt_mapper(input_pellets)
+#exit()
+
 # IF LOCAL DATABASE DOES NOT EXIST: CREATE IT
 local_database = os.getenv("HOME") + "/public/imasdb/" + output_database + "/3/0"
 if os.path.isdir(local_database) == False:
@@ -77,7 +82,11 @@ output.create()
 smart = smart_actor()
 code_parameters = smart.get_code_parameters()
 code_parameters.parameters_path = 'input/smart.xml'
-smart.initialize(code_parameters=code_parameters)
+runtime_settings = smart.get_runtime_settings()
+if debug == 1:
+    from smart.common.runtime_settings import DebugMode
+    runtime_settings.debug_mode = DebugMode.STANDALONE
+smart.initialize(code_parameters=code_parameters,runtime_settings=runtime_settings)
 
 # EXECUTE SMART
 print('=> Execute SMART')

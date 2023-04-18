@@ -23,6 +23,7 @@ code_description:
             parameters: ./input/smart.xml
             schema: ./input/smart.xsd
         code_path: ./libsmart.a
+        data_dictionary_compliant: 3.38.1
         data_type: legacy
         include_path: ./mod_smart.mod
         programming_language: fortran

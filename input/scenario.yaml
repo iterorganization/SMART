@@ -1,8 +1,12 @@
 # ---------------------------------
 # PARAMETERS OF THE INPUT SCENARIO
 # ---------------------------------
-shot:                131047
-run_in:              10
+shot:                134173
+run_in:              106
+#shot:                131047
+#run_in:              10
+shot:                130012
+run_in:              4
 input_user_or_path:  public
 input_database:      ITER
 
@@ -21,7 +25,7 @@ run_out:             99
 # - if <0: use IDS first time slice (with ntimes specified by the user)
 # - if =0: use IDS whole time vector (ntimes not used)
 # - if >0: use the specified time slice (with ntimes specified by the user)
-time_slice: -1.0
+time_slice: 200.0
 
 # Number of time steps to simulate
 # (effective only when time_slice is not equal to zero)
@@ -38,7 +42,11 @@ dt_required: 0.2
 # Parameter to remove Access Layer warnings when reading/writing obsolete data
 warnoff: 1
 
-use_pellets_ids: 1
+# Debug (1) or not (0)
+debug: 0
+
+# Use pellets IDS (1) or not (0)
+use_pellets_ids: 0
 
 
 
