@@ -95,9 +95,11 @@ c=====================================================================
 	double precision YRP,YVP,YKC1,YEFF,YCOS0,YNp,YSIG,YHRO
 	double precision Zp,an,Eion,at,ap,am,coeff,ycoef,yshape,ALFA
 	double precision YDABL,YDDEP,YVOL,yswitch
-c>11-APR-2023 H.M
+c>26-APR-2023 H.M
 	double precision, parameter :: eps = 1.0d-5
-c<11-APR-2023 H.M
+	integer n
+	integer, parameter :: nmax = 1000
+c<26-APR-2023 H.M
 !,YPELSRS(*)
         double precision, allocatable :: 
      >  YTE(:),YTI(:),YNTE(:),YNTI(:),YXJ(:),YX12(:),
@@ -238,6 +240,9 @@ cc		CAR16(J)=0.
 	YRP1=YRP**(3.d0-ap)
 
 c	write(*,*) YA1,YA2,YA3
+c>26-APR-2023 H.M
+        n = 0
+c<26-APR-2023 H.M
  1	J=J-JS
 	YR2=YR1
 	YF2=YF1
@@ -263,6 +268,13 @@ C*NEW
 
 	if(YRP1.le.0.) goto 2
 !	write(*,*) j 
+c>26-APR-2023 H.M
+        n = n + 1
+	if (n .gt. nmax) then
+	   write(*,*) 'Warnig from SMART: Exited due to given profile'
+	   return
+	endif
+c<26-APR-2023 H.M
 	if(J.eq.1) then
 		J=0
 		JS=-1
