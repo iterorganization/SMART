@@ -3,9 +3,10 @@
 # ------------------------------------
 
 # NEEDED MODULES
-import imas,os,yaml,datetime
+import imas,os,yaml,datetime,copy
 import numpy as np
 from smart.actor import smart as smart_actor
+from time_compute import time_compute
 #from imas_rt_mapping import imas_rt_mapper
 
 # INPUT/OUTPUT CONFIGURATION
@@ -23,6 +24,8 @@ else:
 output_database     = config['output_database']
 run_out             = config['run_out']
 time_slice          = config['time_slice']
+dt_required         = config['dt_required']
+ntimes              = config['ntimes']
 debug               = config['debug']
 use_pellets_ids     = config['use_pellets_ids']
 
@@ -36,6 +39,8 @@ print('input_database      = ',input_database)
 print('output_user_or_path = ',output_user_or_path)
 print('output_database     = ',output_database)
 print('time_slice          = ',time_slice)
+print('dt_required         = ',dt_required)
+print('ntimes              = ',ntimes)
 print('---------------------------------')
 
 # OPEN INPUT DATAFILE TO GET DATA FROM IMAS SCENARIO DATABASE
@@ -43,11 +48,6 @@ print('=> Open input datafile')
 input = imas.DBEntry(imas.imasdef.MDSPLUS_BACKEND,input_database,shot,run_in,input_user_or_path)
 input.open()
 
-# READ INPUT IDSS FROM LOCAL DATABASE
-print('=> Read input IDSs')
-input_equilibrium = input.get_slice('equilibrium',time_slice,1)
-input_core_profiles = input.get_slice('core_profiles',time_slice,1)
-input.close()
 
 # PELLETS WRITTEN ON THE FLY (TO BE LATER FILLED VIA WAVEFORM-COOKER OR TAKEN FROM PCSSP)
 input_pellets = imas.pellets()
@@ -78,6 +78,9 @@ print('=> Create output datafile')
 output = imas.DBEntry(imas.imasdef.MDSPLUS_BACKEND,output_database,shot,run_out,output_user_or_path)
 output.create()
 
+# READ FULL TIME VECTOR OF EQUILIBRIUM IDS TO GET THE TIME BASE
+time_array,it = time_compute(input,time_slice,ntimes,dt_required)
+
 # INITIALIZE THE ACTOR
 smart = smart_actor()
 code_parameters = smart.get_code_parameters()
@@ -88,24 +91,46 @@ if debug == 1:
     runtime_settings.debug_mode = DebugMode.STANDALONE
 smart.initialize(code_parameters=code_parameters,runtime_settings=runtime_settings)
 
-# EXECUTE SMART
-print('=> Execute SMART')
-try:
-    output_core_profiles = smart(input_equilibrium, input_core_profiles, input_pellets)
-except Exception as error_message:
-    print('ERROR in run_smart',str(error_message))
-    exit(1)
-#input_core_profiles = output_core_profiles
+# TIME LOOP
+FirstTime = True
+for itime in range(it,it+ntimes):
 
+    if len(time_array)>1:
+        print('Time = %5.2f' % time_array[itime],'s, itime = ',itime,'/',it+ntimes-1)
+        time = time_array[itime]
+    else:
+        time = time_array[0]
+          
+    # READ IDSS FROM INPUT SCENARIO
+    print('=> Read input IDSs')
+    input_equilibrium = input.get_slice('equilibrium',time,1)
+    if FirstTime is True:
+        input_core_profiles = input.get_slice('core_profiles',time,1)
+        FirstTime = False
+
+    # EXECUTE SMART
+    print('=> Execute SMART')
+    try:
+        input_core_profiles.time[0] = np.array([time])
+        output_core_profiles = smart(input_equilibrium, input_core_profiles, input_pellets)
+        input_core_profiles = copy.deepcopy(output_core_profiles)
+    except Exception as error_message:
+        print('ERROR in run_smart',str(error_message))
+        exit(1)
+
+    output.put_slice(input_equilibrium)
+    output.put_slice(input_pellets)
+    output.put_slice(output_core_profiles)
+    print('Output time = %5.2f s' % (output_core_profiles.time[0]))
+        
 # FINALIZE THE ACTOR
 smart.finalize()
 
 # SAVE IDS INTO OUTPUT FILE
 print('=> Save IDSs to local database')
-output.put(output_core_profiles)
-output.put(input_equilibrium)
 if use_pellets_ids == 1:
     output.put(input_pellets)
     
+input.close()
 output.close()
 print('Done exporting.')
