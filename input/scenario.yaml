@@ -27,7 +27,7 @@ time_slice: 100.0 #380.1474599
 
 # Number of time steps to simulate
 # (effective only when time_slice is not equal to zero)
-ntimes: 10
+ntimes: 100
 
 # Time step in case a generic time array is defined
 # (effective only when ntimes > length of the input time array)
