@@ -36,7 +36,8 @@ contains
     double precision, allocatable ::                            &
         ne(:), ni(:), Te(:), Ti(:), F1(:), F2(:), F3(:), FP(:), &
         ametr(:), shif(:), vr(:), mu(:), YPELSRS(:), VOL(:),    &
-        ametre(:), shife(:), VOLe(:), XCP(:), XEQ(:), RHO(:), FPe(:)
+        ametre(:), shife(:), VOLe(:), XCP(:), XEQ(:), RHO(:),   &
+        FPe(:), dV(:)
 
     ! INITIALISATION OF ERROR FLAG
     error_flag = 0
@@ -110,7 +111,8 @@ contains
     allocate(ne(n_xcp), ni(n_xcp), Te(n_xcp), Ti(n_xcp), &
              F1(n_xcp), F2(n_xcp), F3(n_xcp), FP(n_xcp), &
              ametr(n_xcp), shif(n_xcp), vr(n_xcp),       &
-             mu(n_xcp), YPELSRS(n_xcp), VOL(n_xcp), XCP(n_xcp))
+             mu(n_xcp), YPELSRS(n_xcp), VOL(n_xcp),      &
+             XCP(n_xcp), dV(n_xcp))
 
     allocate(ametre(n_xeq), shife(n_xeq), VOLe(n_xeq), &
              FPe(n_xeq), XEQ(n_xeq), RHO(n_xeq))
@@ -213,10 +215,19 @@ contains
         cp_out%profiles_1d(i_time)%ion(j)%temperature(:) = Ti(:)*temA2D
     enddo
 
-    deallocate(ne, ni, Te, Ti, F1, F2, F3, FP, &
-               ametr, shif, vr, mu, YPELSRS, VOL, XCP)
-    deallocate(ametre, shife, VOLe, FPe, XEQ, RHO)
+    !== more mapping to IDS
+    allocate(cp_out%global_quantities%n_e_volume_average(i_time),&
+             cp_out%global_quantities%t_e_volume_average(i_time) )
 
+    dV(:) = VR(:) * HRO
+    cp_out%global_quantities%n_e_volume_average(i_time) = &
+        SUM(ne(:)*denA2D*dV(:)) / SUM(dV(:)) 
+    cp_out%global_quantities%t_e_volume_average(i_time) = &
+        SUM(ne(:)*denA2D*Te(:)*temA2D*dV(:)) / SUM(ne(:)*denA2D*dV(:))
+
+    deallocate(ne, ni, Te, Ti, F1, F2, F3, FP, &
+               ametr, shif, vr, mu, YPELSRS, VOL, XCP, dV)
+    deallocate(ametre, shife, VOLe, FPe, XEQ, RHO)
 
     ! FINAL DISPLAY
     write(*,*) 'END OF SMART'

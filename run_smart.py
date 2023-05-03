@@ -122,7 +122,7 @@ for itime in range(it,it+ntimes):
     output.put_slice(input_pellets)
     output.put_slice(output_core_profiles)
     print('Output time = %5.2f s' % (output_core_profiles.time[0]))
-        
+
 # FINALIZE THE ACTOR
 smart.finalize()
 

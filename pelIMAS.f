@@ -95,11 +95,11 @@ c=====================================================================
 	double precision YRP,YVP,YKC1,YEFF,YCOS0,YNp,YSIG,YHRO
 	double precision Zp,an,Eion,at,ap,am,coeff,ycoef,yshape,ALFA
 	double precision YDABL,YDDEP,YVOL,yswitch
-c>26-APR-2023 H.M
+c>26-APR-2023 M.H
 	double precision, parameter :: eps = 1.0d-5
 	integer n
 	integer, parameter :: nmax = 1000
-c<26-APR-2023 H.M
+c<26-APR-2023 M.H
 !,YPELSRS(*)
         double precision, allocatable :: 
      >  YTE(:),YTI(:),YNTE(:),YNTI(:),YXJ(:),YX12(:),
@@ -240,9 +240,9 @@ cc		CAR16(J)=0.
 	YRP1=YRP**(3.d0-ap)
 
 c	write(*,*) YA1,YA2,YA3
-c>26-APR-2023 H.M
+c>26-APR-2023 M.H
         n = 0
-c<26-APR-2023 H.M
+c<26-APR-2023 M.H
  1	J=J-JS
 	YR2=YR1
 	YF2=YF1
@@ -268,13 +268,13 @@ C*NEW
 
 	if(YRP1.le.0.) goto 2
 !	write(*,*) j 
-c>26-APR-2023 H.M
+c>26-APR-2023 M.H
         n = n + 1
 	if (n .gt. nmax) then
 	   write(*,*) 'Warnig from SMART: Exited due to given profile'
 	   return
 	endif
-c<26-APR-2023 H.M
+c<26-APR-2023 M.H
 	if(J.eq.1) then
 		J=0
 		JS=-1
@@ -389,6 +389,12 @@ c*19-NOV-2013 vvvvvvvvvvvvvvvvvv
 	JMIN=min(jbeg,jmin)
 
 c*19-NOV-2013 ^^^^^^^^^^^^^^^^^^^
+c>03-MAY-2023 M.H
+	if(JMIN .le. 0) then
+	    write(*,*) 'Warnig from SMART: Exited due to fault in n/E shift'
+	    return
+	endif
+c<03-MAY-2023 M.H
 	do JS1=1,JDEL
 		JS=JBEG+JS1-1
 		if(JS.lt.0)JS=-JS
@@ -444,7 +450,6 @@ C smoothing with energy/particle conservation
 	call	SMTH(ALFA,j,DNI,YXJ,j,DNE,YX12,NRD)
 	call	SMTH(ALFA,j,DNE,YX12,j,DNI,YXj,NRD)
 
-
 !===============================^^^^ 26-03-2018
 	DO J=1,NA1
 
@@ -483,7 +488,7 @@ c Ni
 c
 cc	goto 777
 
-c>11-APR-2023 H.M
+c>11-APR-2023 M.H
 c       H
 	if (abs(YAM-1.d0).lt.eps) then
        	NI(J)=NI(J)-F1(J) 
@@ -512,7 +517,7 @@ c       D/T
 	F2(J)=F2(J)+(3.d0-YAM)*YDNI
 	NI(J)=NI(J)+F3(J)+F2(J)
 	endif
-c<11-APR-2023 H.M
+c<11-APR-2023 M.H
 cc 777	continue
 c
 cc	CAR9(J)	=CAR9(J)+YDNI
