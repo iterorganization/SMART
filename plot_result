@@ -19,7 +19,7 @@ def find_nearest(a, a0):
 # MANAGEMENT OF INPUT ARGUMENTS
 
 parser = argparse.ArgumentParser(description=\
-                   '---- Run ECSTRAY according to parameters from input configuration folder')
+                   '---- Run script according to parameters from input configuration folder')
 parser.add_argument('-c','--config_folder',help='Configuration folder',required=False,type=str)
 
 # CONFIGURATION FOLDER
