@@ -24,6 +24,7 @@ else:
 output_database     = config['output_database']
 run_out             = config['run_out']
 time_slice          = config['time_slice']
+time_no_more_pellet = config['time_no_more_pellet']
 dt_required         = config['dt_required']
 ntimes              = config['ntimes']
 debug               = config['debug']
@@ -107,6 +108,10 @@ for itime in range(it,it+ntimes):
     if FirstTime is True:
         input_core_profiles = input.get_slice('core_profiles',time,1)
         FirstTime = False
+
+    # Stop pellet injection after a while
+    if time >= time_no_more_pellet:
+        input_pellets.time_slice[0].pellet[0].shape.size = np.array([1.e-37])
 
     # EXECUTE SMART
     print('=> Execute SMART')

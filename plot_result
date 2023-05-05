@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+
+import imas, argparse, yaml
+import numpy as np
+import matplotlib, os
+if 'DISPLAY' not in os.environ:
+    matplotlib.use('agg')
+else:
+    matplotlib.use('TKagg')
+import matplotlib.pyplot as plt
+
+# ---------------------------------------------------------------
+def find_nearest(a, a0):
+    'Element in nd array `a` closest to the scalar value `a0`'
+    idx = abs(a - a0).argmin()
+    return a.flat[idx],idx
+
+# ---------------------------------------------------------------
+# MANAGEMENT OF INPUT ARGUMENTS
+
+parser = argparse.ArgumentParser(description=\
+                   '---- Run ECSTRAY according to parameters from input configuration folder')
+parser.add_argument('-c','--config_folder',help='Configuration folder',required=False,type=str)
+
+# CONFIGURATION FOLDER
+args = vars(parser.parse_args())
+config_folder = args["config_folder"]
+if config_folder is None:
+    config_folder = 'input'
+
+# ---------------------------------------------------------------
+
+# Read scenario.yaml used for the simulation to know where to find
+# the IMAS output datafile
+scenario_file = open(config_folder+'/scenario.yaml', 'r')
+config = yaml.load(scenario_file,Loader=yaml.CLoader)
+scenario_file.close()
+
+# Backen
+if config['scenario_backend'] == 'hdf5':
+    sc_backend = imas.imasdef.HDF5_BACKEND
+else:
+    sc_backend = imas.imasdef.MDSPLUS_BACKEND
+    
+# Find output datafile from the configuration parameters
+if config['output_user_or_path'] == 'default':
+    output_user_or_path = os.getenv('USER')
+    config['output_user_or_path'] = os.getenv('USER')
+else:
+    output_user_or_path = config['output_user_or_path']
+
+# Read the equilibrium and core_profiles IDSs from the input datafile
+input = imas.DBEntry(sc_backend,
+         config['input_database'],
+         config['shot'],
+         config['run_in'],
+         config['input_user_or_path'])
+input.open()
+core_profiles_ref = input.get_slice('core_profiles',config['time_slice'],1)
+input.close()
+
+# Read the output core_profiles IDS
+output = imas.DBEntry(imas.imasdef.MDSPLUS_BACKEND,
+          config['output_database'],
+          config['shot'],
+          config['run_out'],
+          config['output_user_or_path'])
+output.open()
+core_profiles = output.get('core_profiles')
+output.close()
+
+#plt.figure()
+#plt.plot(core_profiles_ref.time,core_profiles_ref.global_quantities.n_e_volume_average,
+#         label='Ref input')
+#plt.plot(core_profiles.time,core_profiles.global_quantities.n_e_volume_average,
+#         label='Result')
+#plt.grid()
+#plt.legend(loc='lower right')
+#plt.xlabel('Time [s]')
+#plt.ylabel('Volume-averaged electron density [m-3]')
+
+
+[t_no_pellet,idx_no_pellet] = find_nearest(core_profiles.time,config['time_no_more_pellet'])
+plt.figure()
+plt.plot(core_profiles_ref.profiles_1d[0].grid.rho_tor_norm,
+         core_profiles_ref.profiles_1d[0].electrons.density,
+         linewidth=2,color='g',label='Initial t = %.2f s'%core_profiles_ref.time[0])
+for i in range(len(core_profiles.time)):
+    if i==0:
+        plt.plot(core_profiles.profiles_1d[i].grid.rho_tor_norm,
+                 core_profiles.profiles_1d[i].electrons.density,
+                 linewidth=2,color='magenta',label='SMART at t = %.2f s'%core_profiles.time[i])
+    elif i==len(core_profiles.time)-1:
+        plt.plot(core_profiles.profiles_1d[i].grid.rho_tor_norm,
+                 core_profiles.profiles_1d[i].electrons.density,
+                 linewidth=2,color='r',linestyle='--',label='SMART at t = %.2f s'%core_profiles.time[i])
+    elif i==idx_no_pellet:
+        plt.plot(core_profiles.profiles_1d[i].grid.rho_tor_norm,
+                 core_profiles.profiles_1d[i].electrons.density,
+                 linewidth=4,color='b',label='Pellets no more t = %.2f s'%core_profiles.time[i])
+    else:
+        plt.plot(core_profiles.profiles_1d[i].grid.rho_tor_norm,
+                 core_profiles.profiles_1d[i].electrons.density)
+        
+plt.grid()
+plt.legend(loc='upper right')
+ymin = plt.gca().get_ylim()[0]
+ymax = plt.gca().get_ylim()[1]
+plt.xlim(0.,1.)
+plt.ylim(0,ymax*1.2)
+
+plt.xlabel('Normalised rho_tor')
+plt.ylabel('Electron density profile [m-3]')
+
+plt.show()
+    
+
+
+

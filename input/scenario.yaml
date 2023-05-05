@@ -13,7 +13,7 @@ input_database:      ITER
 # -----------------------------------
 output_user_or_path: default
 output_database:     ITER
-run_out:             99
+run_out:             101
 
 # -----------------------------------
 # PARAMETERS FOR OPTIONAL TIME LOOP
@@ -23,7 +23,10 @@ run_out:             99
 # - if <0: use IDS first time slice (with ntimes specified by the user)
 # - if =0: use IDS whole time vector (ntimes not used)
 # - if >0: use the specified time slice (with ntimes specified by the user)
-time_slice: 100.0 #380.1474599
+time_slice: 200.
+
+# Time when pellet injection is stopped
+time_no_more_pellet: 205.
 
 # Number of time steps to simulate
 # (effective only when time_slice is not equal to zero)
@@ -31,7 +34,7 @@ ntimes: 100
 
 # Time step in case a generic time array is defined
 # (effective only when ntimes > length of the input time array)
-dt_required: 0.2
+dt_required: 1.
 
 # --------------
 # MISCELLANEOUS
@@ -46,6 +49,8 @@ debug: 0
 # Use pellets IDS (1) or not (0)
 use_pellets_ids: 1
 
+# Backend of input scenario (hdf5 or mdsplus)
+scenario_backend: mdsplus
 
 
 
