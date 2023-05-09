@@ -63,7 +63,7 @@ if use_pellets_ids == 1:
     input_pellets.time_slice[0].pellet[0].shape.size = np.array([92.e-9])
     input_pellets.time_slice[0].pellet[0].species.resize(1)
     input_pellets.time_slice[0].pellet[0].species[0].a = 2.5 # (2.5 for 50:50 DT)
-    input_pellets.time_slice[0].pellet[0].velocity_initial = 0.3e5
+    input_pellets.time_slice[0].pellet[0].velocity_initial = 0.3e3
 
 #real_time_data = imas_rt_mapper(input_pellets)
 #exit()
