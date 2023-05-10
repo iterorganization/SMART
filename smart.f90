@@ -29,6 +29,7 @@ contains
      
     integer :: i, j, i_time, j_time, n_xcp, n_xeq, n_ion, nrd, NA1
     integer, dimension(3) :: ipx
+    double precision, parameter :: pi = 3.141592653589793
     double precision ::                                         &
         denA2D, temA2D, presA2D, cuA2D,                         &
         HRO, ROC, BTOR, GP, SHIFT, ABC, RTOR, ALFA,             &
@@ -64,7 +65,8 @@ contains
           write(*,*) 'Input pellets IDS detected'
           smart_in%YAM  = pellets_in%time_slice(1)%pellet(1)%species(1)%a
           smart_in%YVP  = pellets_in%time_slice(1)%pellet(1)%velocity_initial*1.e-3
-          smart_in%YVOL = pellets_in%time_slice(1)%pellet(1)%shape%size(1)*1e9
+          smart_in%YVOL = pellets_in%time_slice(1)%pellet(1)%shape%size(1)**2 * &
+                          pellets_in%time_slice(1)%pellet(1)%shape%size(2) * pi * 1.e+9
        else
           write(*,*) 'Input pellets IDS NOT detected'
        endif

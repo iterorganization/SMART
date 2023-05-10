@@ -60,7 +60,10 @@ if use_pellets_ids == 1:
     input_pellets.time[0] = 0.
     input_pellets.time_slice.resize(1)
     input_pellets.time_slice[0].pellet.resize(1)
-    input_pellets.time_slice[0].pellet[0].shape.size = np.array([92.e-9])
+    input_pellets.time_slice[0].pellet[0].shape.type.index = 2
+    input_pellets.time_slice[0].pellet[0].shape.size.resize(2)
+    input_pellets.time_slice[0].pellet[0].shape.size[0] = 5.0 / 2.0 * 1.0e-3
+    input_pellets.time_slice[0].pellet[0].shape.size[1] = 92.0 / (np.pi * 2.5**2) * 1.0e-3
     input_pellets.time_slice[0].pellet[0].species.resize(1)
     input_pellets.time_slice[0].pellet[0].species[0].a = 2.5 # (2.5 for 50:50 DT)
     input_pellets.time_slice[0].pellet[0].velocity_initial = 0.3e3
