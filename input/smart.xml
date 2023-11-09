@@ -3,7 +3,7 @@
     <!-- Pellet mass in Atomic Units (2.5 for 50:50 DT) -->
     <YAM> 2.5e0 </YAM>
 
-    <!-- Vpel [km/s] -->
+    <!-- Vpel [m/s] -->
     <YVP> 0.3e2 </YVP>
 
     <!-- Pellet size [mm3] -->
