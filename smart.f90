@@ -30,15 +30,15 @@ contains
     integer :: i, j, i_time, j_time, n_xcp, n_xeq, n_ion, nrd, NA1
     integer, dimension(3) :: ipx
     double precision, parameter :: pi = 3.141592653589793
-    double precision ::                                         &
-        denA2D, temA2D, presA2D, cuA2D,                         &
-        HRO, ROC, BTOR, GP, SHIFT, ABC, RTOR, ALFA,             &
-        YAM, YVP, YVOL, YCOS0, YEFF, YDL,YDABL, YDDEP, yswitch
-    double precision, allocatable ::                            &
-        ne(:), ni(:), Te(:), Ti(:), F1(:), F2(:), F3(:), FP(:), &
-        ametr(:), shif(:), vr(:), mu(:), YPELSRS(:), VOL(:),    &
-        ametre(:), shife(:), VOLe(:), XCP(:), XEQ(:), RHO(:),   &
-        FPe(:), dV(:)
+    double precision ::                                        &
+       denA2D, temA2D, presA2D, cuA2D,                         &
+       HRO, ROC, BTOR, GP, SHIFT, ABC, RTOR, ALFA,             &
+       YAM, YVP, YVOL, YCOS0, YEFF, YDL,YDABL, YDDEP, yswitch
+    double precision, allocatable ::                           &
+       ne(:), ni(:), Te(:), Ti(:), F1(:), F2(:), F3(:), FP(:), &
+       ametr(:), shif(:), vr(:), mu(:), YPELSRS(:), VOL(:),    &
+       ametre(:), shife(:), VOLe(:), XCP(:), XEQ(:), RHO(:),   &
+       FPe(:), dV(:)
 
     ! INITIALISATION OF ERROR FLAG
     error_flag = 0
@@ -54,10 +54,10 @@ contains
     if(pellets_in%ids_properties%homogeneous_time.ge.0) from_pellets_ids = .True.
     
     ! CHECK IF INPUT IDS IS VALID
-    if (ids_is_valid(eq_in%ids_properties%homogeneous_time)      .and. &
-        size(eq_in%time)>0                                       .and. &
-        ids_is_valid(cp_in%ids_properties%homogeneous_time)      .and. &
-        size(cp_in%time)>0) then
+    if (ids_is_valid(eq_in%ids_properties%homogeneous_time) .and. &
+       size(eq_in%time)>0                                   .and. &
+       ids_is_valid(cp_in%ids_properties%homogeneous_time)  .and. &
+       size(cp_in%time)>0) then
 
        call assign_codeparam(codeparam%parameters_value,smart_in)
 
@@ -126,11 +126,11 @@ contains
 
     ! BTOR, RTOR
     if (size(cp_in%vacuum_toroidal_field%b0) > 0) then
-        BTOR = dabs(cp_in%vacuum_toroidal_field%b0(i_time))
-        RTOR = cp_in%vacuum_toroidal_field%r0
+       BTOR = dabs(cp_in%vacuum_toroidal_field%b0(i_time))
+       RTOR = cp_in%vacuum_toroidal_field%r0
     else if (size(eq_in%vacuum_toroidal_field%b0) > 0) then
-        BTOR = dabs(eq_in%vacuum_toroidal_field%b0(j_time))
-        RTOR = eq_in%vacuum_toroidal_field%r0
+       BTOR = dabs(eq_in%vacuum_toroidal_field%b0(j_time))
+       RTOR = eq_in%vacuum_toroidal_field%r0
     else
        error_flag = -1
        allocate(character(50):: error_message)
@@ -166,12 +166,12 @@ contains
     XCP(:)= cp_in%profiles_1d(i_time)%grid%rho_tor_norm(:)
     ROC = eq_in%time_slice(j_time)%profiles_1d%phi(n_xeq)
     ROC = sqrt(dabs(ROC/BTOR/3.141592))
-    ametre(:) = (eq_in%time_slice(j_time)%profiles_1d%r_outboard(:) - &
-                       eq_in%time_slice(j_time)%profiles_1d%r_inboard(:))/2.
-    shife(:) = (eq_in%time_slice(j_time)%profiles_1d%r_outboard(:) + &
-                      eq_in%time_slice(j_time)%profiles_1d%r_inboard(:))/2. - RTOR
+    ametre(:) = (eq_in%time_slice(j_time)%profiles_1d%r_outboard(:) &
+               - eq_in%time_slice(j_time)%profiles_1d%r_inboard(:))/2.
+    shife(:) = (eq_in%time_slice(j_time)%profiles_1d%r_outboard(:) &
+              + eq_in%time_slice(j_time)%profiles_1d%r_inboard(:))/2. - RTOR
     FPe(:) = - eq_in%time_slice(j_time)%profiles_1d%psi(:) &
-                   + eq_in%time_slice(j_time)%profiles_1d%psi(1)
+             + eq_in%time_slice(j_time)%profiles_1d%psi(1)
 
     ABC = ametre(n_xeq)
     SHIFT = Shife(n_xeq) - RTOR
@@ -186,14 +186,14 @@ contains
 
     VR(1) = VOL(1) / HRO
     do j=2, n_xcp
-        VR(j) = (VOL(j) - VOL(j-1)) / HRO
+       VR(j) = (VOL(j) - VOL(j-1)) / HRO
     enddo
 
     do i=1, n_xcp
-        ni(i) = 0.
-        do j=1, n_ion
-            ni(i) = ni(i) + cp_in%profiles_1d(i_time)%ion(j)%density(i)/denA2D
-        enddo
+       ni(i) = 0.
+       do j=1, n_ion
+          ni(i) = ni(i) + cp_in%profiles_1d(i_time)%ion(j)%density(i)/denA2D
+       enddo
     enddo
 
     !== Pellet Ablation Model: SMART 
@@ -208,13 +208,13 @@ contains
     cp_out%profiles_1d(i_time)%electrons%density(:) = ne(:)*denA2D
     cp_out%profiles_1d(i_time)%electrons%temperature(:) = Te(:)*temA2D
     if (ipx(1) > 0) &
-        cp_out%profiles_1d(i_time)%ion(ipx(1))%density(:) = F1(:)*denA2D
+       cp_out%profiles_1d(i_time)%ion(ipx(1))%density(:) = F1(:)*denA2D
     if (ipx(2) > 0) &
-        cp_out%profiles_1d(i_time)%ion(ipx(2))%density(:) = F2(:)*denA2D
+       cp_out%profiles_1d(i_time)%ion(ipx(2))%density(:) = F2(:)*denA2D
     if (ipx(3) > 0) &
-        cp_out%profiles_1d(i_time)%ion(ipx(3))%density(:) = F3(:)*denA2D
+       cp_out%profiles_1d(i_time)%ion(ipx(3))%density(:) = F3(:)*denA2D
     do j=1, n_ion
-        cp_out%profiles_1d(i_time)%ion(j)%temperature(:) = Ti(:)*temA2D
+       cp_out%profiles_1d(i_time)%ion(j)%temperature(:) = Ti(:)*temA2D
     enddo
 
     !== more mapping to IDS
@@ -223,9 +223,9 @@ contains
 
     dV(:) = VR(:) * HRO
     cp_out%global_quantities%n_e_volume_average(i_time) = &
-        SUM(ne(:)*denA2D*dV(:)) / SUM(dV(:)) 
+       SUM(ne(:)*denA2D*dV(:)) / SUM(dV(:)) 
     cp_out%global_quantities%t_e_volume_average(i_time) = &
-        SUM(ne(:)*denA2D*Te(:)*temA2D*dV(:)) / SUM(ne(:)*denA2D*dV(:))
+       SUM(ne(:)*denA2D*Te(:)*temA2D*dV(:)) / SUM(ne(:)*denA2D*dV(:))
 
     deallocate(ne, ni, Te, Ti, F1, F2, F3, FP, &
                ametr, shif, vr, mu, YPELSRS, VOL, XCP, dV)
@@ -262,19 +262,19 @@ contains
     ! Index array for H/D/T
     ierr = -1
     do i=1, nion
-        ia = nint(cp%profiles_1d(i_time)%ion(i)%element(1)%a)
-        iz = nint(cp%profiles_1d(i_time)%ion(i)%element(1)%z_n)
+       ia = nint(cp%profiles_1d(i_time)%ion(i)%element(1)%a)
+       iz = nint(cp%profiles_1d(i_time)%ion(i)%element(1)%z_n)
 
-        ! Return in case of value error on ia/iz
-        if ((ia <= 0) .or. (iz <= 0)) return
+       ! Return in case of value error on ia/iz
+       if ((ia <= 0) .or. (iz <= 0)) return
 
-        if ((ia == 1) .and. (iz == 1)) then      ! H
-            ipx(1) = i
-        else if ((ia == 2) .and. (iz == 1)) then ! D
-            ipx(2) = i
-        else if ((ia == 3) .and. (iz == 1)) then ! T
-            ipx(3) = i
-        endif
+       if ((ia == 1) .and. (iz == 1)) then      ! H
+          ipx(1) = i
+       else if ((ia == 2) .and. (iz == 1)) then ! D
+          ipx(2) = i
+       else if ((ia == 3) .and. (iz == 1)) then ! T
+          ipx(3) = i
+       endif
     enddo
 
     ! H/D/T not found 
@@ -284,22 +284,22 @@ contains
     ierr = -2
     ! H
     if (abs(YAM-1.d0) < eps) then
-        if (ipx(1) == 0) return
+       if (ipx(1) == 0) return
     ! D
     else if(abs(YAM-2.d0) < eps) then
-        if (ipx(2) == 0) return
+       if (ipx(2) == 0) return
     ! T
     else if(abs(YAM-3.d0) < eps) then
-        if (ipx(3) == 0) return
+       if (ipx(3) == 0) return
     ! H/D
     else if ((YAM > 1.d0) .and. (YAM < 2.d0)) then
-        if ((ipx(1) == 0) .or. (ipx(2) == 0)) return
+       if ((ipx(1) == 0) .or. (ipx(2) == 0)) return
     ! D/T
     else if ((YAM > 2.d0) .and. (YAM < 3.d0)) then
-        if ((ipx(2) == 0) .or. (ipx(3) == 0)) return
+       if ((ipx(2) == 0) .or. (ipx(3) == 0)) return
     ! Value Error of YAM
     else
-        return 
+       return 
     endif
 
     ! Normal End
