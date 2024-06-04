@@ -26,6 +26,7 @@ $ cd smart
 $ source config_sdcc.sh
 $ make
 $ make standalone.exe
+```
 
 ### Input Parameters (smart.xml)
 
