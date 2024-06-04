@@ -25,7 +25,7 @@ $ git clone ssh://git@git.iter.org/fuel/smart.git
 $ cd smart
 $ source config_sdcc.sh
 $ make
-```
+$ make standalone.exe
 
 ### Input Parameters (smart.xml)
 
@@ -56,5 +56,5 @@ $ python ./run_smart.py
 
 ## Authors
 
-* A.R. Polevoi (PMA/SCD/SCOD, ITER Organization)
-* M. Hosokawa (PMA/SCD/SCOD, ITER Organization)
+* A.R. Polevoi (PMA/SCD/SID, ITER Organization)
+* M. Hosokawa (PMA/SCD/SID, ITER Organization)

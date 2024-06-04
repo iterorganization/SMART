@@ -1,5 +1,5 @@
 # DEFINE F90
-COMPILER = gfortran
+COMPILER = ifort
 include ./compiler.mk
 
 # SET COMPILER OPTIONS
