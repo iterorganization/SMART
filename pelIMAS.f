@@ -139,13 +139,13 @@ c*6-OCT-15
 	enddo	
 c*6-OCT-15	
 	if(YAM.lt.1.d0.or.YAM.gt.3.d0) then
-	write(*,*) 'Warnig from SMART: wrong input data'
+	write(*,*) 'Warning from SMART: wrong input data'
 	write(*,*) '	pellet mass must be H/D/T/HD/DT only'
 	return
 	endif
 	if((YAM*YVP*YRP*(yshape-.999)*YEFF).le.0..or.abs(YCOS0).gt.1.d0) 
      .	then
-	write(*,*) 'Warnig from SMART: wrong input parameters'
+	write(*,*) 'Warning from SMART: wrong input parameters'
 	return
 	endif
 Constants for Kuteev's model
@@ -271,7 +271,7 @@ C*NEW
 c>26-APR-2023 M.H
         n = n + 1
 	if (n .gt. nmax) then
-	   write(*,*) 'Warnig from SMART: Exited due to given profile'
+	   write(*,*) 'Warning from SMART: Exited due to given profile'
 	   return
 	endif
 c<26-APR-2023 M.H
@@ -391,7 +391,7 @@ c*19-NOV-2013 vvvvvvvvvvvvvvvvvv
 c*19-NOV-2013 ^^^^^^^^^^^^^^^^^^^
 c>03-MAY-2023 M.H
 	if(JMIN .le. 0) then
-	    write(*,*) 'Warnig from SMART: Exited due to fault in n/E shift'
+	    write(*,*) 'Warning from SMART: Exited due to n/E shift'
 	    return
 	endif
 c<03-MAY-2023 M.H

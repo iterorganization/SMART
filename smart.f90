@@ -61,7 +61,7 @@ contains
 
        call assign_codeparam(codeparam%parameters_value,smart_in)
 
-       if(from_pellets_ids.eq..true.) then ! REPLACE PELLET INFORMATION
+       if(from_pellets_ids .eqv. .true.) then ! REPLACE PELLET INFORMATION
           write(*,*) 'Input pellets IDS detected'
           smart_in%YAM  = pellets_in%time_slice(1)%pellet(1)%species(1)%a
           smart_in%YVP  = pellets_in%time_slice(1)%pellet(1)%velocity_initial*1.e-3

@@ -1,24 +1,20 @@
 # DEFINE F90
-COMPILER = ifort
+COMPILER = gfortran
 include ./compiler.mk
 
 # SET COMPILER OPTIONS
 ifeq ($(F90), ifort)
 # INTEL - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
   F90FLAGS=-fPIC -fpp -g # FPIC AND PREPROCESSING OPTIONS
-  F90INC=-I. `pkg-config imas-ifort --cflags`
-  F90LIB=`pkg-config imas-ifort --libs`
 else ifeq ($(F90), gfortran)
 # GFORTRAN - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
   F90FLAGS=-fPIC -cpp # FPIC AND PREPROCESSING OPTIONS
-  F90INC=-I. `pkg-config imas-gfortran --cflags`
-  F90LIB=`pkg-config imas-gfortran --libs`
 else
   $(warning Unsupported Fortran compiler $(F90), proceed with care...)
   F90FLAGS=-fPIC -cpp # FPIC AND PREPROCESSING OPTIONS
-  F90INC=-I. `pkg-config imas-gfortran --cflags`
-  F90LIB=`pkg-config imas-gfortran --libs`
 endif
+F90INC=-I. `pkg-config al-fortran --cflags`
+F90LIB=`pkg-config al-fortran --libs`
 
 # XMLLIB LIBRARIES
 F90LIB+=`pkg-config xmllib --libs`

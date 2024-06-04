@@ -13,7 +13,7 @@ from time_compute import time_compute
 file = open('input/scenario.yaml', 'r')
 config = yaml.load(file,Loader=yaml.CLoader)
 file.close()
-shot                = config['shot']
+pulse               = config['pulse']
 run_in              = config['run_in']
 input_user_or_path  = config['input_user_or_path']
 input_database      = config['input_database']
@@ -32,7 +32,7 @@ use_pellets_ids     = config['use_pellets_ids']
 
 # DISPLAY SIMULATION INFORMATION
 print('---------------------------------')
-print('shot                = ',shot)
+print('pulse               = ',pulse)
 print('run_in              = ',run_in)
 print('run_out             = ',run_out)
 print('input_user_or_path  = ',input_user_or_path)
@@ -46,7 +46,7 @@ print('---------------------------------')
 
 # OPEN INPUT DATAFILE TO GET DATA FROM IMAS SCENARIO DATABASE
 print('=> Open input datafile')
-input = imas.DBEntry(imas.imasdef.MDSPLUS_BACKEND,input_database,shot,run_in,input_user_or_path)
+input = imas.DBEntry(imas.imasdef.HDF5_BACKEND,input_database,pulse,run_in,input_user_or_path)
 input.open()
 
 
@@ -79,7 +79,7 @@ if os.path.isdir(local_database) == False:
 
 # CREATE OUTPUT DATAFILE
 print('=> Create output datafile')
-output = imas.DBEntry(imas.imasdef.MDSPLUS_BACKEND,output_database,shot,run_out,output_user_or_path)
+output = imas.DBEntry(imas.imasdef.HDF5_BACKEND,output_database,pulse,run_out,output_user_or_path)
 output.create()
 
 # READ FULL TIME VECTOR OF EQUILIBRIUM IDS TO GET THE TIME BASE

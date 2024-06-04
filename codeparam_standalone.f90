@@ -2,7 +2,7 @@ module mod_codeparam_standalone
 
   implicit none
   type type_standalone_data
-     integer :: shot,run_in,run_out
+     integer :: pulse,run_in,run_out
      character(len=200):: input_db,input_machine,local_db,local_machine
   end type type_standalone_data
 
@@ -23,7 +23,7 @@ contains
     call xml2eg_parse_memory(string, doc)
     call set_verbose(.TRUE.) ! Only needed if you want to see what's going on in the parsing
     
-    call xml2eg_get(doc,'shot',standalone%shot)
+    call xml2eg_get(doc,'pulse',standalone%pulse)
     call xml2eg_get(doc,'run_in',standalone%run_in)
     call xml2eg_get(doc,'run_out',standalone%run_out)
     call xml2eg_get(doc,'input_db',standalone%input_db)

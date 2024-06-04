@@ -4,7 +4,7 @@
      <xs:documentation>Code parameters for SMART</xs:documentation>
    </xs:annotation>
  
-   <xs:simpleType name="integer_shot">
+   <xs:simpleType name="integer_pulse">
      <xs:restriction base="xs:integer">
        <xs:minInclusive value="1"/>
        <xs:maxInclusive value="214748"/>
@@ -27,7 +27,7 @@
    <xs:element name="parameters">
      <xs:complexType>
        <xs:all>
-         <xs:element ref="shot" minOccurs="0"/>
+         <xs:element ref="pulse" minOccurs="0"/>
          <xs:element ref="run_in" minOccurs="0"/>
          <xs:element ref="run_out" minOccurs="0"/>
          <xs:element ref="input_db" minOccurs="0"/>
@@ -39,9 +39,9 @@
    </xs:element>
  
    <!-- Number of times the multiplication factor is applied -->
-   <xs:element name="shot" type="integer_shot">
+   <xs:element name="pulse" type="integer_pulse">
       <xs:annotation>
-          <xs:documentation>Input/output shot number</xs:documentation>
+          <xs:documentation>Input/output pulse number</xs:documentation>
       </xs:annotation>
    </xs:element>
 

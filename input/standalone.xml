@@ -1,7 +1,7 @@
 <parameters>
 
     <!-- INPUT/OUTPUT SHOT NUMBER -->
-    <shot> 131047 </shot>
+    <pulse> 131047 </pulse>
 
     <!-- INPUT RUN NUMBER -->
     <run_in> 10 </run_in>
