@@ -5,13 +5,13 @@ include ./compiler.mk
 # SET COMPILER OPTIONS
 ifeq ($(F90), ifort)
 # INTEL - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
-  F90FLAGS=-fPIC -fpp -g # FPIC AND PREPROCESSING OPTIONS
+  F90FLAGS=-fPIC -fpp -extend-source -g # FPIC AND PREPROCESSING OPTIONS
 else ifeq ($(F90), gfortran)
 # GFORTRAN - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
-  F90FLAGS=-fPIC -cpp # FPIC AND PREPROCESSING OPTIONS
+  F90FLAGS=-fPIC -cpp -ffixed-line-length-none # FPIC AND PREPROCESSING OPTIONS
 else
   $(warning Unsupported Fortran compiler $(F90), proceed with care...)
-  F90FLAGS=-fPIC -cpp # FPIC AND PREPROCESSING OPTIONS
+  F90FLAGS=-fPIC -cpp -ffixed-line-length-none # FPIC AND PREPROCESSING OPTIONS
 endif
 F90INC=-I. `pkg-config al-fortran --cflags`
 F90LIB=`pkg-config al-fortran --libs`
