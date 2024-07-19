@@ -28,11 +28,11 @@ all: lib actor
 
 lib: libsmart.a
 
-exe: standalone.exe
+exe: smart
 
 # STANDALONE COMPILATION
-standalone.exe: libsmart.a ${OBJS_STDA}
-	$(F90) ${F90FLAGS} -o standalone.exe ${OBJS_STDA} $(F90LIB) -L. -lsmart
+smart: libsmart.a ${OBJS_STDA}
+	$(F90) ${F90FLAGS} -o smart ${OBJS_STDA} $(F90LIB) -L. -lsmart
 
 # LIBRARY COMPILATION
 libsmart.a: ${OBJS_ACTOR}
