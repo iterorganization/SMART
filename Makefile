@@ -1,9 +1,9 @@
 # DEFINE F90
-COMPILER = ifort
+COMPILER = ifx
 include ./compiler.mk
 
 # SET COMPILER OPTIONS
-ifeq ($(F90), ifort)
+ifeq ($(F90), ifx)
 # INTEL - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
   F90FLAGS=-fPIC -fpp -extend-source -g # FPIC AND PREPROCESSING OPTIONS
 else ifeq ($(F90), gfortran)
@@ -59,5 +59,5 @@ actor: libsmart.a
 
 # CLEAN DIRECTORY
 clean:
-	rm -f *.exe *.a *.mod *.o smart.xml smart.yaml
+	rm -f smart *.a *.mod *.o smart.xml smart.yaml
 
