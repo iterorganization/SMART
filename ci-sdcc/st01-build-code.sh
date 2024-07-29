@@ -19,7 +19,7 @@ make clean validate lib exe F90="$FCOMPILER"
 set +x
 echo "Done compiling code"
 libfilepath="./$LIBRARY_NAME.a"
-includefilepath="./smart.mod"
+includefilepath="./mod_smart.mod"
 
 if [ ! -f "$libfilepath" ]; then
     echo "$LIBRARY_NAME.a does not exist: $libfilepath"
