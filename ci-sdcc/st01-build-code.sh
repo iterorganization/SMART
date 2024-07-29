@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Bamboo CI script to build code and create library
 # Execute script from root directory
 
@@ -15,7 +15,6 @@ LIBRARY_NAME=libsmart
 
 echo "Compiling code"
 set -x
-pwd
 make clean validate lib exe F90="$FCOMPILER"
 set +x
 echo "Done compiling code"
