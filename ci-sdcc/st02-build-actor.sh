@@ -8,8 +8,8 @@ USERNAME=$(whoami)
 if [[ "$(uname -n)" == *"bamboo"* ]]; then
     set -e -u -o pipefail
 fi
-ACTOR_NAME=smart
-export ACTOR_FOLDER=./$ACTOR_NAME
+ACTOR_NAME="smart"
+export ACTOR_FOLDER="./"$ACTOR_NAME"_actor"
 # remove actor directory if present
 if [ -d $ACTOR_FOLDER ]; then
     rm -rf $ACTOR_FOLDER
@@ -18,7 +18,7 @@ fi
 
 set -x
 # create actor
-make actor FC="$FCOMPILER"
+make actor F90="$FCOMPILER"
 
 # Run actor standalone program
 # python run_hcd2core_profilescode --src "imas:mdsplus?user=public;pulse=130012;run=115;database=TEST;version=3" --dest "imas:mdsplus?user=$USERNAME;pulse=130012;run=23;database=ITER;version=3" --time 200.0
@@ -28,7 +28,7 @@ set +x
 find $ACTOR_FOLDER -type d -name '__pycache__' -exec rm -rf {} +
 
 # Create acrtifact
-tar -cvzf actor.tar.gz $ACTOR_NAME >/dev/null 2>&1
+tar -cvzf actor.tar.gz $ACTOR_FOLDER >/dev/null 2>&1
 
 set -x
 # show contents of artifact
