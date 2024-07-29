@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Bamboo CI script to build code and create library
 # Execute script from root directory
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Bamboo CI script to build actor and run standalone program
 # Execute script from root directory
 
