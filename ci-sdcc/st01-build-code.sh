@@ -15,6 +15,7 @@ LIBRARY_NAME=libsmart
 
 echo "Compiling code"
 set -x
+pwd
 make clean validate lib exe F90="$FCOMPILER"
 set +x
 echo "Done compiling code"
