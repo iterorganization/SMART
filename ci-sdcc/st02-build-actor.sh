@@ -3,7 +3,7 @@
 # Execute script from root directory
 
 source ./ci-sdcc/st00-header.sh $1 $2
-USERNAME=$(whoami)
+#USERNAME=$(whoami)
 # Note Disable set -e option when using on local as it will exit the shell on error
 if [[ "$(uname -n)" == *"bamboo"* ]]; then
     set -e -u -o pipefail
@@ -21,7 +21,7 @@ set -x
 make actor F90="$FCOMPILER"
 
 # Run actor standalone program
-# python run_hcd2core_profilescode --src "imas:mdsplus?user=public;pulse=130012;run=115;database=TEST;version=3" --dest "imas:mdsplus?user=$USERNAME;pulse=130012;run=23;database=ITER;version=3" --time 200.0
+# python run_smart --src "imas:mdsplus?user=public;pulse=130012;run=115;database=TEST;version=3" --dest "imas:mdsplus?user=$USERNAME;pulse=130012;run=23;database=ITER;version=3" --time 200.0
 set +x
 
 # remove __pycache__ from directory
