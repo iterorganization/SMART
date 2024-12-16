@@ -1,4 +1,4 @@
-program standalone
+program standalone_stepup
 
   use ids_schemas
   use ids_routines
@@ -14,7 +14,7 @@ program standalone
   type(ids_equilibrium):: equilibrium_in
   type(ids_core_profiles):: core_profiles_in, core_profiles_out
   type(ids_pellets) :: pellets_in
-  type(ids_parameters_input):: codeparam_standalone,codeparam_smart
+  type(ids_parameters_input):: codeparam_standalone,codeparam_smart, codeparam_stepup
   type(type_standalone_data):: standalone_in
   character(len=200):: input_db,input_machine,local_db,local_machine
   character(len=:), pointer:: error_message
@@ -34,10 +34,10 @@ program standalone
   write(*,'(a17,a30)') ' local_machine = ',standalone_in%local_machine
   write(*,*) '------------------------------------'
 
-  ! READ SMART XML INPUT FILE (ASSIGN_CODEPARAM IS EXECUTED INSIDE THE SMART ROUTINE)
+  ! READ XML INPUT FILE (ASSIGN_CODEPARAM IS EXECUTED INSIDE THE ROUTINE)
   call file2buffer('input/smart.xml',iounit, codeparam_smart%parameters_value)
 
-  ! DEFINE LOCAL DATABASE (TO BE FIRST CREATED WITH "imasdb ITER")
+  ! DEFINE LOCAL DATABASE
   pulse         = standalone_in%pulse
   run_in        = standalone_in%run_in
   run_out       = standalone_in%run_out
@@ -61,10 +61,8 @@ program standalone
   call imas_close(idx)
   write(*,*) 'Finished reading input IDSs'
 
-
-  ! EXECUTE PELLET ABLATION MODEL: SMART
-  call smart(equilibrium_in,core_profiles_in,pellets_in,core_profiles_out,codeparam_smart, &
-       error_flag,error_message)
+  ! CORE TRANPORT FOR PELLET ABRATION MODEL (SMART) WITH ECRH (ECH2a), GAS-PUFF AS B.C. AND ALPHA HEATING MODELS
+  call smart(equilibrium_in,core_profiles_in,pellets_in,core_profiles_out,codeparam_smart,error_flag,error_message)
 
   if(error_flag.eq.0) then
      ! EXPORT RESULTS TO LOCAL DATABASE
@@ -75,11 +73,10 @@ program standalone
      call imas_close(idx)
      write(*,*) 'Done exporting.'
      write(*,*) ' '
-     write(*,*) 'End of standalone'
+     write(*,*) 'End of standalone_stepup'
   else
      write(*,*) error_message
      write(*,*) '=> Program stopped.'
   endif
 
-end program standalone
-
+end program standalone_stepup

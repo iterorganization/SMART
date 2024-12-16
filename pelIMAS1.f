@@ -1,16 +1,16 @@
 C===============================
-      Subroutine pelIMAS
+      Subroutine pelIMAS1
      >(YAM,YVP,YVOL,YCOS0,YEFF,YDL,
      >  YDABL,YDDEP,YPELSRS,yswitch,
-     >  ne,ni,Te,Ti,F1,F2,F3,FP,
+     >  ne,ni,Te,Ti,NHYDR,NDEUT,NTRIT,FP,
      >  ametr,shif,vr,mu,
      >  HRO,ROC,BTOR,RTOR,NA1,NRD)
 ! no common blocks, all inputs are explicit Polevoi 22-11-2022
-! identical to pelsrs1, but NHYDR,NDEUT,NTRIT -> F1,F2,F3
-! double smoothing for dreifted part Polevoy 26-03-2018
-! Subroutine pelnew(YAM,YVP,YVOL,YCOS0,YEFF,YDL,YDABL,YDDEP,yswitch)
-! Subroutine pelinj(YAM,YVP,YRP,YCOS0,YEFF,YSHAPE)
-! Subroutine psmar2(YAM,YVP,YRP,YCOS0,YEFF,YSHAPE)
+!     Subroutine pelIMAS1 version 05-OCT-2023
+!     >	(YAM,YVP,YVOL,YCOS0,YEFF,YDL,YDABL,YDDEP,YPELSRS,yswitch)
+!       Subroutine pelnew(YAM,YVP,YVOL,YCOS0,YEFF,YDL,YDABL,YDDEP,yswitch)
+!       Subroutine pelinj(YAM,YVP,YRP,YCOS0,YEFF,YSHAPE)
+!       Subroutine psmar2(YAM,YVP,YRP,YCOS0,YEFF,YSHAPE)
 ! Simplified Mass Ablation and Relocation Treatment Polevoy 22-09-2000
 ! corrected 17-01-2001 converted to double precision 6-DEC-2012
 !
@@ -82,16 +82,14 @@ c=====================================================================
 ! include 'for/const.inc'
          integer NA,NA1,NRD !05-12-2022
          double precision
-     >     ne(*),ni(*),Te(*),Ti(*),F1(*),F2(*),F3(*),FP(*),
+     >     ne(*),ni(*),Te(*),Ti(*),NHYDR(*),NDEUT(*),NTRIT(*),FP(*),
      >     ametr(*),shif(*),vr(*),mu(*),YPELSRS(*),
      >     HRO,ROC,BTOR,GP,SHIFT,ABC,RTOR
          integer JS1,J0,JJ,JABS,JDEL,JBEG,JEND,JS,J,JMIN
-! double precision DNI(NRD),DNE(NRD),YKCR(NRD),YSFT(NRD),JJFP(NRD)
-!     , ,YTE(NRD),YTI(NRD),YNTE(NRD),YNTI(NRD),YXJ(NRD),YX12(NRD)
          double precision YAM,YCN,YCE,YCI,YSTNE,YSTNI,YSTNE1,YSTNI1,YTST
          double precision YSDNE,YSDNI,YX,YDX,YF,YDF,YNE,YNI,YDNE,YDNI,YDL
          double precision YR,YDA,YDV,YLC,YFI,YPSI,YBETB,YR1,YR2,YF1,YF2
-         double precision YRP1,YRP2,YA1,YA2,YA3,Y16,YPP,YP23,YCOS,YCOSA
+         double precision YRP1,YRP2,YA1,YA2,YA3,Y16,YPP,YP23,YCOS
          double precision YRP,YVP,YKC1,YEFF,YCOS0,YNp,YSIG,YHRO
          double precision Zp,an,Eion,at,ap,am,coeff,ycoef,yshape,ALFA
          double precision YDABL,YDDEP,YVOL,yswitch
@@ -100,7 +98,6 @@ c>26-APR-2023 M.H
          integer n
          integer, parameter :: nmax = 1000
 c<26-APR-2023 M.H
-!,YPELSRS(*)
          double precision, allocatable ::
      >   YTE(:),YTI(:),YNTE(:),YNTI(:),YXJ(:),YX12(:),
      >   DNI(:),DNE(:),YKCR(:),YSFT(:),JJFP(:)
@@ -124,6 +121,10 @@ C     . YAM,YVP,YRP,YCOS0,YEFF,YSHAPE
          GP=3.1415925d0
          SHIFT=shif(NA1)
          ABC=AMETR(NA1)
+c
+c======================================================================
+C	write(*,*) 'YAM,YVP,YRP,YCOS0,YEFF,YSHAPE',
+C     .	YAM,YVP,YRP,YCOS0,YEFF,YSHAPE
 c*19-NOV-2013 vvvvvvvvvvvvvvvvvv
          yshape=1.d0
          yrp=1.d-1*(.75d0/GP*yvol)**.333333 !YRP [cm]
@@ -222,13 +223,6 @@ C*NEW ^^^^^^^^
             YXJ(J)=(j-1)*HRO/ROC
             YX12(J)=(j-.5)*HRO/ROC
 
-cc  CAR9(J)=0.
-cc  CAR8(J)=0.
-cc  CAR12(J)=0.
-cc  CAR13(J)=0.
-cc  CAR14(J)=0.
-cc  CAR15(J)=0.
-cc  CAR16(J)=0.
          enddo
          YXJ(NA1)=1.d0
          YX12(NA1)=1.d0
@@ -297,8 +291,8 @@ c*NEW-1 vvvvvvvvvvvvv
             YDNE=0.d0
             do JJ=JBEG,JEND,-1
                if(JJ.eq.1) then
-!  YDV=VOLUM(1)
-                  YDV=VR(2)*YHRO
+! YDV=VOLUM(1)
+                  YDV=VR(1)*HRO
                else
                   YDV=VR(JJ)*YHRO+YDV
 CVOLUM(J)-VOLUM(J-1)
@@ -324,9 +318,6 @@ c YFI=YLC/YR
 C 2*GP for ASTRA units
             YPSI=-YR/MU(J)*YBETB/(BTOR)*YDNE/YLC/
      .        AMETR(J)/YNE/(1.d0+YDA/AMETR(J)/YFI)*YCOS
-cc  CAR14X(J)=YDNE
-cc  CAR15X(J)=YNE
-cc  CAR16X(J)=YDNE/YNE
 
 c*YSIG
 C*NEW ^^^^^^^^^^^^^
@@ -338,22 +329,19 @@ c*NEW-1 ^^^^^^^^^^^^^^
          do J=1,NA1 !============================================
             if(J.eq.1) then
                YDV=VR(2)*HRO
+!VOLUM(1)
             else
                YDV=VR(J)*HRO
             endif
             YDNI = DNI(J)/YDV
             YNE =NE(J)+YDNI*Zp
             YNI =NI(J)+YDNI
-Ctemporary output
+
             YTE(J)=(TE(J)-0.667d0*YDNI/NE(J)*Eion)*NE(J)/YNE
             YTI(J)=TI(J)*NI(J)/YNI
-cc CAR12(J)=YKCR(J)
-C PSI = FP/2GP
-cc CAR13(J)=YSFT(J)/(FP(NA1)-FP(1))
-cc CAR16(J) =YDNI
 
          enddo
-ccc   write(*,*) 'TYTA'
+ccc
 c index for density shift
 
          YDX=(1.d0/NRD)
@@ -391,7 +379,8 @@ c*19-NOV-2013 vvvvvvvvvvvvvvvvvv
 c*19-NOV-2013 ^^^^^^^^^^^^^^^^^^^
 c>03-MAY-2023 M.H
                   if(JMIN .le. 0) then
-                     write(*,*) 'Warning from SMART: Exited due to n/E shift'
+                     write(*,*)
+     &                  'Warning from SMART: Exited due to n/E shift'
                      return
                   endif
 c<03-MAY-2023 M.H
@@ -439,16 +428,16 @@ C smoothing with energy/particle conservation
          endif
 !===============================vvvv 26-03-2018
 ! extra smoothing for edge
-
-         ALFA = 0.1d0
-         do j=jmin,na1
-            YXJ(j-jmin+1)=YXJ(j)
-            YX12(j-jmin+1)=YX12(j)
+!
+!        ALFA = 0.1d0
+!        do j=jmin,na1
+!           YXJ(j-jmin+1)=YXJ(j)
+!           YX12(j-jmin+1)=YX12(j)
 ! write(*,*) YXJ(j),YX12(j),jmin,j,na1
-         enddo
-         j=na1-jmin+1
-         call SMTH(ALFA,j,DNI,YXJ,j,DNE,YX12,NRD)
-         call SMTH(ALFA,j,DNE,YX12,j,DNI,YXj,NRD)
+!        enddo
+!        j=na1-jmin+1
+!        call SMTH(ALFA,j,DNI,YXJ,j,DNE,YX12,NRD)
+!        call SMTH(ALFA,j,DNE,YX12,j,DNI,YXj,NRD)
 
 !===============================^^^^ 26-03-2018
          DO J=1,NA1
@@ -476,53 +465,43 @@ c*19-NOV-2013 ^^^^^^^^^^^^^^^^^^^
 Ctemporary output
 c Te
                TE(J) =(YTE(J)*NE(J)+YNTE(J)/YDV*YCE)/YNE
-cc CAR14(J)=(YTE(J)*NE(J)+YNTE(J)/YDV*YCE)/YNE
 c Ti
                TI(J) =(YTI(J)*NI(J)+YNTI(J)/YDV*YCI)/YNI
-cc CAR15(J)=(YTI(J)*NI(J)+YNTI(J)/YDV*YCI)/YNI
 c Ne
                NE(J) =NE(J)+YDNI*Zp
-cc CAR8(J) =CAR8(J)+YDNI*Zp
-
-c Ni
-c
-cc goto 777
 
 c>11-APR-2023 M.H
 c       H
                if (abs(YAM-1.d0).lt.eps) then
-                  NI(J)=NI(J)-F1(J)
-                  F1(J)=F1(J)+YDNI
-                  NI(J)=NI(J)+F1(J)
+                  NI(J)=NI(J)-NHYDR(J)
+                  NHYDR(J)=NHYDR(J)+YDNI
+                  NI(J)=NI(J)+NHYDR(J)
 c       D
                else if (abs(YAM-2.d0).lt.eps) then
-                  NI(J)=NI(J)-F2(J)
-                  F2(J)=F2(J)+YDNI
-                  NI(J)=NI(J)+F2(J)
+                  NI(J)=NI(J)-NDEUT(J)
+                  NDEUT(J)=NDEUT(J)+YDNI
+                  NI(J)=NI(J)+NDEUT(J)
 c       T
                else if (abs(YAM-3.d0).lt.eps) then
-                  NI(J)=NI(J)-F3(J)
-                  F3(J)=F3(J)+YDNI
-                  NI(J)=NI(J)+F3(J)
+                  NI(J)=NI(J)-NTRIT(J)
+                  NTRIT(J)=NTRIT(J)+YDNI
+                  NI(J)=NI(J)+NTRIT(J)
 c       H/D
                else if (YAM.gt.1.d0.and.YAM.lt.2.d0) then
-                  NI(J)=NI(J)-F1(J)-F2(J)
-                  F1(J)=F1(J)+(2.d0-YAM)*YDNI
-                  F2(J)=F2(J)+(YAM-1.d0)*YDNI
-                  NI(J)=NI(J)+F1(J)+F2(J)
+                  NI(J)=NI(J)-NHYDR(J)-NDEUT(J)
+                  NHYDR(J)=NHYDR(J)+(2.d0-YAM)*YDNI
+                  NDEUT(J)=NDEUT(J)+(YAM-1.d0)*YDNI
+                  NI(J)=NI(J)+NHYDR(J)+NDEUT(J)
 c       D/T
                else if (YAM.gt.2.d0.and.YAM.lt.3.d0) then
-                  NI(J)=NI(J)-F3(J)-F2(J)
-                  F3(J)=F3(J)+(YAM-2.d0)*YDNI
-                  F2(J)=F2(J)+(3.d0-YAM)*YDNI
-                  NI(J)=NI(J)+F3(J)+F2(J)
+                  NI(J)=NI(J)-NTRIT(J)-NDEUT(J)
+                  NTRIT(J)=NTRIT(J)+(YAM-2.d0)*YDNI
+                  NDEUT(J)=NDEUT(J)+(3.d0-YAM)*YDNI
+                  NI(J)=NI(J)+NTRIT(J)+NDEUT(J)
                endif
-c<11-APR-2023 M.H
-cc 777 continue
-c
-cc CAR9(J) =CAR9(J)+YDNI
-            endif !!!!!!!!!!!!!!!!!!!! end of yswitch
 c*6-OCT-15 vvvv
+            endif   !!!!!!!!!!!!!!!!!!!! end of yswitch
+
             YPELSRS(j) = YPELSRS(j)+YDNI*Zp
 
          enddo

@@ -1,10 +1,12 @@
 <parameters>
 
     <!-- INPUT/OUTPUT SHOT NUMBER -->
-    <pulse> 131047 </pulse>
+    <!-- <pulse> 131047 </pulse> -->
+    <pulse> 134100 </pulse>
 
     <!-- INPUT RUN NUMBER -->
-    <run_in> 10 </run_in>
+    <!-- <run_in> 10 </run_in> -->
+    <run_in> 1 </run_in>
 
     <!-- OUTPUT RUN NUMBER -->
     <run_out> 99 </run_out>
@@ -22,4 +24,3 @@
     <local_machine>ITER</local_machine>
 
 </parameters>
-

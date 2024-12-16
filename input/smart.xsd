@@ -11,9 +11,22 @@
      </xs:restriction>
    </xs:simpleType>
 
-  <xs:simpleType name="float_minInclusive_dot0001">
+   <xs:simpleType name="float_minInclusive_dot0001">
      <xs:restriction base="xs:float">
        <xs:minInclusive value="0.0001"/>
+     </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="float_minInclusive_0">
+     <xs:restriction base="xs:float">
+       <xs:minInclusive value="0.0"/>
+     </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="float_minmax_Inclusive_01">
+     <xs:restriction base="xs:float">
+       <xs:minInclusive value="0.0"/>
+       <xs:maxInclusive value="1.0"/>
      </xs:restriction>
    </xs:simpleType>
 
@@ -21,6 +34,18 @@
    <xs:element name="parameters">
      <xs:complexType>
        <xs:all>
+         <!-- STEPUP -->
+         <xs:element ref="TAU" minOccurs="0"/>
+         <xs:element ref="dtau" minOccurs="0"/>
+         <xs:element ref="QNB" minOccurs="0"/>
+         <xs:element ref="F01B" minOccurs="0"/>
+         <xs:element ref="F02B" minOccurs="0"/>
+         <xs:element ref="F03B" minOccurs="0"/>
+         <xs:element ref="GN2E" minOccurs="0"/>
+         <xs:element ref="GN2I" minOccurs="0"/>
+         <xs:element ref="sw_smart" minOccurs="0"/>
+         <xs:element ref="sw_ech2a" minOccurs="0"/>
+         <!-- SMART -->
          <xs:element ref="YAM" minOccurs="0"/>
          <xs:element ref="YVP" minOccurs="0"/>
          <xs:element ref="YVOL" minOccurs="0"/>
@@ -28,10 +53,93 @@
          <xs:element ref="YEFF" minOccurs="0"/>
          <xs:element ref="YDL" minOccurs="0"/>
          <xs:element ref="yswitch" minOccurs="0"/>
+         <xs:element ref="yglength" minOccurs="0"/>
+         <!-- ECH2a -->
+         <xs:element ref="ROCEC" minOccurs="0"/>
+         <xs:element ref="ROCDR" minOccurs="0"/>
+         <xs:element ref="QECR" minOccurs="0"/>
+         <xs:element ref="YEFFec" minOccurs="0"/>
        </xs:all>
      </xs:complexType>
    </xs:element>
- 
+
+   <!--
+     ///// STEPUP /////
+   -->
+
+   <!-- Time step [s] -->
+   <xs:element name="TAU" type="float_minInclusive_dot0001">
+      <xs:annotation>
+          <xs:documentation>Time step [s]</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Time interval between consequential pellet injection [s] -->
+   <xs:element name="dtau" type="float_minInclusive_dot0001">
+      <xs:annotation>
+          <xs:documentation>Time interval between consequential pellet injection [s]</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Boundary influx of neutrals (D+T+H) for transport equation in CX approximation [10^19 s-1] -->
+   <xs:element name="QNB" type="float_minInclusive_0">
+      <xs:annotation>
+          <xs:documentation>Boundary influx of neutrals (D+T+H) for transport equation in CX approximation [10^19 s-1]</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Edge neutral density (Puffing, H component) [10^19 m-3]-->
+   <xs:element name="F01B" type="float_minInclusive_0">
+      <xs:annotation>
+          <xs:documentation>Edge neutral density (Puffing, H component) [10^19 m-3]</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Edge neutral density (Puffing, D component) [10^19 m-3]-->
+   <xs:element name="F02B" type="float_minInclusive_0">
+      <xs:annotation>
+          <xs:documentation>Edge neutral density (Puffing, D component) [10^19 m-3]</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Edge neutral density (Puffing, T component) [10^19 m-3]-->
+   <xs:element name="F03B" type="float_minInclusive_0">
+      <xs:annotation>
+          <xs:documentation>Edge neutral density (Puffing, T component) [10^19 m-3]</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Coefficient for convective term in heat transport (0/1.5/2.5) for electron -->
+   <xs:element name="GN2E" type="float_minInclusive_0">
+      <xs:annotation>
+          <xs:documentation>Coefficient for convective term in heat transport (0/1.5/2.5) for electron</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Coefficient for convective term in heat transport (0/1.5/2.5) for ion -->
+   <xs:element name="GN2I" type="float_minInclusive_0">
+      <xs:annotation>
+          <xs:documentation>Coefficient for convective term in heat transport (0/1.5/2.5) for ion</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Switch for SMART (Off when switch = 0, On when switch != 0) -->
+   <xs:element name="sw_smart" type="xs:integer">
+      <xs:annotation>
+          <xs:documentation>Switch for SMART (Off when switch = 0, On when switch != 0)</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- Switch for ECH2a (Off when switch = 0, On when switch != 0) -->
+   <xs:element name="sw_ech2a" type="xs:integer">
+      <xs:annotation>
+          <xs:documentation>Switch for ECH2a (Off when switch = 0, On when switch != 0)</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!--
+     ///// SMART /////
+   -->
 
    <!-- Pellet mass in atomic units (2.5 for 50:50 DT) -->
    <xs:element name="YAM" type="float_minInclusive_dot0001">
@@ -81,6 +189,46 @@
           <xs:documentation>Switch between distinct pellets and permanent pellet model</xs:documentation>
       </xs:annotation>
    </xs:element>
+
+   <!-- Length of the guide tube [m] -->
+   <xs:element name="yglength" type="float_minInclusive_dot0001">
+      <xs:annotation>
+          <xs:documentation>Length of the guide tube [m]</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!--
+     ///// ECH2a /////
+   -->
+
+   <!-- EC location in normalized toroidal flux coordinate -->
+   <xs:element name="ROCEC" type="float_minmax_Inclusive_01">
+      <xs:annotation>
+          <xs:documentation>EC location in normalized toroidal flux coordinate</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- EC width in normalized toroidal flux coordinate -->
+   <xs:element name="ROCDR" type="float_minInclusive_0">
+      <xs:annotation>
+          <xs:documentation>EC width in normalized toroidal flux coordinate</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- ECRH Power [MW] -->
+   <xs:element name="QECR" type="float_minInclusive_0">
+      <xs:annotation>
+          <xs:documentation>ECRH Power [MW]</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
+   <!-- IEC/QEC [MA/MW] -->
+   <xs:element name="YEFFec" type="float_minInclusive_0">
+      <xs:annotation>
+          <xs:documentation>IEC/QEC [MA/MW]</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
 
 </xs:schema>
  

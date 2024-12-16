@@ -1,17 +1,15 @@
-# DEFINE F90
-COMPILER = ifx
 include ./compiler.mk
-
 # SET COMPILER OPTIONS
 ifeq ($(F90), ifx)
 # INTEL - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
-  F90FLAGS=-fPIC -fpp -extend-source -g # FPIC AND PREPROCESSING OPTIONS
+  F90FLAGS=-fPIC -fpp -extend-source # FPIC AND PREPROCESSING OPTIONS
+  F90FLAGS+=-g -debug -fpe-all=0 -no-ftz -traceback -fp-stack-check
 else ifeq ($(F90), gfortran)
 # GFORTRAN - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
   F90FLAGS=-fPIC -cpp -ffixed-line-length-none # FPIC AND PREPROCESSING OPTIONS
+  #F90FLAGS+=-Wall -g -fcheck=bounds -O -ffpe-trap=invalid,zero,overflow -Wuninitialized
 else
-  $(warning Unsupported Fortran compiler $(F90), proceed with care...)
-  F90FLAGS=-fPIC -cpp -ffixed-line-length-none # FPIC AND PREPROCESSING OPTIONS
+  $(error Unsupported Fortran compiler $(F90); exit 1)
 endif
 F90INC=-I. `pkg-config al-fortran --cflags`
 F90LIB=`pkg-config al-fortran --libs`
@@ -20,11 +18,14 @@ F90LIB=`pkg-config al-fortran --libs`
 F90LIB+=`pkg-config xmllib --libs`
 F90INC+=`pkg-config xmllib --cflags`
 
-# LIST OF FORTRAN FILES
-OBJS_ACTOR = codeparam_smart.o smart.o pelIMAS.o SMTH.o
-OBJS_STDA  = codeparam_standalone.o smart.o standalone.o pelIMAS.o SMTH.o
+# Constants
+F90INC+=`pkg-config fundamental-constants --cflags`
 
-all: lib actor
+# LIST OF FORTRAN FILES
+OBJS_ACTOR = codeparam_smart.o smart.o pelIMAS1.o SMTH.o stepup.o runnt.o
+OBJS_STDA  = codeparam_standalone.o standalone.o
+
+all: lib exe
 
 lib: libsmart.a
 
@@ -60,4 +61,3 @@ actor: libsmart.a
 # CLEAN DIRECTORY
 clean:
 	rm -f smart *.a *.mod *.o smart.xml smart.yaml
-

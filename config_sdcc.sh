@@ -1,15 +1,33 @@
 # Start from clean environment
-ml purge
+
+#COMPILER:ifx/gfortran
+
+export COMPILER=ifx
+#export COMPILER=gfortran
 
 # IMAS and iWrap
 # intel
-ml IMAS-AL-Fortran/5.3.0-intel-2023b-DD-3.42.0
-ml IMAS-AL-Python/5.3.0-intel-2023b-DD-3.42.0
-ml XMLlib/3.3.2-intel-compilers-2023.2.1
+if [[ $COMPILER =~ ^(ifort|icc|icpc|intel|ifx|icx)$ ]]
+then
+  ml purge
+  ml IMAS-AL-Fortran/5.3.0-intel-2023b-DD-3.42.0
+  ml IMAS-AL-Python/5.3.0-intel-2023b-DD-3.42.0
+  ml XMLlib/3.3.2-intel-compilers-2023.2.1
 # foss
-#ml IMAS-AL-Fortran/5.3.0-foss-2023b-DD-3.42.0
-#ml IMAS-AL-Python/5.3.0-foss-2023b-DD-3.42.0
-#ml XMLlib/3.3.2-GCC-13.2.0
+elif [[ $COMPILER =~ ^(gfortran|g++|gcc|GCC)$ ]]
+then
+  ml purge
+  ml IMAS-AL-Fortran/5.3.0-foss-2023b-DD-3.42.0
+  ml IMAS-AL-Python/5.3.0-foss-2023b-DD-3.42.0
+  ml XMLlib/3.3.2-GCC-13.2.0
+#
+else
+  echo "Set environt variable as ifx/gfortran"
+  return
+fi
+
+# Constants
+ml Fundamental-Constants
 
 # iWrap
 ml iWrap/1.0.0-GCCcore-13.2.0
@@ -19,6 +37,7 @@ ml iWrap/1.0.0-GCCcore-13.2.0
 
 # For debugging, just in case
 #ml TotalView
+
 
 # Actor folder
 export ACTOR_FOLDER=~/public/PYTHON_ACTORS

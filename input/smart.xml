@@ -1,5 +1,43 @@
 <parameters>
 
+   <!--
+      ///// STEPUP /////
+    -->
+
+    <!-- Time step [s] -->
+    <TAU> 1.e-2 </TAU>
+
+    <!-- Time interval between consequential pellet injection [s] -->
+    <dtau> 1.e-1 </dtau>
+
+    <!-- Boundary influx of neutrals (D+T+H) for transport equation in CX approximation [10^19 s-1] -->
+    <QNB> 1.e-1 </QNB>
+
+    <!-- Edge neutral density (Puffing, H component) [10^19 m-3]-->
+    <F01B> 0.e0 </F01B>
+
+    <!-- Edge neutral density (Puffing, D component) [10^19 m-3]-->
+    <F02B> 0.85e-5 </F02B>
+
+    <!-- Edge neutral density (Puffing, T component) [10^19 m-3]-->
+    <F03B> 0.85e-5 </F03B>
+
+    <!-- Coefficient for convective term in heat transport (0/1.5/2.5) for electron-->
+    <GN2E> 0.0e0 </GN2E>
+
+    <!-- Coefficient for convective term in heat transport (0/1.5/2.5) for ion -->
+    <GN2I> 0.0e0 </GN2I>
+
+    <!-- Switch for SMART (Off when switch = 0, On when switch != 0) -->
+    <sw_smart> 1 </sw_smart>
+
+    <!-- Switch for ECH2a (Off when switch = 0, On when switch != 0) -->
+    <sw_ech2a> 1 </sw_ech2a>
+
+    <!--
+      ///// SMART /////
+    -->
+
     <!-- Pellet mass in Atomic Units (2.5 for 50:50 DT) -->
     <YAM> 2.5e0 </YAM>
 
@@ -21,5 +59,23 @@
     <!-- Switch between distinct pellets and permanent pellet model -->
     <yswitch> 1.e0 </yswitch>
 
-</parameters>
+    <!-- Length of the guide tube [m] -->
+    <yglength> 2.0e1 </yglength>
 
+    <!--
+      ///// ECH2a /////
+    -->
+
+    <!-- EC location w.r.t. toroidal flux coordinate = sqrt(phi/(pi*b0)) -->
+    <ROCEC> 3.0e-1 </ROCEC>
+
+    <!-- EC width w.r.t. toroidal flux coordinate = sqrt(phi/(pi*b0)) -->
+    <ROCDR> 5.0e-2 </ROCDR>
+
+    <!-- ECRH Power [MW] -->
+    <QECR> 1.0e1 </QECR>
+
+    <!-- IEC/QEC [MA/MW] -->
+    <YEFFec> 0.0e0 </YEFFec>
+
+</parameters>
