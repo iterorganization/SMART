@@ -3,8 +3,10 @@
 # ---------------------------------
 #pulse:               131047
 #run_in:              10
-pulse:               130012
-run_in:              4
+#pulse:               130012
+#run_in:              4
+pulse:               134001
+run_in:              1
 input_user_or_path:  public
 input_database:      ITER
 
@@ -30,7 +32,8 @@ time_no_more_pellet: 205.
 
 # Number of time steps to simulate
 # (effective only when time_slice is not equal to zero)
-ntimes: 100
+#ntimes: 100
+ntimes: 1
 
 # Time step in case a generic time array is defined
 # (effective only when ntimes > length of the input time array)

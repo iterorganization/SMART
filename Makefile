@@ -3,11 +3,11 @@ include ./compiler.mk
 ifeq ($(F90), ifx)
 # INTEL - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
   F90FLAGS=-fPIC -fpp -extend-source # FPIC AND PREPROCESSING OPTIONS
-  F90FLAGS+=-g -debug -fpe-all=0 -no-ftz -traceback -fp-stack-check
+  #F90FLAGS+=-g -debug -fpe-all=0 -no-ftz -traceback
 else ifeq ($(F90), gfortran)
 # GFORTRAN - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
   F90FLAGS=-fPIC -cpp -ffixed-line-length-none # FPIC AND PREPROCESSING OPTIONS
-  #F90FLAGS+=-Wall -g -fcheck=bounds -O -ffpe-trap=invalid,zero,overflow -Wuninitialized
+  F90FLAGS+=-Wall -g -fcheck=bounds -O -ffpe-trap=invalid,zero,overflow -Wuninitialized
 else
   $(error Unsupported Fortran compiler $(F90); exit 1)
 endif

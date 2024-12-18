@@ -1,9 +1,10 @@
 # Start from clean environment
+ml purge
 
 #COMPILER:ifx/gfortran
 
-export COMPILER=ifx
-#export COMPILER=gfortran
+#export COMPILER=ifx
+export COMPILER=gfortran
 
 # IMAS and iWrap
 # intel
@@ -25,6 +26,9 @@ else
   echo "Set environt variable as ifx/gfortran"
   return
 fi
+
+# IMASPy
+ml IMASPy
 
 # Constants
 ml Fundamental-Constants

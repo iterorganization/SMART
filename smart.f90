@@ -116,6 +116,8 @@ contains
          return
       end if
 
+      write(*,*)"dtau=",smart_in%dtau
+
       !======================
       ! initialization
       i_time = size(cp_in%time)

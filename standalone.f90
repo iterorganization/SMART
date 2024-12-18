@@ -1,4 +1,4 @@
-program standalone_stepup
+program standalone
 
   use ids_schemas
   use ids_routines
@@ -14,7 +14,7 @@ program standalone_stepup
   type(ids_equilibrium):: equilibrium_in
   type(ids_core_profiles):: core_profiles_in, core_profiles_out
   type(ids_pellets) :: pellets_in
-  type(ids_parameters_input):: codeparam_standalone,codeparam_smart, codeparam_stepup
+  type(ids_parameters_input):: codeparam_standalone,codeparam_smart
   type(type_standalone_data):: standalone_in
   character(len=200):: input_db,input_machine,local_db,local_machine
   character(len=:), pointer:: error_message
@@ -73,10 +73,10 @@ program standalone_stepup
      call imas_close(idx)
      write(*,*) 'Done exporting.'
      write(*,*) ' '
-     write(*,*) 'End of standalone_stepup'
+     write(*,*) 'End of standalone'
   else
      write(*,*) error_message
      write(*,*) '=> Program stopped.'
   endif
 
-end program standalone_stepup
+end program standalone
