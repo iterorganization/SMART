@@ -116,13 +116,11 @@ contains
          return
       end if
 
-      write(*,*)"dtau=",smart_in%dtau
-
       !======================
       ! initialization
       i_time = size(cp_in%time)
       TIMBEG = cp_in%time(i_time)
-      write (*, *) 'i_time,time=', i_time, time
+      write (*, *) 'i_time,time=', i_time, TIMBEG
       !              i_time=size(cp_in%profiles_1d(:)%time)
       j_time = size(eq_in%time_slice)
       n_xcp = size(cp_in%profiles_1d(i_time)%grid%rho_tor_norm)

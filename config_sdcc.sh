@@ -3,8 +3,8 @@ ml purge
 
 #COMPILER:ifx/gfortran
 
-#export COMPILER=ifx
-export COMPILER=gfortran
+export COMPILER=ifx
+#export COMPILER=gfortran
 
 # IMAS and iWrap
 # intel

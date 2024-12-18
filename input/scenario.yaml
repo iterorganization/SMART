@@ -28,7 +28,8 @@ run_out:             101
 time_slice: 200.
 
 # Time when pellet injection is stopped
-time_no_more_pellet: 205.
+#time_no_more_pellet: 205.
+time_no_more_pellet: 240.
 
 # Number of time steps to simulate
 # (effective only when time_slice is not equal to zero)

@@ -3,8 +3,7 @@
 # ------------------------------------
 
 # NEEDED MODULES
-import imaspy as imas
-import os,yaml,datetime,copy
+import imas,os,yaml,datetime,copy
 import numpy as np
 from smart.actor import smart as smart_actor
 from time_compute import time_compute
@@ -47,13 +46,12 @@ print('---------------------------------')
 
 # OPEN INPUT DATAFILE TO GET DATA FROM IMAS SCENARIO DATABASE
 print('=> Open input datafile')
-input = imas.DBEntry(imas.ids_defs.HDF5_BACKEND,input_database,pulse,run_in,input_user_or_path)
+input = imas.DBEntry(imas.imasdef.HDF5_BACKEND,input_database,pulse,run_in,input_user_or_path)
 input.open()
 
 
 # PELLETS WRITTEN ON THE FLY (TO BE LATER FILLED VIA WAVEFORM-COOKER OR TAKEN FROM PCSSP)
-factory = imas.IDSFactory()
-input_pellets = factory.new('pellets')
+input_pellets = imas.pellets()
 if use_pellets_ids == 1:
     input_pellets.ids_properties.homogeneous_time = 1
     input_pellets.ids_properties.provider = os.getenv('USER')
@@ -81,7 +79,7 @@ if os.path.isdir(local_database) == False:
 
 # CREATE OUTPUT DATAFILE
 print('=> Create output datafile')
-output = imas.DBEntry(imas.ids_defs.HDF5_BACKEND,output_database,pulse,run_out,output_user_or_path)
+output = imas.DBEntry(imas.imasdef.HDF5_BACKEND,output_database,pulse,run_out,output_user_or_path)
 output.create()
 
 # READ FULL TIME VECTOR OF EQUILIBRIUM IDS TO GET THE TIME BASE
@@ -97,19 +95,9 @@ if debug == 1:
     runtime_settings.debug_mode = DebugMode.STANDALONE
 smart.initialize(code_parameters=code_parameters,runtime_settings=runtime_settings)
 
-from pprint import pprint
-print(type(code_parameters.get_parameter("parameters/dtau")))
-pprint(code_parameters.get_parameter("parameters/dtau"))
+#code_parameters.set_parameter('parameters/dtau','2.0e-1')
+#smart.initialize(code_parameters=code_parameters,runtime_settings=runtime_settings)
 
-code_parameters.set_parameter('parameters/dtau','2.0e-1')
-smart.initialize(code_parameters=code_parameters,runtime_settings=runtime_settings)
-
-# test
-#input_equilibrium = factory.new("equilibrium")
-#input_equilibrium.ids_properties.homogeneous_time = 1
-#input_equilibrium.time.resize(1)
-#input_equilibrium.time[0] = 1.0
-#output.put_slice(input_equilibrium)
 
 # TIME LOOP
 FirstTime = True
@@ -121,27 +109,24 @@ for itime in range(it,it+ntimes):
     else:
         time = time_array[0]
           
-    # READ IDSes FROM INPUT SCENARIO
+    # READ IDSS FROM INPUT SCENARIO
     print('=> Read input IDSs')
-    input_equilibrium = input.get_slice('equilibrium',time,imas.ids_defs.CLOSEST_INTERP)
+    input_equilibrium = input.get_slice('equilibrium',time,1)
     if FirstTime is True:
-        input_core_profiles = input.get_slice('core_profiles',time,imas.ids_defs.CLOSEST_INTERP)
+        input_core_profiles = input.get_slice('core_profiles',time,1)
         FirstTime = False
 
     # Stop pellet injection after a while
+    print("time >= time_no_more_pellet",time,time_no_more_pellet)
     if time >= time_no_more_pellet:
         input_pellets.time_slice[0].pellet[0].shape.size = np.array([1.e-37])
 
     # EXECUTE SMART
     print('=> Execute SMART')
     try:
-        print('=> Execute SMART1')
-        input_core_profiles.time[0] = np.array([time])
-        print('=> Execute SMART2')
+        input_core_profiles.time[0] = time
         output_core_profiles = smart(input_equilibrium, input_core_profiles, input_pellets)
-        print('=> Execute SMART3')
         input_core_profiles = copy.deepcopy(output_core_profiles)
-        print('=> Execute SMART4')
     except Exception as error_message:
         print('ERROR in run_smart',str(error_message))
         exit(1)
@@ -150,6 +135,7 @@ for itime in range(it,it+ntimes):
     output.put_slice(input_pellets)
     output.put_slice(output_core_profiles)
     print('Output time = %5.2f s' % (output_core_profiles.time[0]))
+
 
 # FINALIZE THE ACTOR
 smart.finalize()
