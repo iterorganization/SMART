@@ -3,7 +3,7 @@ include ./compiler.mk
 ifeq ($(F90), ifx)
 # INTEL - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
   F90FLAGS=-fPIC -fpp -extend-source # FPIC AND PREPROCESSING OPTIONS
-  #F90FLAGS+=-g -debug -fpe-all=0 -no-ftz -traceback
+  F90FLAGS+=-g -debug -fpe-all=0 -no-ftz -traceback -check bounds
 else ifeq ($(F90), gfortran)
 # GFORTRAN - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
   F90FLAGS=-fPIC -cpp -ffixed-line-length-none # FPIC AND PREPROCESSING OPTIONS

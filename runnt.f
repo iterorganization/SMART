@@ -324,7 +324,7 @@ C----------------------------------------------------------------------|
          implicit none
          double precision T1(*),T2(*),Q1(*),Q2(*),P1(*),P2(*)
          integer N,j
-         double precision W(N,*)
+         double precision W(N+1,*)
          double precision Y1,Y2,Y11,Y12,Y21,Y22,YD
          if (Q1(4).lt.0. .and. Q2(4).lt.0.)	then
 C Both eqns use fluxes as boundary conditions:
