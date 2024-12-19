@@ -195,7 +195,7 @@ C **** Electron temperature equation
          YWD(ND1)=0.
          DSE(ND1)=0.
          call RUNTTa(YWA,YWB,PET,YWC,NEO,NE,TEO,
-     >    ND,TAU,HRO,QE(1),YWD,DSE,VRO,VR,G11,WORK1,PEI)
+     >    ND1,TAU,HRO,QE(1),YWD,DSE,VRO,VR,G11,WORK1,PEI)
          do	J=ND1,NB1
             PDE(j) = 0.
          enddo
@@ -237,14 +237,14 @@ C      call	markloc("TI equation"//char(0))
          YWD(ND1)=0.
          DSI(ND1)=0.
          call RUNTTa(YWA,YWB,PIT,YWC,NIO,NI,TIO,
-     >   ND,TAU,HRO,QI(1),YWD,DSI,VRO,VR,G11,WORK1,PEI)
+     >   ND1,TAU,HRO,QI(1),YWD,DSI,VRO,VR,G11,WORK1,PEI)
          do	J=ND1,NB1
             PDI(j) = 0.
          enddo
          do	J=1,ND
             PDI(j) = 0.
          enddo
-         call NURTTa(TE,TI,QE,QI,PETOT,PITOT,ND,WORK1)
+         call NURTTa(TE,TI,QE,QI,PETOT,PITOT,ND1,WORK1)
          if (ND1.lt.NA1) then
             do j=ND1+1,NA1
                QE(j)=QE(ND1)
