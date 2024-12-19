@@ -324,7 +324,7 @@ C----------------------------------------------------------------------|
          implicit none
          double precision T1(*),T2(*),Q1(*),Q2(*),P1(*),P2(*)
          integer N,j
-         double precision W(N+1,*)
+         double precision W(N,*)
          double precision Y1,Y2,Y11,Y12,Y21,Y22,YD
          if (Q1(4).lt.0. .and. Q2(4).lt.0.)	then
 C Both eqns use fluxes as boundary conditions:
@@ -361,7 +361,7 @@ C Define fluxes:
          Q1(N+1) = Q1(N)
          Q2(N+1) = Q2(N)
 C Define RHSs:
-         do j=1,N+1
+         do j=1,N
             P1(j) = W(j,21)+W(j,23)*T1(j)+W(j,10)*(T1(j)-T2(j))
             P2(j) = W(j,22)+W(j,24)*T2(j)+W(j,10)*(T2(j)-T1(j))
          enddo
