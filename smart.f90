@@ -178,6 +178,15 @@ contains
       PE = 0.
       PI = 0.
       PEI = 0.
+      GNX = 0.
+      GN2E = 0.
+      GN2I = 0.
+      QF1 = 0.
+      QF2 = 0.
+      QF3 = 0.
+      SF1TOT = 0.
+      SF2TOT = 0.
+      SF3TOT = 0.
 
       !====================================================== core profiles
       ne(1:n_xcp) = cp_in%profiles_1d(i_time)%electrons%density(1:n_xcp)/denA2D
@@ -467,9 +476,8 @@ contains
       !==============================================density stepup
       !======================================= neutrals
       call STEPUPN0(&
-      &NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO,&
-      &VF0, DF0, F0o, F0, F0X, QNB, SF0, SFF0, SF0TOT, QF0, GF0, GF0X&
-      &)
+         NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO,&
+         VF0, DF0, F0o, F0, F0X, QNB, SF0, SFF0, SF0TOT, QF0, GF0, GF0X)
       !=================================================
       do j = 1, NA1
          svcx = 0.
@@ -547,7 +555,7 @@ contains
          NEX, NEo, NE, NIX, NIo, NI, Qe, Qi, GNX, GN2E, GN2I)
 
       write (*, *) 'QE,QI,Ge', QE(NA1), QI(NA1), QF1(NA1) + QF2(NA1) + QF3(NA1)
-
+ 
       !============================================= pelshot
       !        Write(*,*) 'before pellet'
       !        time=time + TAU

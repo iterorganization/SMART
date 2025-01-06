@@ -53,8 +53,7 @@ program standalone
 
   ! OPEN INPUT DATAFILE FROM OFFICIAL IMAS SCENARIO DATABASE
   write(*,*) '=> Read input IDSs'
-  !call imas_open_env('ids',pulse,run_in,idx,input_db,input_machine,'3')
-  call al_build_uri_from_legacy_parameters(MDSPLUS_BACKEND, pulse, run_in, input_db, input_machine, "3", "", uri, status)
+  call al_build_uri_from_legacy_parameters(HDF5_BACKEND, pulse, run_in, input_db, input_machine, "3", "", uri, status)
   call al_begin_dataentry_action(uri, OPEN_PULSE, idx, status);
   call ids_get(idx,'equilibrium',equilibrium_in)
   call ids_get(idx,'core_profiles',core_profiles_in)

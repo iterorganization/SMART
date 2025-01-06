@@ -1,7 +1,7 @@
       Subroutine STEPUPN0(
-     > NA1,NB1,TAU,HRO,VRo,VR,G11,SLAT,RHO,
-     > CN,DN,NEo,NE,NEX,QNB,SN,SNN,SNTOT,QN,GN,GNX
-     > )
+     >   NA1,NB1,TAU,HRO,VRo,VR,G11,SLAT,RHO,
+     >   CN,DN,NEo,NE,NEX,QNB,SN,SNN,SNTOT,QN,GN,GNX)
+
 ! diffusive model for hydrogen neutrals QNB[10^19at/s] neutral influx > 0.
 ! sign is introduced in line 47
          implicit none
@@ -23,10 +23,12 @@ C **** Density equation
          YHRO = HRO
          NA=NA1-1
          do 2212 J=1,NA1
-!      DN(J)=0.d0
-!      CN(J)=0.d0
-!      SN(J)=SNEBM(J)
-!      SNN(J)=0.d0
+!           DN(J)=0.d0
+!           CN(J)=0.d0
+!           SN(J)=SNEBM(J)
+            SNN(J)=0.d0
+            DSN(J)=0.d0
+            GNX(J)=0.d0
             SNTOT(J)=SN(J)
             YWA(J)=+DN(J)
             if (j.gt.NA)	goto 2212
@@ -90,10 +92,13 @@ C **** Density equation
          NA=NA1-1
          HROA=RHO(na1)-RHO(NA)
          do 2212 J=1,NA1
-!      DN(J)=0.d0
-!      CN(J)=0.d0
-!      SN(J)=SNEBM(J)
-!      SNN(J)=0.d0
+!           DN(J)=0.d0
+!           CN(J)=0.d0
+!           SN(J)=SNEBM(J)
+            SNN(J)=0.d0
+            DSN(J)=0.d0
+            YWA(J)=0.d0
+            GNX(J)=0.d0
             SNTOT(J)=SN(J)
             YWA(J)=+DN(J)
             if (j.gt.NA)	goto 2212
@@ -175,6 +180,7 @@ C **** Electron temperature equation
  2222    YHRO = HRO
          do 2223 J=1,NA1
 !      PET(J)=0.
+            PET(J)=0.
             PETOT(J)=PE(J)
             if (j.gt.NA)	goto 2223
             YWB(J)=-YWD(J)
@@ -207,6 +213,7 @@ C      call	markloc("TI equation"//char(0))
          do 2231 J=1,NA1
 !      XI(J)=0.d0
 !      PI(J)=PIBM(J)
+            PIT(J)=0.
             if (j.gt.NA)	goto 2231
             YWA(J)=0.
      >       +XI(J)

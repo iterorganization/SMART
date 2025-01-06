@@ -1,5 +1,6 @@
 C======================================================================|
       subroutine RUNNA(A,B,DS,C,D,NO,N,GT,H,E,NN,VO,VN,G11)
+C     call       RUNNa(YWA,YWB,DSN,SNN,SN,NEO,ND,TAU,HRO,YWC,NE,VRO,VR,G11)
 C----------------------------------------------------------------------|
 C Example call:
 C      SNN(J)=SNNEU
