@@ -52,7 +52,7 @@ else:
 # Read the equilibrium and core_profiles IDSs from the input datafile
 input = imas.DBEntry(sc_backend,
          config['input_database'],
-         config['shot'],
+         config['pulse'],
          config['run_in'],
          config['input_user_or_path'])
 input.open()
@@ -60,9 +60,9 @@ core_profiles_ref = input.get_slice('core_profiles',config['time_slice'],1)
 input.close()
 
 # Read the output core_profiles IDS
-output = imas.DBEntry(imas.imasdef.MDSPLUS_BACKEND,
+output = imas.DBEntry(imas.imasdef.HDF5_BACKEND,
           config['output_database'],
-          config['shot'],
+          config['pulse'],
           config['run_out'],
           config['output_user_or_path'])
 output.open()
@@ -85,6 +85,7 @@ plt.figure()
 plt.plot(core_profiles_ref.profiles_1d[0].grid.rho_tor_norm,
          core_profiles_ref.profiles_1d[0].electrons.density,
          linewidth=2,color='g',label='Initial t = %.2f s'%core_profiles_ref.time[0])
+print("len time=",len(core_profiles.time))
 for i in range(len(core_profiles.time)):
     if i==0:
         plt.plot(core_profiles.profiles_1d[i].grid.rho_tor_norm,
@@ -113,7 +114,3 @@ plt.xlabel('Normalised rho_tor')
 plt.ylabel('Electron density profile [m-3]')
 
 plt.show()
-    
-
-
-

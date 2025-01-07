@@ -8,7 +8,10 @@
     <TAU> 1.e-2 </TAU>
 
     <!-- Time interval between consequential pellet injection [s] -->
+    <!--
     <dtau> 1.e-1 </dtau>
+    -->
+    <dtau> 2.e-2 </dtau>
 
     <!-- Boundary influx of neutrals (D+T+H) for transport equation in CX approximation [10^19 s-1] -->
     <QNB> 1.e-1 </QNB>

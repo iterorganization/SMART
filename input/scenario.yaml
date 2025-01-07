@@ -34,11 +34,11 @@ time_no_more_pellet: 270.
 # Number of time steps to simulate
 # (effective only when time_slice is not equal to zero)
 #ntimes: 100
-ntimes: 1
+ntimes: 5
 
 # Time step in case a generic time array is defined
 # (effective only when ntimes > length of the input time array)
-dt_required: 1.
+dt_required: 1.0e-2
 
 # --------------
 # MISCELLANEOUS
@@ -54,8 +54,4 @@ debug: 0
 use_pellets_ids: 1
 
 # Backend of input scenario (hdf5 or mdsplus)
-scenario_backend: mdsplus
-
-
-
-
+scenario_backend: hdf5

@@ -40,7 +40,10 @@ contains
          y, y2, pdt, svdt, paion2, VINTa, QNB
       !
       double precision &
-         TAU, dtau, TIME, TIMBEG, TIMPEL
+         TAU, dtau, TIME, TIMBEG
+      double precision, save :: TIMPEL = 0.0
+      integer, save :: ic = 0
+
       integer, allocatable :: ispec(:)
       !
       integer:: iH, iD, iT, na, nb1, Nhydr, JABS, istep
@@ -336,11 +339,10 @@ contains
       !=========================================================== time loop
       open (1, file='out_Peltran.dat')
       TIME = TIMBEG
-      TIMPEL = 0.
-      write (1, 997)&
-      &'TIME,s', '  Te(1)', '   Ti(1)', '   ne(1)',&
-      &'   ni(1)', '   <ne>', '   n0(1)', '   n0(a)',&
-      &'   <Shdt>', '   <Sn0>', '  QF0B'
+      !TIMPEL = 0.
+      write (1, 997)   'TIME,s', '  Te(1)','   Ti(1)','   ne(1)',&
+                     '   ni(1)', '   <ne>','   n0(1)','   n0(a)',&
+                    '   <Shdt>','   <Sn0>',   '  QF0B'
 997   format(11A14)
       !do 999 jtime=1,100
       !=============================================== OLDNEW
@@ -559,11 +561,11 @@ contains
       !============================================= pelshot
       !        Write(*,*) 'before pellet'
       !        time=time + TAU
-      if (smart_in%sw_smart .ne. 0) then
-         TIMPEL = TIMPEL + TAU
-         if (TIMPEL .ge. (smart_in%dtau - 1.d-7)) then
-            TIMPEL = 0.
-            !== Pellet Ablation Model: SMART
+      TIMPEL = TIMPEL + TAU
+      if (TIMPEL .ge. (dtau - 1.d-7)) then
+         TIMPEL = 0.
+         !== Pellet Ablation Model: SMART
+         if (smart_in%sw_smart .ne. 0) then
             call pelIMAS1(smart_in%YAM, smart_in%YVP, smart_in%YVOL, &
                           smart_in%YCOS0, smart_in%YEFF, smart_in%YDL, &
                           YDABL, YDDEP, YPELSRS, smart_in%yswitch, &
@@ -601,6 +603,8 @@ contains
       ! end of time loop
       !========================================================
       !== conversion to IMAS units
+      cp_out%time(i_time) = TIME
+
       cp_out%profiles_1d(i_time)%electrons%density(1:n_xcp) = ne(1:n_xcp)*denA2D
       cp_out%profiles_1d(i_time)%electrons%temperature(1:n_xcp) = Te(1:n_xcp)*temA2D
       if (ispec(1) .ne. 0) then
