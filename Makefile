@@ -60,4 +60,4 @@ actor: libsmart.a
 
 # CLEAN DIRECTORY
 clean:
-	rm -f smart *.a *.mod *.o smart.xml smart.yaml
+	rm -f smart *.a *.mod *.o smart.xml smart.yaml *.dat
