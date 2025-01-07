@@ -601,67 +601,51 @@ contains
       ! end of time loop
       !========================================================
       !== conversion to IMAS units
-      cp_in%profiles_1d(i_time)%electrons%density(1:n_xcp) = ne(1:n_xcp)*denA2D
-      cp_in%profiles_1d(i_time)%electrons%temperature(1:n_xcp) = Te(1:n_xcp)*temA2D
+      cp_out%profiles_1d(i_time)%electrons%density(1:n_xcp) = ne(1:n_xcp)*denA2D
+      cp_out%profiles_1d(i_time)%electrons%temperature(1:n_xcp) = Te(1:n_xcp)*temA2D
       if (ispec(1) .ne. 0) then
-         cp_in%profiles_1d(i_time)%ion(ispec(1))%density(1:n_xcp) = F1(1:n_xcp)*denA2D
-         cp_in%profiles_1d(i_time)%neutral(ispec(1))%density(1:n_xcp) = F01B/F0B*F0(1:n_xcp)*denA2D
+         cp_out%profiles_1d(i_time)%ion(ispec(1))%density(1:n_xcp) = F1(1:n_xcp)*denA2D
+         cp_out%profiles_1d(i_time)%neutral(ispec(1))%density(1:n_xcp) = F01B/F0B*F0(1:n_xcp)*denA2D
       end if
       if (ispec(2) .ne. 0) then
-         cp_in%profiles_1d(i_time)%ion(ispec(2))%density(1:n_xcp) = F2(1:n_xcp)*denA2D
-         cp_in%profiles_1d(i_time)%neutral(ispec(2))%density(1:n_xcp) = F02B/F0B*F0(1:n_xcp)*denA2D
+         cp_out%profiles_1d(i_time)%ion(ispec(2))%density(1:n_xcp) = F2(1:n_xcp)*denA2D
+         cp_out%profiles_1d(i_time)%neutral(ispec(2))%density(1:n_xcp) = F02B/F0B*F0(1:n_xcp)*denA2D
       end if
       if (ispec(3) .ne. 0) then
-         cp_in%profiles_1d(i_time)%ion(ispec(3))%density(1:n_xcp) = F3(1:n_xcp)*denA2D
-         cp_in%profiles_1d(i_time)%neutral(ispec(3))%density(1:n_xcp) = F03B/F0B*F0(1:n_xcp)*denA2D
+         cp_out%profiles_1d(i_time)%ion(ispec(3))%density(1:n_xcp) = F3(1:n_xcp)*denA2D
+         cp_out%profiles_1d(i_time)%neutral(ispec(3))%density(1:n_xcp) = F03B/F0B*F0(1:n_xcp)*denA2D
       end if
       do i = 1, n_ion
-         cp_in%profiles_1d(i_time)%ion(i)%temperature(1:n_xcp) = Ti(1:n_xcp)*temA2D
+         cp_out%profiles_1d(i_time)%ion(i)%temperature(1:n_xcp) = Ti(1:n_xcp)*temA2D
       end do
       !        write(*,*) 'vr, n_xcp',n_xcp, vr(1:n_xcp)
       !        write(*,*) 'vole, n_xcp',n_xcp, vr(1:n_xcp)
       !        write(*,*) 'shif, n_xcp',n_xcp, shif(1:n_xcp)
       write (*, *) 'YDABL,YDDEP', YDABL, YDDEP
-      write (*, *) 'RHOEC,RHODR,ROC,QEC,YEFFec=',&
-      &RHOEC, RHODR, ROC, QECR, YEFFec
-      Write (*, *)&
-      &'Pecr', VINTa(PECR, ROC, RHO, VR, NA1),&
-      &'Pe', VINTa(PECR, ROC, RHO, VR, NA1),&
-      &'Pi', VINTa(PI, ROC, RHO, VR, NA1)
+      write (*, *) 'RHOEC,RHODR,ROC,QEC,YEFFec=',RHOEC, RHODR, ROC, QECR, YEFFec
+      Write (*, *) 'Pecr', VINTa(PECR, ROC, RHO, VR, NA1),&
+                   'Pe', VINTa(PECR, ROC, RHO, VR, NA1),&
+                   'Pi', VINTa(PI, ROC, RHO, VR, NA1)
       deallocate (ispec)
       !        include 'dealloc.corprf
-      deallocate (&
-      &ne, ni, Te, Ti, nex, nix, TEX, TIX, TN, NN,&
-      &F0, F1, F2, F3, F0x, F1x, F2x, F3x, FP,&
-      &neo, nio, Teo, Tio,&
-      &F0o, F1o, F2o, F3o, FPo,&
-      &cu, cutor, cd, cubs,&
-      &UPL, UPOL, EZ, ZEF&
-      &)
+      deallocate (ne, ni, Te, Ti, nex, nix, TEX, TIX, TN, NN,&
+                  F0, F1, F2, F3, F0x, F1x, F2x, F3x, FP,&
+                  neo, nio, Teo, Tio, F0o, F1o, F2o, F3o, FPo,&
+                  cu, cutor, cd, cubs, UPL, UPOL, EZ, ZEF)
       !        include 'dealloc.corsrs'
-      deallocate (&
-      &SN, SNN, SNTOT, QN, GN, GNX, PE, PET, PETOT,&
-      &SF0, SFF0, SF0TOT, QF0, GF0, GF0X,&
-      &SF1, SFF1, SF1TOT, QF1, GF1, GF1X,&
-      &SF2, SFF2, SF2TOT, QF2, GF2, GF2X,&
-      &SF3, SFF3, SF3TOT, QF3, GF3, GF3X,&
-      &PI, PIT, PITOT, PEI, QE, QI, PECR, CUECR,&
-      &YPELSRS&
-      &)
+      deallocate (SN, SNN, SNTOT, QN, GN, GNX, PE, PET, PETOT,&
+                  SF0, SFF0, SF0TOT, QF0, GF0, GF0X,&
+                  SF1, SFF1, SF1TOT, QF1, GF1, GF1X,&
+                  SF2, SFF2, SF2TOT, QF2, GF2, GF2X,&
+                  SF3, SFF3, SF3TOT, QF3, GF3, GF3X,&
+                  PI, PIT, PITOT, PEI, QE, QI, PECR, CUECR,YPELSRS)
       !        include 'dealloc.cortran'
-      deallocate (&
-      &DF0, VF0, DF1, VF1, DF2, VF2, DF3, VF3,&
-      &DN, CN, HE, XI, CC&
-      &)
+      deallocate (DF0, VF0, DF1, VF1, DF2, VF2, DF3, VF3,DN, CN, HE, XI, CC)
       !        write(*,*) '308'
       !        include 'dealloc.eq'
-      deallocate (&
-      &IPOL, G11, G33, SLAT,&
-      &ametr, shif, vr, vro,&
-      &mu, VOL, XCP,&
-      &ametre, shife, VOLe,&
-      &FPe, XEQ, RHO, IPOLe, G11e, G33e, SLATe&
-      &)
+      deallocate (IPOL, G11, G33, SLAT, ametr, shif, vr, vro,&
+                  mu, VOL, XCP, ametre, shife, VOLe,&
+                  FPe, XEQ, RHO, IPOLe, G11e, G33e, SLATe)
       !        write(*,*) '313'
 
    end subroutine smart
