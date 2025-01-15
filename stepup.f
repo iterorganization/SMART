@@ -32,7 +32,10 @@ C **** Density equation
 !           CN(J)=0.d0
 !           SN(J)=SNEBM(J)
 !           SNN(J)=0.d0
-            GNX(J)=0.d0
+            DSN(J)=0.
+!>>>>
+!           GNX(J)=0.d0
+!>>>>
             SNTOT(J)=SN(J)
             YWA(J)=DN(J)
             if (j.gt.NA) goto 2212
@@ -72,25 +75,24 @@ C **** Density equation
 !===================================================
       Subroutine STEPUPN(
      >  NA1,NB1,TAU,HRO,VRo,VR,G11,SLAT,RHO,
-     > CN,DN,NEo,NE,NEX,NEB,SN,SNN,SNTOT,QN,GN,GNX
+     > CN,DN,DSN,NEo,NE,NEX,NEB,SN,SNN,SNTOT,QN,GN,GNX
      > )
          !  use physics_module_level1
          implicit none
          integer NA,NA1,ND,ND1,NA1N,NA1E,NB1,J,JIT,JEX,Jcall
          double precision
      >    TAU,HRO,VRo(*),VR(*),G11(*),SLAT(*),RHo(*),
-     >    CN(*),DN(*),NEo(*),NE(*),NEX(*),
+     >    CN(*),DN(*),DSN(*),NEo(*),NE(*),NEX(*),
      >    SN(*),SNN(*),SNTOT(*),QN(*),GN(*),GNX(*),
      >    YHRO,HROA,NEB
          double precision, allocatable ::
-     >     YWA(:),YWB(:),YWC(:),DSN(:)
+     >     YWA(:),YWB(:),YWC(:)
          allocate(
-     >     YWA(NA1),YWB(NA1),YWC(NA1),DSN(NA1)
+     >     YWA(NA1),YWB(NA1),YWC(NA1)
      >      )
          YWA = 0.
          YWB = 0.
          YWC = 0.
-         DSN = 0.
 
 !      call	markloc("tmp/eqns.inc"//char(0))
  2100    continue
@@ -103,8 +105,10 @@ C **** Density equation
 !           DN(J)=0.d0
 !           CN(J)=0.d0
 !           SN(J)=SNEBM(J)
-            SNN(J)=0.d0
-            GNX(J)=0.d0
+!>>>>
+!           SNN(J)=0.d0
+!           GNX(J)=0.d0
+!>>>>
             SNTOT(J)=SN(J)
             YWA(J)=DN(J)
             if (j.gt.NA) goto 2212
@@ -134,14 +138,14 @@ C **** Density equation
          GN(NA1)=QN(NA1)/SLAT(NA1)
          SNTOT(NA1)=SNTOT(NA)
          deallocate(
-     >     YWA,YWB,YWC,DSN
+     >     YWA,YWB,YWC
      >      )
          return
       end
 !===================================================
       subroutine STEPUPT(
      > NA1,NB1,TAU,HRO,VRo,VR,G11,SLAT,RHO,
-     > XI,HE,
+     > XI,HE,DSI,DSE,
      > PE,PET,PETOT,PI,PIT,PITOT,PEI,
      > TEX,TE,TEo,TEB,TIX,TI,TIo,TIB,
      > NEX,NEo,NE,NIX,NIo,NI,Qe,Qi,GNX,
@@ -153,7 +157,7 @@ C **** Density equation
          integer NA,NA1,ND,ND1,NA1N,NA1E,NA1I,NB1,J,JIT,JEX,Jcall
          double precision
      >    TAU,HRO,VRo(*),VR(*),G11(*),SLAT(*),RHo(*),
-     >    XI(*),HE(*),GNX(*),QE(*),QI(*),
+     >    XI(*),HE(*),GNX(*),QE(*),QI(*),DSE(*),DSI(*),
      >    PE(*),PET(*),PETOT(*),
      >    PI(*),PIT(*),PITOT(*),PEI(*),
      >    TEX(*),TE(*),TEo(*),TEB,TIX(*),TI(*),TIo(*),TIB,
@@ -161,17 +165,15 @@ C **** Density equation
      >    YHRO,HROA,GN2E,GN2I
          double precision, allocatable ::
      >     YWA(:),YWB(:),YWC(:),YWD(:),
-     >     DSE(:),DSI(:),PDI(:),PDE(:),WORK1(:,:)
+     >     PDI(:),PDE(:),WORK1(:,:)
          allocate(
      >     YWA(NA1),YWB(NA1),YWC(NA1),YWD(NA1),
-     >     DSE(NA1),DSI(NA1),PDI(NA1),PDE(NA1),WORK1(NA1,24)
+     >     PDI(NA1),PDE(NA1),WORK1(NA1,24)
      >      )
          YWA = 0.
          YWB = 0.
          YWC = 0.
          YWD = 0.
-         DSE = 0.
-         DSI = 0.
          PDI = 0.
          PDE = 0.
          WORK1 = 0.
@@ -215,7 +217,7 @@ C **** Electron temperature equation
          DSE(ND1)=0.
          call RUNTTa(YWA,YWB,PET,YWC,NEO,NE,TEO,
      >    ND,TAU,HRO,QE(1),YWD,DSE,VRO,VR,G11,WORK1,PEI)
-         do	J=ND1,NB1
+         do J=ND1,NB1
             PDE(j) = 0.
          enddo
          do	J=1,ND
@@ -257,10 +259,10 @@ C      call	markloc("TI equation"//char(0))
          DSI(ND1)=0.
          call RUNTTa(YWA,YWB,PIT,YWC,NIO,NI,TIO,
      >   ND,TAU,HRO,QI(1),YWD,DSI,VRO,VR,G11,WORK1,PEI)
-         do	J=ND1,NB1
+         do J=ND1,NB1
             PDI(j) = 0.
          enddo
-         do	J=1,ND
+         do J=1,ND
             PDI(j) = 0.
          enddo
          call NURTTa(TE,TI,QE,QI,PETOT,PITOT,ND,WORK1)
@@ -271,7 +273,7 @@ C      call	markloc("TI equation"//char(0))
             enddo
          endif
          deallocate(
-     >     YWA,YWB,YWC,YWD,DSE,DSI,PDE,PDI,WORK1
+     >     YWA,YWB,YWC,YWD,PDE,PDI,WORK1
      >      )
          return
       end

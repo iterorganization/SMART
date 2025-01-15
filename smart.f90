@@ -65,7 +65,7 @@ contains
 
       double precision, allocatable :: &
          DF0(:), VF0(:), DF1(:), VF1(:), DF2(:), VF2(:), DF3(:), VF3(:), &
-         DN(:), CN(:), HE(:), XI(:), cc(:)
+         DN(:), CN(:), HE(:), XI(:), cc(:), DSI(:), DSE(:), DSN(:)
 
       double precision, allocatable :: &
          ametr(:), shif(:), mu(:), VOL(:), vr(:), VOLo(:), vro(:), &
@@ -290,12 +290,16 @@ contains
       PECR = 0.
       CUECR = 0.
 
-      allocate ( DN(n_xcp), CN(n_xcp), HE(n_xcp), XI(n_xcp), CC(n_xcp) )
+      allocate ( DN(n_xcp), CN(n_xcp), HE(n_xcp), XI(n_xcp), CC(n_xcp), &
+                 DSI(n_xcp), DSE(n_xcp), DSN(n_xcp) )
       DN = 0.
       CN = 0.
       HE = 0.
       XI = 0.
       CC = 0.
+      DSI = 0.
+      DSE = 0.
+      DSN = 0.
 
       !====================================================== core profiles
       ne(1:n_xcp) = cp_in%profiles_1d(i_time)%electrons%density(1:n_xcp)/denA2D
@@ -539,6 +543,13 @@ contains
          VF3(J) = 0.
       end do
 
+      ! for Pereverzev-Corrigan scheme
+      do j=1,NA1
+         DSE(J)=0.
+         DSI(J)=0.
+         DSN(J)=0.
+      enddo
+
       !======================================== for neutral transport
       do j = 1, NA1
          svcx = 0.
@@ -631,13 +642,13 @@ contains
       !======================================= hydrogen species
       if (iH .ne. 0) call STEPUPN( &
          NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
-         VF1, DF1, F1o, F1, F1X, F1B, SF1, SFF1, SF1TOT, QF1, GF1, GF1X)
+         VF1, DF1, DSN, F1o, F1, F1X, F1B, SF1, SFF1, SF1TOT, QF1, GF1, GF1X)
       if (iD .ne. 0) call STEPUPN( &
          NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
-         VF2, DF2, F2o, F2, F2X, F2B, SF2, SFF2, SF2TOT, QF2, GF2, GF2X)
+         VF2, DF2, DSN, F2o, F2, F2X, F2B, SF2, SFF2, SF2TOT, QF2, GF2, GF2X)
       if (iT .ne. 0) call STEPUPN( &
          NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
-         VF3, DF3, F3o, F3, F3X, F3B, SF3, SFF3, SF3TOT, QF3, GF3, GF3X)
+         VF3, DF3, DSN, F3o, F3, F3X, F3B, SF3, SFF3, SF3TOT, QF3, GF3, GF3X)
       !============================ electron density from quasineutrality
       ne(1:na1) = f1(1:na1) + f2(1:na1) + f3(1:na1)
       ni(1:na1) = ne(1:na1)
@@ -659,7 +670,7 @@ contains
       !==============================================temperature stepup
       !        write(*,*) 'trace 325 before STEPUPT'
       call STEPUPT( &
-         NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO, XI, HE, &
+         NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO, XI, HE, DSI, DSE, &
          PE, PET, PETOT, PI, PIT, PITOT, PEI, &
          TEX, TE, TEo, TEB, TIX, TI, TIo, TIB, &
          NEX, NEo, NE, NIX, NIo, NI, Qe, Qi, GNX, GN2E, GN2I)
@@ -752,7 +763,8 @@ contains
                   SF3, SFF3, SF3TOT, QF3, GF3, GF3X,&
                   PI, PIT, PITOT, PEI, QE, QI, PECR, CUECR,YPELSRS)
       !        include 'dealloc.cortran'
-      deallocate (DF0, VF0, DF1, VF1, DF2, VF2, DF3, VF3,DN, CN, HE, XI, CC)
+      deallocate (DF0, VF0, DF1, VF1, DF2, VF2, DF3, VF3, &
+                  DN, CN, HE, XI, CC, DSE, DSI, DSN)
       !        write(*,*) '308'
       !        include 'dealloc.eq'
       deallocate (IPOL, G11, G33, SLAT, ametr, shif, vr, vro,&
