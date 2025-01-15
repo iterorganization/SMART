@@ -12,10 +12,14 @@
 ifneq (, $(filter $(COMPILER), gfortran g++ gcc GCC))
 	CXX  = g++
 	F90  = gfortran
-else ifneq (, $(filter $(COMPILER), ifort icc icpc intel ifx icx))
+else ifneq (, $(filter $(COMPILER), intel ifx icx))
 	# should be icpc, but FC2K needs icc
 	CXX  = icx
 	F90  = ifx
+else ifneq (, $(filter $(COMPILER), ifort icc icpc))
+	# should be icpc, but FC2K needs icc
+	CXX  = icc
+	F90  = ifort
 # # continue here with similar tests for other compilers, like pgi or nvidia. Examples:
 # else ifneq (, $(filter $(COMPILER), nvfortran nvc++ nvidia NVIDIA))
 # 	CXX = nvcc

@@ -8,7 +8,7 @@ program standalone
 
   implicit none
 
-  integer:: idx,run_in,run_out,pulse,error_flag
+  integer:: i,idx,run_in,run_out,pulse,error_flag
   integer:: iounit = 1
   integer:: status
   type(ids_equilibrium):: equilibrium_in
@@ -60,22 +60,32 @@ program standalone
   call imas_close(idx)
   write(*,*) 'Finished reading input IDSs'
 
-  ! CORE TRANPORT FOR PELLET ABRATION MODEL (SMART) WITH ECRH (ECH2a), GAS-PUFF AS B.C. AND ALPHA HEATING MODELS
-  call smart(equilibrium_in,core_profiles_in,pellets_in,core_profiles_out,codeparam_smart,error_flag,error_message)
+  ! EXPORT RESULTS TO LOCAL DATABASE
+  call al_build_uri_from_legacy_parameters(HDF5_BACKEND, pulse, run_out, local_db, local_machine, "3", "", uri, status)
+  call al_begin_dataentry_action(uri, FORCE_CREATE_PULSE, idx, status);
 
-  if(error_flag.eq.0) then
-     ! EXPORT RESULTS TO LOCAL DATABASE
-     write(*,*) '=> Export output IDSs to local database'
-     call al_build_uri_from_legacy_parameters(HDF5_BACKEND, pulse, run_out, local_db, local_machine, "3", "", uri, status)
-     call al_begin_dataentry_action(uri, FORCE_CREATE_PULSE, idx, status);
-     call ids_put(idx,'core_profiles',core_profiles_out)
-     call imas_close(idx)
-     write(*,*) 'Done exporting.'
-     write(*,*) ' '
-     write(*,*) 'End of standalone'
-  else
-     write(*,*) error_message
-     write(*,*) '=> Program stopped.'
-  endif
+  do i=1, 100
+     ! CORE TRANPORT FOR PELLET ABRATION MODEL (SMART) WITH ECRH (ECH2a), GAS-PUFF AS B.C. AND ALPHA HEATING MODELS
+     call smart(equilibrium_in,core_profiles_in,pellets_in,core_profiles_out,codeparam_smart,error_flag,error_message)
+
+     call ids_copy(core_profiles_out, core_profiles_in)
+
+     if(error_flag.eq.0) then
+        !! EXPORT RESULTS TO LOCAL DATABASE
+        write(*,*) '=> Export output IDSs to local database'
+        call ids_put_slice(idx,"core_profiles",core_profiles_out)
+     else
+        write(*,*) error_message
+        write(*,*) '=> Program stopped.'
+        stop
+     endif
+
+  enddo
+
+  call imas_close(idx)
+
+  write(*,*) 'Done exporting.'
+  write(*,*) ' '
+  write(*,*) 'End of standalone'
 
 end program standalone

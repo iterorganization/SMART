@@ -99,6 +99,7 @@ smart.initialize(code_parameters=code_parameters,runtime_settings=runtime_settin
 #smart.initialize(code_parameters=code_parameters,runtime_settings=runtime_settings)
 
 
+print('time_array=',time_array)
 # TIME LOOP
 FirstTime = True
 for itime in range(it,it+ntimes):
@@ -109,8 +110,8 @@ for itime in range(it,it+ntimes):
     else:
         time = time_array[0]
           
-    # READ IDSS FROM INPUT SCENARIO
-    print('=> Read input IDSs')
+    # READ IDSes FROM INPUT SCENARIO
+    print('=> Read input IDSes')
     input_equilibrium = input.get_slice('equilibrium',time,1)
     if FirstTime is True:
         input_core_profiles = input.get_slice('core_profiles',time,1)
@@ -123,19 +124,26 @@ for itime in range(it,it+ntimes):
 
     # EXECUTE SMART
     print('=> Execute SMART')
-    try:
-        input_core_profiles.time[0] = time
-        output_core_profiles = smart(input_equilibrium, input_core_profiles, input_pellets)
-        input_core_profiles = copy.deepcopy(output_core_profiles)
-    except Exception as error_message:
-        print('ERROR in run_smart',str(error_message))
-        exit(1)
+#>>>>
+#   try:
+#       input_core_profiles.time[0] = time
+#       output_core_profiles = smart(input_equilibrium, input_core_profiles, input_pellets)
+#       input_core_profiles = copy.deepcopy(output_core_profiles)
+#   except Exception as error_message:
+#       print('ERROR in run_smart',str(error_message))
+#       exit(1)
+    output_core_profiles = smart(input_equilibrium, input_core_profiles, input_pellets)
+    input_core_profiles = copy.deepcopy(output_core_profiles)
+#>>>>
 
     output.put_slice(input_equilibrium)
     output.put_slice(input_pellets)
     output.put_slice(output_core_profiles)
     print('Output time = %5.2f s' % (output_core_profiles.time[0]))
 
+#>>>
+        #print("homogeneous_time=",input_core_profiles.ids_properties.homogeneous_time)
+#>>>
 
 # FINALIZE THE ACTOR
 smart.finalize()

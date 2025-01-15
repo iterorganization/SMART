@@ -9,12 +9,12 @@
 
     <!-- Time interval between consequential pellet injection [s] -->
     <!--
-    <dtau> 1.e-1 </dtau>
+        <dtau> 1.e-1 </dtau>
     -->
-    <dtau> 2.e-2 </dtau>
+    <dtau> 1.e+1 </dtau>
 
     <!-- Boundary influx of neutrals (D+T+H) for transport equation in CX approximation [10^19 s-1] -->
-    <QNB> 1.e-1 </QNB>
+    <QNB> 1.e3 </QNB>
 
     <!-- Edge neutral density (Puffing, H component) [10^19 m-3]-->
     <F01B> 0.e0 </F01B>
@@ -48,7 +48,7 @@
     <YVP> 3.0e-1 </YVP>
 
     <!-- Pellet size [mm3] -->
-    <YVOL> 92.e0 </YVOL>
+    <YVOL> 3.3e1 </YVOL>
 
     <!-- Angle to normal to LCS -->
     <YCOS0> 0.8e0 </YCOS0>

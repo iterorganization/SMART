@@ -159,13 +159,16 @@ C----------------------------------------------------------------------|
      1   A(*),B(*),C(*),D(*),NO(*),NN(*),TO(*),DV(*),DS(*),VO(*),
      2   VN(*),G11(*),H,HB,GT,GT23,Y625,AJ,BJ,CJ,DJ,W0,W1,P0,P1,
      3   Q0,Q1,G0,G1,H1,HJ,YA,YB,Y0,Y1,Y2,YS,YJ,Y11,Y12,Y21,Y22
-         integer	N,j,j1,jn,icall,N0,N1
+!        integer	N,j,j1,jn,icall,N0,N1
+         integer	N,j,j1,jn,N0,N1
 !	double precision GETPEI,W(N,*)
 !	external GETPEI
          double precision PEI(*),W(N,*)
 
-         save icall,N0
-         data icall/0/
+!        save icall,N0
+!        data icall/0/
+         integer, save :: icall = 0
+         save N0
 !        call add2loc("Subroutine RUNTT"//char(0))
          GT23 = GT/1.5
          Y625 = 625.*GT23

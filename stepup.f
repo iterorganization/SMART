@@ -16,6 +16,11 @@
          allocate(
      >     YWA(NA1),YWB(NA1),YWC(NA1),DSN(NA1)
      >      )
+         YWA = 0.
+         YWB = 0.
+         YWC = 0.
+         DSN = 0.
+
 !      call	markloc("tmp/eqns.inc"//char(0))
  2100    continue
 C **** Density equation
@@ -26,15 +31,13 @@ C **** Density equation
 !           DN(J)=0.d0
 !           CN(J)=0.d0
 !           SN(J)=SNEBM(J)
-            SNN(J)=0.d0
-            DSN(J)=0.d0
+!           SNN(J)=0.d0
             GNX(J)=0.d0
             SNTOT(J)=SN(J)
-            YWA(J)=+DN(J)
-            if (j.gt.NA)	goto 2212
-            if (j.eq.NA)	YHRO = HROA
-            YWB(J)=0.
-     >       -CN(J)
+            YWA(J)=DN(J)
+            if (j.gt.NA) goto 2212
+            if (j.eq.NA) YHRO = HROA
+            YWB(J)=-CN(J)
  2212    continue
          ND1 = NA1
          NA1N = ND1
@@ -84,6 +87,11 @@ C **** Density equation
          allocate(
      >     YWA(NA1),YWB(NA1),YWC(NA1),DSN(NA1)
      >      )
+         YWA = 0.
+         YWB = 0.
+         YWC = 0.
+         DSN = 0.
+
 !      call	markloc("tmp/eqns.inc"//char(0))
  2100    continue
 C **** Density equation
@@ -96,15 +104,12 @@ C **** Density equation
 !           CN(J)=0.d0
 !           SN(J)=SNEBM(J)
             SNN(J)=0.d0
-            DSN(J)=0.d0
-            YWA(J)=0.d0
             GNX(J)=0.d0
             SNTOT(J)=SN(J)
-            YWA(J)=+DN(J)
-            if (j.gt.NA)	goto 2212
-            if (j.eq.NA)	YHRO = HROA
-            YWB(J)=0.
-     >       -CN(J)
+            YWA(J)=DN(J)
+            if (j.gt.NA) goto 2212
+            if (j.eq.NA) YHRO = HROA
+            YWB(J)=-CN(J)
  2212    continue
          ND1 = NA1
          NA1N = ND1
@@ -161,6 +166,15 @@ C **** Density equation
      >     YWA(NA1),YWB(NA1),YWC(NA1),YWD(NA1),
      >     DSE(NA1),DSI(NA1),PDI(NA1),PDE(NA1),WORK1(NA1,24)
      >      )
+         YWA = 0.
+         YWB = 0.
+         YWC = 0.
+         YWD = 0.
+         DSE = 0.
+         DSI = 0.
+         PDI = 0.
+         PDE = 0.
+         WORK1 = 0.
 
 C **** Electron temperature equation
 !      call	markloc("TE equation"//char(0))
@@ -170,9 +184,8 @@ C **** Electron temperature equation
          do 2221 J=1,NA1
 !      HE(J)=0.d0
 !      PE(J)=PEBM(J)
-            if (j.gt.NA)	goto 2221
-            YWA(J)=0.
-     >       +HE(J)
+            if (j.gt.NA) goto 2221
+            YWA(J)=HE(J)
             YWA(J)=YWA(J)*(NE(J+1)+NE(J))*0.5
             YWD(J)=0.
             YWD(J)=YWD(J)*(NE(J+1)+NE(J))*0.5+GN2E*GNX(J)*SLAT(J)/G11(J)
@@ -182,7 +195,7 @@ C **** Electron temperature equation
 !      PET(J)=0.
             PET(J)=0.
             PETOT(J)=PE(J)
-            if (j.gt.NA)	goto 2223
+            if (j.gt.NA) goto 2223
             YWB(J)=-YWD(J)
             YWC(J)=PE(j)
  2223    continue
@@ -214,9 +227,8 @@ C      call	markloc("TI equation"//char(0))
 !      XI(J)=0.d0
 !      PI(J)=PIBM(J)
             PIT(J)=0.
-            if (j.gt.NA)	goto 2231
-            YWA(J)=0.
-     >       +XI(J)
+            if (j.gt.NA) goto 2231
+            YWA(J)=XI(J)
             YWA(J)=YWA(J)*(NI(J+1)+NI(J))*0.5
             YWD(J)=2.*GN2I*GNX(J)*SLAT(J)/G11(J)/(NE(J+1)+NE(J))
             YWD(J)=0.5*YWD(J)*(NI(J+1)+NI(J))
@@ -225,7 +237,7 @@ C      call	markloc("TI equation"//char(0))
          do 2233 J=1,NA1
 !      PIT(J)=0.
             PITOT(J)=PI(J)
-            if (j.gt.NA)	goto 2233
+            if (j.gt.NA) goto 2233
             YWB(J)=-YWD(J)
             YWC(J)=PI(j)
  2233    continue

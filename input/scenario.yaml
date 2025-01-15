@@ -33,8 +33,9 @@ time_no_more_pellet: 270.
 
 # Number of time steps to simulate
 # (effective only when time_slice is not equal to zero)
-#ntimes: 100
-ntimes: 5
+ntimes: 100
+#ntimes: 5
+#ntimes: 1
 
 # Time step in case a generic time array is defined
 # (effective only when ntimes > length of the input time array)

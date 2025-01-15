@@ -42,7 +42,6 @@ contains
       double precision &
          TAU, dtau, TIME, TIMBEG
       double precision, save :: TIMPEL = 0.0
-      integer, save :: ic = 0
 
       integer, allocatable :: ispec(:)
       !
@@ -149,15 +148,77 @@ contains
          cu(n_xcp), cutor(n_xcp), cd(n_xcp), cubs(n_xcp), &
          UPL(n_xcp), UPOL(n_xcp), EZ(n_xcp), ZEF(n_xcp), AMAIN(n_xcp) )
       !        include 'alloc.eq'
+      ne = 0.
+      ni = 0.
+      Te = 0.
+      Ti = 0.
+      nex = 0.
+      nix = 0.
+      TEX = 0.
+      TIX = 0.
+      F1x = 0.
+      F2x = 0.
+      F3x = 0.
+      F1 = 0.
+      F2 = 0.
+      F3 = 0.
+      FP = 0.
+      neo = 0.
+      nio = 0.
+      Teo = 0.
+      Tio = 0.
+      F1o = 0.
+      F2o = 0.
+      F3o = 0.
+      FPo = 0.
+      F0 = 0.
+      F0o = 0.
+      F0x = 0.
+      NN = 0.
+      TN = 0.
+      cu = 0.
+      cutor = 0.
+      cd = 0.
+      cubs = 0.
+      UPL = 0.
+      UPOL = 0.
+      EZ = 0.
+      ZEF = 0.
+      AMAIN = 0.
+
       allocate ( &
          ametr(n_xcp), shif(n_xcp), vr(n_xcp), vro(n_xcp), &
          mu(n_xcp), VOL(n_xcp), VOLo(n_xcp), XCP(n_xcp), &
          IPOL(n_xcp), G11(n_xcp), G33(n_xcp), SLAT(n_xcp) )
+      ametr = 0.
+      shif = 0.
+      vr = 0.
+      vro = 0.
+      mu = 0.
+      VOL = 0.
+      VOLo = 0.
+      XCP = 0.
+      IPOL = 0.
+      G11 = 0.
+      G33 = 0.
+      SLAT = 0.
+
       allocate ( &
          ametre(n_xeq), shife(n_xeq), VOLe(n_xeq), &
          FPe(n_xeq), XEQ(n_xeq), RHO(n_xeq), &
          IPOLe(n_xeq), G11e(n_xeq), G33e(n_xeq), SLATe(n_xeq))
       !        include 'alloc.corsrs'
+      ametre = 0.
+      shife = 0.
+      VOLe = 0.
+      FPe = 0.
+      XEQ = 0.
+      RHO = 0.
+      IPOLe = 0.
+      G11e = 0.
+      G33e = 0.
+      SLATe = 0.
+
       allocate ( &
          SN(n_xcp), SNN(n_xcp), SNTOT(n_xcp), &
          QN(n_xcp), GN(n_xcp), GNX(n_xcp), &
@@ -174,22 +235,67 @@ contains
          PE(n_xcp), PET(n_xcp), PETOT(n_xcp), QE(n_xcp), QI(n_xcp), &
          PI(n_xcp), PIT(n_xcp), PITOT(n_xcp), PEI(n_xcp), &
          YPELSRS(n_xcp) )
+
+      SN = 0.
+      SNN = 0.
+      SNTOT = 0.
+      QN = 0.
+      GN = 0.
+      GNX = 0.
+      SF0 = 0.
+      SFF0 = 0.
+      SF0TOT = 0.
+      QF0 = 0.
+      GF0 = 0.
+      GF0X = 0.
+      SF1 = 0.
+      SFF1 = 0.
+      SF1TOT = 0.
+      QF1 = 0.
+      GF1 = 0.
+      GF1X = 0.
+      SF2 = 0.
+      SFF2 = 0.
+      SF2TOT = 0.
+      QF2 = 0.
+      GF2 = 0.
+      GF2X = 0.
+      SF3 = 0.
+      SFF3 = 0.
+      SF3TOT = 0.
+      QF3 = 0.
+      GF3 = 0.
+      GF3X = 0.
+      DF0 = 0.
+      VF0 = 0.
+      DF1 = 0. 
+      VF1 = 0.
+      DF2 = 0.
+      VF2 = 0.
+      DF3 = 0.
+      VF3 = 0.
+      PE = 0.
+      PET = 0.
+      PETOT = 0.
+      QE = 0.
+      QI = 0.
+      PI = 0.
+      PIT = 0.
+      PITOT = 0.
+      PEI = 0.
+      YPELSRS = 0.
+
       allocate ( PECR(n_xcp), CUECR(n_xcp) )
       !        include 'alloc.cortran'
-      allocate ( DN(n_xcp), CN(n_xcp), HE(n_xcp), XI(n_xcp), CC(n_xcp) )
+      PECR = 0.
+      CUECR = 0.
 
-      PE = 0.
-      PI = 0.
-      PEI = 0.
-      GNX = 0.
-      GN2E = 0.
-      GN2I = 0.
-      QF1 = 0.
-      QF2 = 0.
-      QF3 = 0.
-      SF1TOT = 0.
-      SF2TOT = 0.
-      SF3TOT = 0.
+      allocate ( DN(n_xcp), CN(n_xcp), HE(n_xcp), XI(n_xcp), CC(n_xcp) )
+      DN = 0.
+      CN = 0.
+      HE = 0.
+      XI = 0.
+      CC = 0.
 
       !====================================================== core profiles
       ne(1:n_xcp) = cp_in%profiles_1d(i_time)%electrons%density(1:n_xcp)/denA2D
@@ -403,6 +509,7 @@ contains
       !        Write(*,*) 'before pellet'
 
       !=============================================== boundary conditions
+      QNB = smart_in%QNB
       F01B = smart_in%F01B
       F02B = smart_in%F02B
       F03B = smart_in%F03B
@@ -520,6 +627,7 @@ contains
          !        SF3(j)=NEo(J)*SVIE*F0(J)*F03B/F0B
          TN(j) = Ti(j) + (Te(j) - Ti(j))*195.*PEI(j)/SVCX/(ni(j) + f0(j))/ni(j)
       end do
+
       !======================================= hydrogen species
       if (iH .ne. 0) call STEPUPN( &
          NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
