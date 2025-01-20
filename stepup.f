@@ -5,7 +5,7 @@
 ! diffusive model for hydrogen neutrals QNB[10^19at/s] neutral influx > 0.
 ! sign is introduced in line 47
          implicit none
-         integer NA,NA1,ND,ND1,NA1N,NA1E,NB1,J,JIT,JEX,Jcall
+         integer NA,NA1,ND,ND1,NA1N,NB1,J
          double precision
      >    TAU,HRO,VRo(*),VR(*),G11(*),SLAT(*),RHo(*),
      >    CN(*),DN(*),NEo(*),NE(*),NEX(*),
@@ -21,10 +21,10 @@
          YWC = 0.
          DSN = 0.
 
-!      call	markloc("tmp/eqns.inc"//char(0))
- 2100    continue
+!      callmarkloc("tmp/eqns.inc"//char(0))
+!2100    continue
 C **** Density equation
-!      call	markloc("NE equation"//char(0))
+!      callmarkloc("NE equation"//char(0))
          YHRO = HRO
          NA=NA1-1
          do 2212 J=1,NA1
@@ -33,9 +33,6 @@ C **** Density equation
 !           SN(J)=SNEBM(J)
 !           SNN(J)=0.d0
             DSN(J)=0.
-!>>>>
-!           GNX(J)=0.d0
-!>>>>
             SNTOT(J)=SN(J)
             YWA(J)=DN(J)
             if (j.gt.NA) goto 2212
@@ -79,7 +76,7 @@ C **** Density equation
      > )
          !  use physics_module_level1
          implicit none
-         integer NA,NA1,ND,ND1,NA1N,NA1E,NB1,J,JIT,JEX,Jcall
+         integer NA,NA1,ND,ND1,NA1N,NB1,J
          double precision
      >    TAU,HRO,VRo(*),VR(*),G11(*),SLAT(*),RHo(*),
      >    CN(*),DN(*),DSN(*),NEo(*),NE(*),NEX(*),
@@ -94,10 +91,10 @@ C **** Density equation
          YWB = 0.
          YWC = 0.
 
-!      call	markloc("tmp/eqns.inc"//char(0))
- 2100    continue
+!      callmarkloc("tmp/eqns.inc"//char(0))
+!2100    continue
 C **** Density equation
-!      call	markloc("NE equation"//char(0))
+!      callmarkloc("NE equation"//char(0))
          YHRO = HRO
          NA=NA1-1
          HROA=RHO(na1)-RHO(NA)
@@ -105,10 +102,6 @@ C **** Density equation
 !           DN(J)=0.d0
 !           CN(J)=0.d0
 !           SN(J)=SNEBM(J)
-!>>>>
-!           SNN(J)=0.d0
-!           GNX(J)=0.d0
-!>>>>
             SNTOT(J)=SN(J)
             YWA(J)=DN(J)
             if (j.gt.NA) goto 2212
@@ -154,7 +147,7 @@ C **** Density equation
          !  use physics_module_level1
 
          implicit none
-         integer NA,NA1,ND,ND1,NA1N,NA1E,NA1I,NB1,J,JIT,JEX,Jcall
+         integer NA,NA1,ND,ND1,NA1E,NA1I,NB1,J
          double precision
      >    TAU,HRO,VRo(*),VR(*),G11(*),SLAT(*),RHo(*),
      >    XI(*),HE(*),GNX(*),QE(*),QI(*),DSE(*),DSI(*),
@@ -179,7 +172,7 @@ C **** Density equation
          WORK1 = 0.
 
 C **** Electron temperature equation
-!      call	markloc("TE equation"//char(0))
+!      callmarkloc("TE equation"//char(0))
          NA=NA1-1
          HROA=RHO(NA1)-RHO(NA)
 
@@ -192,7 +185,8 @@ C **** Electron temperature equation
             YWD(J)=0.
             YWD(J)=YWD(J)*(NE(J+1)+NE(J))*0.5+GN2E*GNX(J)*SLAT(J)/G11(J)
  2221    continue
- 2222    YHRO = HRO
+!2222    YHRO = HRO
+         YHRO = HRO
          do 2223 J=1,NA1
 !      PET(J)=0.
             PET(J)=0.
@@ -220,11 +214,11 @@ C **** Electron temperature equation
          do J=ND1,NB1
             PDE(j) = 0.
          enddo
-         do	J=1,ND
+         do J=1,ND
             PDE(j) = 0.
          enddo
 C **** Ion temperature equation
-C      call	markloc("TI equation"//char(0))
+C      callmarkloc("TI equation"//char(0))
          do 2231 J=1,NA1
 !      XI(J)=0.d0
 !      PI(J)=PIBM(J)
@@ -235,7 +229,8 @@ C      call	markloc("TI equation"//char(0))
             YWD(J)=2.*GN2I*GNX(J)*SLAT(J)/G11(J)/(NE(J+1)+NE(J))
             YWD(J)=0.5*YWD(J)*(NI(J+1)+NI(J))
  2231    continue
- 2232    YHRO = HRO
+!2232    YHRO = HRO
+         YHRO = HRO
          do 2233 J=1,NA1
 !      PIT(J)=0.
             PITOT(J)=PI(J)
