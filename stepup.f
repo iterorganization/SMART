@@ -27,6 +27,7 @@ C **** Density equation
 !      callmarkloc("NE equation"//char(0))
          YHRO = HRO
          NA=NA1-1
+         HROA=RHO(na1)-RHO(NA)
          do 2212 J=1,NA1
 !           DN(J)=0.d0
 !           CN(J)=0.d0
