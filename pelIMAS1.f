@@ -144,7 +144,7 @@ c*6-OCT-15
             write(*,*) ' pellet mass must be H/D/T/HD/DT only'
             return
          endif
-         if((YAM*YVP*YRP*(yshape-.999)*YEFF).le.0..or.abs(YCOS0).gt.1.d0)
+         if((YAM*YVP*YRP*(yshape-.999)*YEFF).le.0..or.dabs(YCOS0).gt.1.d0)
      .   then
             write(*,*) 'Warning from SMART: wrong input parameters'
             return
@@ -280,10 +280,10 @@ c<26-APR-2023 M.H
 c*NEW-1 vvvvvvvvvvvvv
          YKCR(NA1)=YKCR(NA)
          do J=NA1,JABS,-1
-            JDEL=2*YKCR(J)/HRO+1
+            JDEL=idint(2.0d0*YKCR(J)/HRO)+1
             JBEG=JDEL/2
             JBEG=J+JBEG
-            YHRO=(2.d0*YKCR(J)/JDEL)
+            YHRO=2.d0*YKCR(J)/dble(JDEL)
             if(JBEG.gt.NA1) JBEG=NA1
             JEND=JBEG-JDEL
             if(JEND.lt.1) JEND=1
@@ -363,12 +363,12 @@ C density, energy shift
          do j=NA1,1,-1
 
             if(DNI(J).ne.0.d0) then
-               JJ=NRD*(FP(J)+YSFT(J)-FP(1))/YDF + 1
+               JJ=idint(dble(NRD)*(FP(J)+YSFT(J)-FP(1))/YDF) + 1
                if(JJ.lt.0) JJ=-JJ
                if(JJ.lt.NRD) then
 
-                  J0=JJFP(JJ)
-                  JDEL=(2*YKCR(J)/HRO)+1
+                  J0=idint(JJFP(JJ))
+                  JDEL=idint(2.0d0*YKCR(J)/HRO)+1
                   Jdel=min(JDEL,1)
                   JBEG=JDEL/2
                   JBEG=J0-JBEG
@@ -507,11 +507,11 @@ c*6-OCT-15 vvvv
          enddo
 c*19-NOV-2013 vvvvvvvvvvvvvvvvvv
 
-         YDABL=1.d0-(1.d0*JABS)/NA1
-         YDDEP=1.d0-(1.d0*JMIN)/NA1
+         YDABL=1.d0-(1.d0*dble(JABS))/dble(NA1)
+         YDDEP=1.d0-(1.d0*dble(JMIN))/dble(NA1)
 c write(*,*) 'JABS,JMIN,rp= ',JABS,JMIN,rp
-         YDABL=max(YDABL,1.d-8)
-         YDDEP=max(YDDEP,1.d-8)
+         YDABL=dmax1(YDABL,1.d-8)
+         YDDEP=dmax1(YDDEP,1.d-8)
 
 c*19-NOV-2013 ^^^^^^^^^^^^^^^^^^^
 

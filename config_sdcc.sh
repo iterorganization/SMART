@@ -4,8 +4,8 @@ ml purge
 #COMPILER:ifx/gfortran
 
 #export COMPILER=ifx
-#export COMPILER=ifort
-export COMPILER=gfortran
+export COMPILER=ifort
+#export COMPILER=gfortran
 
 # IMAS and iWrap
 # intel
@@ -43,6 +43,8 @@ ml iWrap/1.0.0-GCCcore-13.2.0
 # For debugging, just in case
 #ml TotalView
 
+# IMAS warning
+export IMAS_AL_DISABLE_OBSOLESCENT_WARNING=1
 
 # Actor folder
 export ACTOR_FOLDER=~/public/PYTHON_ACTORS

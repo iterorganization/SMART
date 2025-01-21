@@ -11,7 +11,7 @@ else ifeq ($(F90), ifort)
 else ifeq ($(F90), gfortran)
 # GFORTRAN - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
   F90FLAGS=-fPIC -cpp -ffixed-line-length-none # FPIC AND PREPROCESSING OPTIONS
-  #F90FLAGS+=-Wall -g -fcheck=bounds -O0 -ffpe-trap=invalid,zero,overflow -Wuninitialized
+  F90FLAGS+=-Wall -g -fcheck=bounds -O0 -ffpe-trap=invalid,zero,overflow -Wuninitialized
 else
   $(error Unsupported Fortran compiler $(F90); exit 1)
 endif

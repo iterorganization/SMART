@@ -68,14 +68,14 @@ C----------------------------------------------------------------------|
                goto 99
             endif
 C Power-law scheme: (1 line)
-            P1 = 0.5*(abs(YB)+YB)               ! 0.5(|B|+B)
+            P1 = 0.5*(dabs(YB)+YB)               ! 0.5(|B|+B)
             if (YA .eq. 0.d0) goto 1
             if (j .eq. N) HJ = HB
 C Exponential scheme: (7 lines)
             YJ = HJ*YB/YA                       ! |\xi|
-            if (abs(YJ) .ge. 4.d1) goto 1       ! Use (A/h)*f(\xi) = .5*(|B|+B)
-            if (abs(YJ) .ge. 1.d-5) then
-               P1 = YB/(1.-exp(-YJ))            ! Use (A/h)*f(\xi) = B/(1-exp{-\xi})
+            if (dabs(YJ) .ge. 4.d1) goto 1       ! Use (A/h)*f(\xi) = .5*(|B|+B)
+            if (dabs(YJ) .ge. 1.d-5) then
+               P1 = YB/(1.-dexp(-YJ))            ! Use (A/h)*f(\xi) = B/(1-exp{-\xi})
             else
                P1 = YA/HJ*(1.+0.5*YJ)           ! Use (A/h)*f(\xi) = A/h/(1-\xi/2)
             endif
@@ -193,7 +193,7 @@ C----------------------------------------------------------------------|
             YB = B(j)
             if (DV(N1) .gt. 0.) then
                Y11 = DV(j)*0.5*(NN(j)+NN(j+1))
-               Y12 = Y11*log(TO(j)/TO(j+1))/H1
+               Y12 = Y11*dlog(TO(j)/TO(j+1))/H1
                YA = YA+Y11
                YB = YB+Y12
                Y2 = TO(j)-TO(j+1)
@@ -205,12 +205,12 @@ C----------------------------------------------------------------------|
             endif
             if (YA .lt. 0.d0) write(*,*) 'j,a(j)',j,a(j)
             if (YA .lt. 0.d0) goto 99
-            P1 = 0.5*(abs(YB)+YB)          ! 0.5(|B|+B) (Used if vh/D is big)
+            P1 = 0.5*(dabs(YB)+YB)          ! 0.5(|B|+B) (Used if vh/D is big)
             if (YA .eq. 0.d0) goto 1
             YJ = H1*YB/YA                  ! |\xi| Peclet number
-            if (abs(YJ) .ge. 4.d1) goto 1  ! Use (A/h)*f(\xi) = .5*(|B|+B)
-            if (abs(YJ) .ge. 1.d-5) then
-               P1 = YB/(1.-exp(-YJ))       ! Use (A/h)*f(\xi) = B/(1-exp{-\xi})
+            if (dabs(YJ) .ge. 4.d1) goto 1  ! Use (A/h)*f(\xi) = .5*(|B|+B)
+            if (dabs(YJ) .ge. 1.d-5) then
+               P1 = YB/(1.-dexp(-YJ))       ! Use (A/h)*f(\xi) = B/(1-exp{-\xi})
             else
                P1 = YA/H1*(1.+0.5*YJ)      ! Use (A/h)*f(\xi) = A/h/(1-\xi/2)
             endif
@@ -372,8 +372,8 @@ C Define RHSs:
          P1(N+1) = P1(N)
          P2(N+1) = P2(N)
          do J=1,N+1
-            T1(j) = max(T1(j),1.d-4)
-            T2(j) = max(T2(j),1.d-4)
+            T1(j) = dmax1(T1(j),1.d-4)
+            T2(j) = dmax1(T2(j),1.d-4)
          enddo
       end
 !==================================

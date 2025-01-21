@@ -1,11 +1,11 @@
       Subroutine STEPUPN0(
-     >   NA1,NB1,TAU,HRO,VRo,VR,G11,SLAT,RHO,
+     >   NA1,TAU,HRO,VRo,VR,G11,SLAT,RHO,
      >   CN,DN,NEo,NE,NEX,QNB,SN,SNN,SNTOT,QN,GN,GNX)
 
 ! diffusive model for hydrogen neutrals QNB[10^19at/s] neutral influx > 0.
 ! sign is introduced in line 47
          implicit none
-         integer NA,NA1,ND,ND1,NA1N,NB1,J
+         integer NA,NA1,ND,ND1,NA1N,J
          double precision
      >    TAU,HRO,VRo(*),VR(*),G11(*),SLAT(*),RHo(*),
      >    CN(*),DN(*),NEo(*),NE(*),NEX(*),
@@ -72,12 +72,12 @@ C **** Density equation
       end
 !===================================================
       Subroutine STEPUPN(
-     >  NA1,NB1,TAU,HRO,VRo,VR,G11,SLAT,RHO,
+     >  NA1,TAU,HRO,VRo,VR,G11,SLAT,RHO,
      > CN,DN,DSN,NEo,NE,NEX,NEB,SN,SNN,SNTOT,QN,GN,GNX
      > )
          !  use physics_module_level1
          implicit none
-         integer NA,NA1,ND,ND1,NA1N,NB1,J
+         integer NA,NA1,ND,ND1,NA1N,J
          double precision
      >    TAU,HRO,VRo(*),VR(*),G11(*),SLAT(*),RHo(*),
      >    CN(*),DN(*),DSN(*),NEo(*),NE(*),NEX(*),
@@ -142,7 +142,7 @@ C **** Density equation
      > XI,HE,DSI,DSE,
      > PE,PET,PETOT,PI,PIT,PITOT,PEI,
      > TEX,TE,TEo,TEB,TIX,TI,TIo,TIB,
-     > NEX,NEo,NE,NIX,NIo,NI,Qe,Qi,GNX,
+     > NEo,NE,NIo,NI,Qe,Qi,GNX,
      > GN2E,GN2I
      > )
          !  use physics_module_level1
@@ -155,7 +155,7 @@ C **** Density equation
      >    PE(*),PET(*),PETOT(*),
      >    PI(*),PIT(*),PITOT(*),PEI(*),
      >    TEX(*),TE(*),TEo(*),TEB,TIX(*),TI(*),TIo(*),TIB,
-     >    NEo(*),NE(*),NEX(*),NIo(*),NI(*),NIX(*),
+     >    NEo(*),NE(*),NIo(*),NI(*),
      >    YHRO,HROA,GN2E,GN2I
          double precision, allocatable ::
      >     YWA(:),YWB(:),YWC(:),YWD(:),

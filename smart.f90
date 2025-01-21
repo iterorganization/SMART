@@ -596,7 +596,7 @@ contains
       !==============================================density stepup
       !======================================= neutrals
       call STEPUPN0(&
-         NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO,&
+         NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO,&
          VF0, DF0, F0o, F0, F0X, QNB, SF0, SFF0, SF0TOT, QF0, GF0, GF0X)
       !=================================================
       do j = 1, NA1
@@ -641,13 +641,13 @@ contains
 
       !======================================= hydrogen species
       if (iH .ne. 0) call STEPUPN( &
-         NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
+         NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
          VF1, DF1, DSN, F1o, F1, F1X, F1B, SF1, SFF1, SF1TOT, QF1, GF1, GF1X)
       if (iD .ne. 0) call STEPUPN( &
-         NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
+         NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
          VF2, DF2, DSN, F2o, F2, F2X, F2B, SF2, SFF2, SF2TOT, QF2, GF2, GF2X)
       if (iT .ne. 0) call STEPUPN( &
-         NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
+         NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
          VF3, DF3, DSN, F3o, F3, F3X, F3B, SF3, SFF3, SF3TOT, QF3, GF3, GF3X)
       !============================ electron density from quasineutrality
       ne(1:na1) = f1(1:na1) + f2(1:na1) + f3(1:na1)
@@ -673,7 +673,7 @@ contains
          NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO, XI, HE, DSI, DSE, &
          PE, PET, PETOT, PI, PIT, PITOT, PEI, &
          TEX, TE, TEo, TEB, TIX, TI, TIo, TIB, &
-         NEX, NEo, NE, NIX, NIo, NI, Qe, Qi, GNX, GN2E, GN2I)
+         NEo, NE, NIo, NI, Qe, Qi, GNX, GN2E, GN2I)
 
       write (*, *) 'QE,QI,Ge', QE(NA1), QI(NA1), QF1(NA1) + QF2(NA1) + QF3(NA1)
  
@@ -697,7 +697,7 @@ contains
       !======================= calculation of the delay between shoot and ablation
       !        write(*,*) 'ne-neo',(ne(1:NA1)-neo(1:NA1))
       !        write(*,*) 'Te-Teo',(Te(1:NA1)-Teo(1:NA1))
-      jabs = (1.-YDABL)*NA1
+      jabs = idint((1.0d0-YDABL)*NA1)
       if (smart_in%YCOS0 .gt. 0.) then
          Dtpel = (smart_in%yglength + smart_in%YDL*(ametr(NA1) - ametr(jabs) + shif(jabs)))/smart_in%YVP/1000.
       else
@@ -844,11 +844,11 @@ double precision function VINTa(ARR, YR, RHO, VR, NA1)
    HRO = RHO(3) - RHO(2)
    HROA = RHO(NA1) - RHO(NA)
    if (YR .le. RHO(NA)) then
-      JK = YR/HRO + 1
+      JK = idint(YR/HRO) + 1
       YR1 = YR
    else
       JK = NA
-      YR1 = min(YR, RHO(NA) + .5d0*HROA)
+      YR1 = dmin1(YR, RHO(NA) + .5d0*HROA)
    end if
    YDR = (JK - YR1/HRO)*VR(JK)
    do J = 1, JK

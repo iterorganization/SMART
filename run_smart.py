@@ -40,7 +40,6 @@ print('input_database      = ',input_database)
 print('output_user_or_path = ',output_user_or_path)
 print('output_database     = ',output_database)
 print('time_slice          = ',time_slice)
-print('dt_required         = ',dt_required)
 print('ntimes              = ',ntimes)
 print('---------------------------------')
 
@@ -63,7 +62,7 @@ if use_pellets_ids == 1:
     input_pellets.time_slice[0].pellet[0].shape.type.index = 2
     input_pellets.time_slice[0].pellet[0].shape.size.resize(2)
     input_pellets.time_slice[0].pellet[0].shape.size[0] = 5.0 / 2.0 * 1.0e-3
-    input_pellets.time_slice[0].pellet[0].shape.size[1] = 92.0 / (np.pi * 2.5**2) * 1.0e-3
+    input_pellets.time_slice[0].pellet[0].shape.size[1] = 33.0 / (np.pi * 2.5**2) * 1.0e-3
     input_pellets.time_slice[0].pellet[0].species.resize(1)
     input_pellets.time_slice[0].pellet[0].species[0].a = 2.5 # (2.5 for 50:50 DT)
     input_pellets.time_slice[0].pellet[0].velocity_initial = 0.3e3
@@ -99,7 +98,6 @@ smart.initialize(code_parameters=code_parameters,runtime_settings=runtime_settin
 #smart.initialize(code_parameters=code_parameters,runtime_settings=runtime_settings)
 
 
-print('time_array=',time_array)
 # TIME LOOP
 FirstTime = True
 for itime in range(it,it+ntimes):
@@ -141,9 +139,6 @@ for itime in range(it,it+ntimes):
     output.put_slice(output_core_profiles)
     print('Output time = %5.2f s' % (output_core_profiles.time[0]))
 
-#>>>
-        #print("homogeneous_time=",input_core_profiles.ids_properties.homogeneous_time)
-#>>>
 
 # FINALIZE THE ACTOR
 smart.finalize()
