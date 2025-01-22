@@ -72,7 +72,7 @@ program standalone
 
      if(error_flag.eq.0) then
         !! EXPORT RESULTS TO LOCAL DATABASE
-        write(*,*) '=> Export output IDSs to local database'
+        !write(*,*) '=> Export output IDSs to local database'
         call ids_put_slice(idx,"core_profiles",core_profiles_out)
      else
         write(*,*) error_message

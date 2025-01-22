@@ -45,6 +45,7 @@
          <xs:element ref="GN2I" minOccurs="0"/>
          <xs:element ref="sw_smart" minOccurs="0"/>
          <xs:element ref="sw_ech2a" minOccurs="0"/>
+         <xs:element ref="sw_stdout" minOccurs="0"/>
          <!-- SMART -->
          <xs:element ref="YAM" minOccurs="0"/>
          <xs:element ref="YVP" minOccurs="0"/>
@@ -136,6 +137,14 @@
           <xs:documentation>Switch for ECH2a (Off when switch = 0, On when switch != 0)</xs:documentation>
       </xs:annotation>
    </xs:element>
+
+   <!-- Switch for debug information to stdout (Off when switch = 0, On when switch != 0) -->
+   <xs:element name="sw_stdout" type="xs:integer">
+      <xs:annotation>
+          <xs:documentation>Switch for debug information to stdout (Off when switch = 0, On when switch != 0)</xs:documentation>
+      </xs:annotation>
+   </xs:element>
+
 
    <!--
      ///// SMART /////

@@ -7,7 +7,8 @@ ifeq ($(F90), ifx)
 else ifeq ($(F90), ifort)
 # INTEL - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
   F90FLAGS=-fPIC -fpp -extend-source# FPIC AND PREPROCESSING OPTIONS
-  #F90FLAGS+=-g -O0
+  #F90FLAGS+=-g -O0 # For debug
+  F90FLAGS+=-check all -warn all -gen_interfaces -fpe0 -ftrapuv -traceback -g # For debug
 else ifeq ($(F90), gfortran)
 # GFORTRAN - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
   F90FLAGS=-fPIC -cpp -ffixed-line-length-none # FPIC AND PREPROCESSING OPTIONS

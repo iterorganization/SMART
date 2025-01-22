@@ -34,6 +34,9 @@
     <!-- Switch for ECH2a (Off when switch = 0, On when switch != 0) -->
     <sw_ech2a> 1 </sw_ech2a>
 
+    <!-- Switch for debug information to stdout (Off when switch = 0, On when switch != 0) -->
+    <sw_stdout> 1 </sw_stdout>
+
     <!--
       ///// SMART /////
     -->

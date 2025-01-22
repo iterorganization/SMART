@@ -106,7 +106,9 @@ contains
             smart_in%YVOL = pellets_in%time_slice(1)%pellet(1)%shape%size(1)**2* &
                             pellets_in%time_slice(1)%pellet(1)%shape%size(2)*M_PI*1.e+9
          else
-            write (*, *) 'Input pellets IDS NOT detected'
+            if (smart_in%sw_stdout .ne. 0) then
+               write (*, *) 'Input pellets IDS NOT detected'
+            end if
          end if
 
          ! COPY THE INPUT IDS IN THE OUTPUT IDS
@@ -122,7 +124,10 @@ contains
       ! initialization
       i_time = size(cp_in%time)
       TIMBEG = cp_in%time(i_time)
-      write (*, *) 'i_time,time=', i_time, TIMBEG
+      if (smart_in%sw_stdout .ne. 0) then
+         write(*, '(/,A17, I5, F10.4)')'i_time, TIMBEG = ', i_time, TIMBEG
+      endif
+      !write (*, *) 'i_time,time=', i_time, TIMBEG
       !              i_time=size(cp_in%profiles_1d(:)%time)
       j_time = size(eq_in%time_slice)
       n_xcp = size(cp_in%profiles_1d(i_time)%grid%rho_tor_norm)
@@ -132,7 +137,7 @@ contains
       NA1 = n_xcp
       NB1 = NA1
       NA = NA1 - 1
-      write (*, *) 'NA1,nrd,n_xeq', NA1, nrd, n_xeq
+      !write (*, *) 'NA1,nrd,n_xeq', NA1, nrd, n_xeq
       !==========================
       allocate (ispec(n_ion + 3))
       !==========================
@@ -315,6 +320,9 @@ contains
       ispec(1:n_ion + 3) = 0
       Nhydr = 0
       istep = 0
+      iH = 0
+      iD = 0
+      iT = 0
       do i = 1, n_ion
          ai = cp_in%profiles_1d(i_time)%ion(i)%element(1)%a
          zi = cp_in%profiles_1d(i_time)%ion(i)%element(1)%z_n
@@ -341,12 +349,11 @@ contains
          write (*, *) 'Hyrogen species: iH,iD,iT Nhydr', iH, iD, iT, Nhydr
          stop
       end if
-      write (*, *) 'ispec', ispec
+      if (smart_in%sw_stdout .ne.0) then
+         write (*, 200) 'ispec          = ', ispec
+      end if
       if (ispec(1) .ne. 0) then
          iH = ispec(1)
-         write (*, *) 'iH,iD,iT Nhydr', iH, iD, iT, Nhydr, n_xcp, i_time, denA2D
-         write (*, *) cp_in%profiles_1d(i_time)%ion(iH)%density(1:n_xcp)/denA2D
-         write (*, *) cp_in%profiles_1d(i_time)%neutral(iH)%density(1:n_xcp)/denA2D
          F1(1:n_xcp) = cp_in%profiles_1d(i_time)%ion(iH)%density(1:n_xcp)/denA2D
          F0(1:n_xcp) = F0(1:n_xcp) + cp_in%profiles_1d(i_time)%neutral(iH)%density(1:n_xcp)/denA2D
       end if
@@ -380,7 +387,7 @@ contains
                    & cp_in%profiles_1d(i_time)%ion(i)%z_ion_1D(j)**2/ne(j)
          end do                                        ! j ion
          if (ne(j) .ge. 0. .and. te(j) .gt. 0.) then
-            pei(j) = 0.00246*(15.9 - .5*log(NE(j)) + log(TE(j)))*NE(j)*Z2NdA/TE(j)/sqrt(TE(j))
+            pei(j) = 0.00246*(15.9 - .5*dlog(NE(j)) + dlog(TE(j)))*NE(j)*Z2NdA/TE(j)/dsqrt(TE(j))
          else
             !                write(*,*) 'ne,te,j',ne(j),te(j),j
          end if
@@ -396,12 +403,12 @@ contains
          stop
       end if
       XEQ(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(1:n_xeq)
-      VOLe(1:n_xeq) = max(0., eq_in%time_slice(j_time)%profiles_1d%VOLUME(1:n_xeq))
+      VOLe(1:n_xeq) = dmax1(0., eq_in%time_slice(j_time)%profiles_1d%VOLUME(1:n_xeq))
       XCP(1:n_xcp) = cp_in%profiles_1d(i_time)%grid%rho_tor_norm(1:n_xcp)
       ROC = eq_in%time_slice(j_time)%profiles_1d%phi(n_xeq)
-      ROC = sqrt(dabs(ROC/BTOR/3.141592))
+      ROC = dsqrt(dabs(ROC/BTOR/M_PI))
       RHO(1:n_xcp) = ROC*XCP(1:n_xcp)
-      ametre(1:n_xeq) = max(0., (eq_in%time_slice(j_time)%profiles_1d%r_outboard(1:n_xeq) - &
+      ametre(1:n_xeq) = dmax1(0., (eq_in%time_slice(j_time)%profiles_1d%r_outboard(1:n_xeq) - &
                               & eq_in%time_slice(j_time)%profiles_1d%r_inboard(1:n_xeq))/2.)
       shife(1:n_xeq) = (eq_in%time_slice(j_time)%profiles_1d%r_outboard(1:n_xeq) + &
                       & eq_in%time_slice(j_time)%profiles_1d%r_inboard(1:n_xeq))/2.-RTOR
@@ -410,7 +417,7 @@ contains
       SLATe(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%surface(1:n_xeq)
       G11e(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%gm3(1:n_xeq)
       G33e(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%gm1(1:n_xeq)*RTOR**2
-      write (*, *) 'Ip =', dabs(eq_in%time_slice(j_time)%global_quantities%Ip/cuA2D)
+      !write (*, *) 'Ip =', dabs(eq_in%time_slice(j_time)%global_quantities%Ip/cuA2D)
       ABC = ametre(n_xeq)
       SHIFT = Shife(n_xeq) - RTOR
       HRO = (XCP(3) - XCP(2))*ROC
@@ -418,14 +425,14 @@ contains
       !SMTH(ALFA,NO,FO,XO,N,FN,XN) mapping from EQ to CP grids
       !        write(*,*) 'trace 184'
       if (n_xeq .ne. n_xcp) then
-         call SMTH(ALFA, n_xeq, VOLe, XEQ, n_xcp, VOL, XCP)
-         call SMTH(ALFA, n_xeq, ametre, XEQ, n_xcp, ametr, XCP)
-         call SMTH(ALFA, n_xeq, FPe, XEQ, n_xcp, FP, XCP)
-         call SMTH(ALFA, n_xeq, shife, XEQ, n_xcp, shif, XCP)
-         call SMTH(ALFA, n_xeq, IPOLe, XEQ, n_xcp, IPOL, XCP)
-         call SMTH(ALFA, n_xeq, G11e, XEQ, n_xcp, G11, XCP)
-         call SMTH(ALFA, n_xeq, G33e, XEQ, n_xcp, G33, XCP)
-         call SMTH(ALFA, n_xeq, SLATe, XEQ, n_xcp, SLAT, XCP)
+         call SMTH(ALFA, n_xeq, VOLe, XEQ, n_xcp, VOL, XCP, NRD)
+         call SMTH(ALFA, n_xeq, ametre, XEQ, n_xcp, ametr, XCP, NRD)
+         call SMTH(ALFA, n_xeq, FPe, XEQ, n_xcp, FP, XCP, NRD)
+         call SMTH(ALFA, n_xeq, shife, XEQ, n_xcp, shif, XCP, NRD)
+         call SMTH(ALFA, n_xeq, IPOLe, XEQ, n_xcp, IPOL, XCP, NRD)
+         call SMTH(ALFA, n_xeq, G11e, XEQ, n_xcp, G11, XCP, NRD)
+         call SMTH(ALFA, n_xeq, G33e, XEQ, n_xcp, G33, XCP, NRD)
+         call SMTH(ALFA, n_xeq, SLATe, XEQ, n_xcp, SLAT, XCP, NRD)
       else
          VOL(1:n_xcp) = VOLe(1:n_xeq)
          ametr(1:n_xcp) = ametre(1:n_xeq)
@@ -447,14 +454,9 @@ contains
       TAU = smart_in%TAU
       dtau = smart_in%dtau
       !=========================================================== time loop
-      open (1, file='out_Peltran.dat')
+      !open (1, file='out_Peltran.dat')
       TIME = TIMBEG
       !TIMPEL = 0.
-      write (1, 997)   'TIME,s', '  Te(1)','   Ti(1)','   ne(1)',&
-                     '   ni(1)', '   <ne>','   n0(1)','   n0(a)',&
-                    '   <Shdt>','   <Sn0>',   '  QF0B'
-997   format(11A14)
-      !do 999 jtime=1,100
       !=============================================== OLDNEW
       TEo(1:NA1) = TE(1:NA1)
       TEx(1:NA1) = TE(1:NA1)
@@ -495,16 +497,16 @@ contains
          !        Use: Palpha=Nd*Nt*SVDT*3520./625. [MW/m#3]
          !        (Yushmanov 11-JUN-87)
          SVDT = TI(J)**(-0.33333333)
-         SVDT = 8.972*EXP(-19.9826*SVDT)*SVDT*SVDT*&
+         SVDT = 8.972*dexp(-19.9826*SVDT)*SVDT*SVDT*&
          &((TI(J) + 1.0134)/(1.+6.386E-3*(TI(J) + 1.0134)**2) +&
-         &1.877*EXP(-.16176*TI(J)*SQRT(TI(J))))
+         &1.877*dexp(-.16176*TI(J)*dsqrt(TI(J))))
          PDT = 5.632*f2(J)*f3(J)*SVDT
          ! PAION2 [MW/m#3]   D-T Fraction of fusion alpha power deposited to ions
          !     P.Pavlo  22.06.89/A.Polevoi 20-MAY-94
          y2 = 88./TE(J)
-         y = sqrt(y2)
-         PAION2 = 2.*(0.166666667*LOG((1.-y + y2)/(1.+2.*y + y2)) +&
-         &0.57735026*(ATAN(0.57735026*(2.*y - 1.)) + 0.52359874))/y2
+         y = dsqrt(y2)
+         PAION2 = 2.*(0.166666667*dlog((1.-y + y2)/(1.+2.*y + y2)) +&
+         &0.57735026*(datan(0.57735026*(2.*y - 1.)) + 0.52359874))/y2
 
          pi(j) = PDT*paion2
          pe(j) = pe(j) + PDT*(1.-paion2)
@@ -517,6 +519,8 @@ contains
       F01B = smart_in%F01B
       F02B = smart_in%F02B
       F03B = smart_in%F03B
+      GN2E = smart_in%GN2E
+      GN2I = smart_in%GN2I
 
       NEB = NE(NA1)
       TEB = TE(NA1)
@@ -554,7 +558,7 @@ contains
       do j = 1, NA1
          svcx = 0.
          if (ti(j) .gt. 0 .and. amain(j) .ge. 1.) then
-            SVCX = 10.**(5.9 + 0.3*LOG10(TI(J)/AMAIN(J)))
+            SVCX = 10.**(5.9 + 0.3*dlog10(TI(J)/AMAIN(J)))
          end if
          DF0(J) = 9.584d10*(TI(J) + 1.d-9)/(SVCX + 1.d-10)/AMAIN(J)/NE&
          &(J)
@@ -567,14 +571,14 @@ contains
             SVRC = 0.
          ELSE
             SVRC = 13.6E-3/TE(j)
-            SVRC = 1.27*SVRC*sqrt(SVRC)/(SVRC + .59)
+            SVRC = 1.27*SVRC*dsqrt(SVRC)/(SVRC + .59)
          END IF
          SF0(J) = (F1(J) + F2(J) + F3(J))*NE(J)*SVRC
          SVIE = .0136/TE(J)
          IF (TE(J) .GT. .01) THEN
-            SVIE = 9.7E5*EXP(-SVIE)*SQRT(SVIE/(1.+SVIE))/(SVIE + .73)
+            SVIE = 9.7E5*dexp(-SVIE)*dsqrt(SVIE/(1.+SVIE))/(SVIE + .73)
          ELSE
-            SVIE = 2.958E5*EXP(-SVIE)*SQRT(SVIE)
+            SVIE = 2.958E5*dexp(-SVIE)*dsqrt(SVIE)
          END IF
          SFF0(J) = -NEo(j)*SVIE
          !              SFF1(J)=-NEo(J)*SVRC
@@ -602,7 +606,7 @@ contains
       do j = 1, NA1
          svcx = 0.
          if (ti(j) .gt. 0 .and. amain(j) .ge. 1.) then
-            SVCX = 10.**(5.9 + 0.3*LOG10(TI(J)/AMAIN(J)))
+            SVCX = 10.**(5.9 + 0.3*dlog10(TI(J)/AMAIN(J)))
          end if
          DF0(J) = 9.584d10*(TI(J) + 1.d-9)/(SVCX + 1.d-10)/AMAIN(J)/NE&
          &(J)
@@ -615,14 +619,14 @@ contains
             SVRC = 0.
          ELSE
             SVRC = 13.6E-3/TE(j)
-            SVRC = 1.27*SVRC*sqrt(SVRC)/(SVRC + .59)
+            SVRC = 1.27*SVRC*dsqrt(SVRC)/(SVRC + .59)
          END IF
          SF0(J) = (F1(J) + F2(J) + F3(J))*NE(J)*SVRC
          SVIE = .0136/TE(J)
          IF (TE(J) .GT. .01) THEN
-            SVIE = 9.7E5*EXP(-SVIE)*SQRT(SVIE/(1.+SVIE))/(SVIE + .73)
+            SVIE = 9.7E5*dexp(-SVIE)*dsqrt(SVIE/(1.+SVIE))/(SVIE + .73)
          ELSE
-            SVIE = 2.958E5*EXP(-SVIE)*SQRT(SVIE)
+            SVIE = 2.958E5*dexp(-SVIE)*dsqrt(SVIE)
          END IF
          SFF0(J) = -NEo(j)*SVIE
          !              SFF1(J)=-NEo(J)*SVRC
@@ -675,12 +679,16 @@ contains
          TEX, TE, TEo, TEB, TIX, TI, TIo, TIB, &
          NEo, NE, NIo, NI, Qe, Qi, GNX, GN2E, GN2I)
 
-      write (*, *) 'QE,QI,Ge', QE(NA1), QI(NA1), QF1(NA1) + QF2(NA1) + QF3(NA1)
+      if (smart_in%sw_stdout .ne.0) then
+         write (*, 100) 'QE, QI, Ge     = ', QE(NA1), QI(NA1), QF1(NA1)+QF2(NA1)+QF3(NA1)
+      endif
  
       !============================================= pelshot
       !        Write(*,*) 'before pellet'
       !        time=time + TAU
       TIMPEL = TIMPEL + TAU
+      YDABL = 0.0
+      YDDEP = 0.0
       if (TIMPEL .ge. (dtau - 1.d-7)) then
          TIMPEL = 0.
          !== Pellet Ablation Model: SMART
@@ -706,19 +714,23 @@ contains
       !        write(*,*) 'Dtpel =',Dtpel
       !============================================ current diffusion (+equilibrium)
       !============================================ end of itterations
-      write (1, 998) &
-         TIME, Te(1), Ti(1), ne(1), ni(1), &
-         VINTa(ne, ROC, RHO, VR, NA1)/VOLe(n_xeq), F0(1), F0(NA1), &
-         VINTa(SF3TOT, ROC, RHO, VR, NA1) + &
-         VINTa(SF2TOT, ROC, RHO, VR, NA1) + &
-         VINTa(SF1TOT, ROC, RHO, VR, NA1),  &
-         VINTa(SF0TOT, ROC, RHO, VR, NA1), QNB
+
+      if (smart_in%sw_stdout .ne.0) then
+         write(*, 100)'Te(1),  Ti(1)  = ',Te(1),Ti(1)
+         write(*, 100)'ne(1),  ni(1)  = ',ne(1),ni(1)
+         write(*, 100)'n0(1),  n0(a)  = ',F0(1),F0(NA1)
+         write(*, 100)'<ne>,   QF0B   = ',VINTa(ne, ROC, RHO, VR, NA1)/VOLe(n_xeq),QNB
+         write(*, 100)'<Shdt>, <Sn0>  = ',VINTa(SF3TOT, ROC, RHO, VR, NA1) + &
+                                          VINTa(SF2TOT, ROC, RHO, VR, NA1) + &
+                                          VINTa(SF1TOT, ROC, RHO, VR, NA1),  &
+                                          VINTa(SF0TOT, ROC, RHO, VR, NA1)
+      end if
+
+ 100  format(A17,5E15.6)
+ 200  format(A17,10i5)
 
       TIME = TIME + TAU
 
-      !999 continue
-      close (1)
-998   format(11(1X0PE13.6))
       ! end of time loop
       !========================================================
       !== conversion to IMAS units
@@ -744,11 +756,16 @@ contains
       !        write(*,*) 'vr, n_xcp',n_xcp, vr(1:n_xcp)
       !        write(*,*) 'vole, n_xcp',n_xcp, vr(1:n_xcp)
       !        write(*,*) 'shif, n_xcp',n_xcp, shif(1:n_xcp)
-      write (*, *) 'YDABL,YDDEP', YDABL, YDDEP
-      write (*, *) 'RHOEC,RHODR,ROC,QEC,YEFFec=',RHOEC, RHODR, ROC, QECR, YEFFec
-      Write (*, *) 'Pecr', VINTa(PECR, ROC, RHO, VR, NA1),&
-                   'Pe', VINTa(PECR, ROC, RHO, VR, NA1),&
-                   'Pi', VINTa(PI, ROC, RHO, VR, NA1)
+      if (smart_in%sw_stdout .ne.0) then
+         write (*, 100) 'YDABL, YDDEP   = ', YDABL, YDDEP
+         write (*, 100) 'RHOEC, RHODR   = ', RHOEC, RHODR
+         write (*, 100) 'ROC, QECR      = ', ROC, QECR
+         write (*, 100) 'YEFFec         = ', YEFFec
+         write (*, 100) 'Pecr, Pe, Pi   = ', VINTa(PECR, ROC, RHO, VR, NA1),&
+                                             VINTa(PECR, ROC, RHO, VR, NA1),&
+                                             VINTa(PI, ROC, RHO, VR, NA1)
+      endif
+
       deallocate (ispec)
       !        include 'dealloc.corprf
       deallocate (ne, ni, Te, Ti, nex, nix, TEX, TIX, TN, NN,&

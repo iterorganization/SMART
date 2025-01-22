@@ -122,17 +122,13 @@ for itime in range(it,it+ntimes):
 
     # EXECUTE SMART
     print('=> Execute SMART')
-#>>>>
-#   try:
-#       input_core_profiles.time[0] = time
-#       output_core_profiles = smart(input_equilibrium, input_core_profiles, input_pellets)
-#       input_core_profiles = copy.deepcopy(output_core_profiles)
-#   except Exception as error_message:
-#       print('ERROR in run_smart',str(error_message))
-#       exit(1)
-    output_core_profiles = smart(input_equilibrium, input_core_profiles, input_pellets)
-    input_core_profiles = copy.deepcopy(output_core_profiles)
-#>>>>
+    try:
+        #input_core_profiles.time[0] = time
+        output_core_profiles = smart(input_equilibrium, input_core_profiles, input_pellets)
+        input_core_profiles = copy.deepcopy(output_core_profiles)
+    except Exception as error_message:
+        print('ERROR in run_smart',str(error_message))
+        exit(1)
 
     output.put_slice(input_equilibrium)
     output.put_slice(input_pellets)

@@ -13,6 +13,7 @@ module mod_codeparam_smart
      double precision:: GN2I
      double precision:: sw_smart
      double precision:: sw_ech2a
+     double precision:: sw_stdout
      ! SMART
      double precision:: YAM
      double precision:: YVP
@@ -56,6 +57,7 @@ contains
     call xml2eg_get(doc,'GN2I',smart%GN2I)
     call xml2eg_get(doc,'sw_smart',smart%sw_smart)
     call xml2eg_get(doc,'sw_ech2a',smart%sw_ech2a)
+    call xml2eg_get(doc,'sw_stdout',smart%sw_stdout)
 
     call xml2eg_get(doc,'YAM',smart%YAM)
     call xml2eg_get(doc,'YVP',smart%YVP)
