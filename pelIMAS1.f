@@ -1,5 +1,3 @@
-Cinclude 'mathematical_constants.f90'
-
 C===============================
       Subroutine pelIMAS1
      >(YAM,YVP,YVOL,YCOS0,YEFF,YDL,
@@ -87,7 +85,7 @@ c=====================================================================
          double precision
      >     ne(*),ni(*),Te(*),Ti(*),NHYDR(*),NDEUT(*),NTRIT(*),FP(*),
      >     ametr(*),shif(*),vr(*),mu(*),YPELSRS(*),
-     >     HRO,ROC,BTOR,GP,SHIFT,ABC,RTOR
+     >     HRO,ROC,BTOR,SHIFT,ABC,RTOR
          integer JS1,J0,JJ,JABS,JDEL,JBEG,JEND,JS,J,JMIN
          double precision YAM,YCN,YCE,YCI,YSTNE,YSTNI,YSTNE1,YSTNI1,YTST
          double precision YSDNE,YSDNI,YX,YDX,YF,YDF,YNE,YNI,YDNE,YDNI,YDL
@@ -121,7 +119,6 @@ C     . YAM,YVP,YRP,YCOS0,YEFF,YSHAPE
          allocate (YSFT(NRD))
          allocate (JJFP(NRD))
          NA=NA1-1
-         GP=3.1415925d0
          SHIFT=shif(NA1)
          ABC=AMETR(NA1)
 c
