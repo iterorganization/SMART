@@ -221,7 +221,7 @@ C*NEW ^^^^^^^^
             YKCR(J)=0.d0
             YSFT(J)=0.d0
             YXJ(J)=(j-1)*HRO/ROC
-            YX12(J)=(j-.5)*HRO/ROC
+            YX12(J)=(DBLE(j)-0.5d0)*HRO/ROC
 
          enddo
          YXJ(NA1)=1.d0
