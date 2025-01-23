@@ -1,3 +1,5 @@
+Cinclude 'mathematical_constants.f90'
+
 C===============================
       Subroutine pelIMAS1
      >(YAM,YVP,YVOL,YCOS0,YEFF,YDL,
@@ -76,6 +78,7 @@ c  Zp  is the charge number of the pellet material
 c  Eion is energy required for full ionization
 c  of a pellet atom 13ev +molecule dissosiation 2.2 eV
 c=====================================================================
+         use mathematical_constants, only: M_PI
          implicit none
 ! include 'for/parameter.inc'
 ! include 'for/status.inc'
@@ -127,7 +130,7 @@ C	write(*,*) 'YAM,YVP,YRP,YCOS0,YEFF,YSHAPE',
 C     .	YAM,YVP,YRP,YCOS0,YEFF,YSHAPE
 c*19-NOV-2013 vvvvvvvvvvvvvvvvvv
          yshape=1.d0
-         yrp=1.d-1*(.75d0/GP*yvol)**.333333 !YRP [cm]
+         yrp=1.d-1*(.75d0/M_PI*yvol)**.333333 !YRP [cm]
          JMIN=NA1
 
 c*19-NOV-2013 ^^^^^^^^^^^^^^^^^^^
@@ -169,7 +172,7 @@ ccc write(*,*) 'cylindrical pellet'
          endif
          if(yshape.gt.2.d0) then
 ccc write(*,*) 'cubic pellet'
-            ycoef=6.d0/GP
+            ycoef=6.d0/M_PI
          endif
 
 c=====================================================================
@@ -190,7 +193,7 @@ c temporarily YCOS0 - inclination *to take into account in absorbtion
 c YCOS - normal to the magn. surf. is parallel to the midplain
 C*NEW ^^^^^^^^
 
-         YA1=8.d0*GP*YNP  !4.d0*GP*2.d0*YNP
+         YA1=8.d0*M_PI*YNP  !4.d0*M_PI*2.d0*YNP
 C 10**11=10**14*100[m->cm]/10**5[km/s->cm/s]/10**22
 C /2 Simpson integration
          YA2=coeff*(3.d0-ap)*1.d-11*(1.d13)**an*1000.**at*YAM**am

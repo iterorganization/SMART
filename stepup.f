@@ -16,10 +16,10 @@
          allocate(
      >     YWA(NA1),YWB(NA1),YWC(NA1),DSN(NA1)
      >      )
-         YWA = 0.
-         YWB = 0.
-         YWC = 0.
-         DSN = 0.
+         YWA = 0.d0
+         YWB = 0.d0
+         YWC = 0.d0
+         DSN = 0.d0
 
 !      callmarkloc("tmp/eqns.inc"//char(0))
 !2100    continue
@@ -33,7 +33,7 @@ C **** Density equation
 !           CN(J)=0.d0
 !           SN(J)=SNEBM(J)
 !           SNN(J)=0.d0
-            DSN(J)=0.
+            DSN(J)=0.d0
             SNTOT(J)=SN(J)
             YWA(J)=DN(J)
             if (j.gt.NA) goto 2212
@@ -52,8 +52,8 @@ C **** Density equation
 !      NE(ND1)=NEB
          NEO(ND1)=NE(ND1)
          YWC(2)=-QNB
-         YWC(3)=0.
-         YWC(4)=-1.
+         YWC(3)=0.d0
+         YWC(4)=-1.d0
          call RUNNa(YWA,YWB,DSN,SNN,SN,NEO,ND,TAU,HRO,YWC,NE,VRO,VR,G11)
          do 2214 J=1,NA
             QN(J)=-G11(J)*(YWA(J)*NE(J+1)-YWB(J)*NE(J))
@@ -88,9 +88,9 @@ C **** Density equation
          allocate(
      >     YWA(NA1),YWB(NA1),YWC(NA1)
      >      )
-         YWA = 0.
-         YWB = 0.
-         YWC = 0.
+         YWA = 0.d0
+         YWB = 0.d0
+         YWC = 0.d0
 
 !      callmarkloc("tmp/eqns.inc"//char(0))
 !2100    continue
@@ -120,7 +120,7 @@ C **** Density equation
          endif
          NE(ND1)=NEB
          NEO(ND1)=NE(ND1)
-         YWC(4)=1.
+         YWC(4)=1.d0
          call RUNNa(YWA,YWB,DSN,SNN,SN,NEO,ND,TAU,HRO,YWC,NE,VRO,VR,G11)
          do 2214 J=1,NA
             QN(J)=-G11(J)*(YWA(J)*NE(J+1)-YWB(J)*NE(J))
@@ -164,13 +164,13 @@ C **** Density equation
      >     YWA(NA1),YWB(NA1),YWC(NA1),YWD(NA1),
      >     PDI(NA1),PDE(NA1),WORK1(NA1,24)
      >      )
-         YWA = 0.
-         YWB = 0.
-         YWC = 0.
-         YWD = 0.
-         PDI = 0.
-         PDE = 0.
-         WORK1 = 0.
+         YWA = 0.d0
+         YWB = 0.d0
+         YWC = 0.d0
+         YWD = 0.d0
+         PDI = 0.d0
+         PDE = 0.d0
+         WORK1 = 0.d0
 
 C **** Electron temperature equation
 !      callmarkloc("TE equation"//char(0))
@@ -190,7 +190,7 @@ C **** Electron temperature equation
          YHRO = HRO
          do 2223 J=1,NA1
 !      PET(J)=0.
-            PET(J)=0.
+            PET(J)=0.d0
             PETOT(J)=PE(J)
             if (j.gt.NA) goto 2223
             YWB(J)=-YWD(J)
@@ -207,23 +207,23 @@ C **** Electron temperature equation
          endif
          TE(ND1)=TEB
          TEO(ND1)=TE(ND1)
-         QE(4)=1.
-         YWD(ND1)=0.
-         DSE(ND1)=0.
+         QE(4)=1.d0
+         YWD(ND1)=0.d0
+         DSE(ND1)=0.d0
          call RUNTTa(YWA,YWB,PET,YWC,NEO,NE,TEO,
      >    ND,TAU,HRO,QE(1),YWD,DSE,VRO,VR,G11,WORK1,PEI)
          do J=ND1,NB1
-            PDE(j) = 0.
+            PDE(j) = 0.d0
          enddo
          do J=1,ND
-            PDE(j) = 0.
+            PDE(j) = 0.d0
          enddo
 C **** Ion temperature equation
 C      callmarkloc("TI equation"//char(0))
          do 2231 J=1,NA1
 !      XI(J)=0.d0
 !      PI(J)=PIBM(J)
-            PIT(J)=0.
+            PIT(J)=0.d0
             if (j.gt.NA) goto 2231
             YWA(J)=XI(J)
             YWA(J)=YWA(J)*(NI(J+1)+NI(J))*0.5
@@ -250,16 +250,16 @@ C      callmarkloc("TI equation"//char(0))
          endif
          TI(ND1)=TIB
          TIO(ND1)=TI(ND1)
-         QI(4)=1.
-         YWD(ND1)=0.
-         DSI(ND1)=0.
+         QI(4)=1.d0
+         YWD(ND1)=0.d0
+         DSI(ND1)=0.d0
          call RUNTTa(YWA,YWB,PIT,YWC,NIO,NI,TIO,
      >   ND,TAU,HRO,QI(1),YWD,DSI,VRO,VR,G11,WORK1,PEI)
          do J=ND1,NB1
-            PDI(j) = 0.
+            PDI(j) = 0.d0
          enddo
          do J=1,ND
-            PDI(j) = 0.
+            PDI(j) = 0.d0
          enddo
          call NURTTa(TE,TI,QE,QI,PETOT,PITOT,ND,WORK1)
          if (ND1.lt.NA1) then

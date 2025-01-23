@@ -41,7 +41,7 @@ contains
       !
       double precision &
          TAU, dtau, TIME, TIMBEG
-      double precision, save :: TIMPEL = 0.0
+      double precision, save :: TIMPEL = 0.d0
 
       integer, allocatable :: ispec(:)
       !
@@ -153,76 +153,76 @@ contains
          cu(n_xcp), cutor(n_xcp), cd(n_xcp), cubs(n_xcp), &
          UPL(n_xcp), UPOL(n_xcp), EZ(n_xcp), ZEF(n_xcp), AMAIN(n_xcp) )
       !        include 'alloc.eq'
-      ne = 0.
-      ni = 0.
-      Te = 0.
-      Ti = 0.
-      nex = 0.
-      nix = 0.
-      TEX = 0.
-      TIX = 0.
-      F1x = 0.
-      F2x = 0.
-      F3x = 0.
-      F1 = 0.
-      F2 = 0.
-      F3 = 0.
-      FP = 0.
-      neo = 0.
-      nio = 0.
-      Teo = 0.
-      Tio = 0.
-      F1o = 0.
-      F2o = 0.
-      F3o = 0.
-      FPo = 0.
-      F0 = 0.
-      F0o = 0.
-      F0x = 0.
-      NN = 0.
-      TN = 0.
-      cu = 0.
-      cutor = 0.
-      cd = 0.
-      cubs = 0.
-      UPL = 0.
-      UPOL = 0.
-      EZ = 0.
-      ZEF = 0.
-      AMAIN = 0.
+      ne = 0.d0
+      ni = 0.d0
+      Te = 0.d0
+      Ti = 0.d0
+      nex = 0.d0
+      nix = 0.d0
+      TEX = 0.d0
+      TIX = 0.d0
+      F1x = 0.d0
+      F2x = 0.d0
+      F3x = 0.d0
+      F1 = 0.d0
+      F2 = 0.d0
+      F3 = 0.d0
+      FP = 0.d0
+      neo = 0.d0
+      nio = 0.d0
+      Teo = 0.d0
+      Tio = 0.d0
+      F1o = 0.d0
+      F2o = 0.d0
+      F3o = 0.d0
+      FPo = 0.d0
+      F0 = 0.d0
+      F0o = 0.d0
+      F0x = 0.d0
+      NN = 0.d0
+      TN = 0.d0
+      cu = 0.d0
+      cutor = 0.d0
+      cd = 0.d0
+      cubs = 0.d0
+      UPL = 0.d0
+      UPOL = 0.d0
+      EZ = 0.d0
+      ZEF = 0.d0
+      AMAIN = 0.d0
 
       allocate ( &
          ametr(n_xcp), shif(n_xcp), vr(n_xcp), vro(n_xcp), &
          mu(n_xcp), VOL(n_xcp), VOLo(n_xcp), XCP(n_xcp), &
          IPOL(n_xcp), G11(n_xcp), G33(n_xcp), SLAT(n_xcp) )
-      ametr = 0.
-      shif = 0.
-      vr = 0.
-      vro = 0.
-      mu = 0.
-      VOL = 0.
-      VOLo = 0.
-      XCP = 0.
-      IPOL = 0.
-      G11 = 0.
-      G33 = 0.
-      SLAT = 0.
+      ametr = 0.d0
+      shif = 0.d0
+      vr = 0.d0
+      vro = 0.d0
+      mu = 0.d0
+      VOL = 0.d0
+      VOLo = 0.d0
+      XCP = 0.d0
+      IPOL = 0.d0
+      G11 = 0.d0
+      G33 = 0.d0
+      SLAT = 0.d0
 
       allocate ( &
          ametre(n_xeq), shife(n_xeq), VOLe(n_xeq), &
          FPe(n_xeq), XEQ(n_xeq), RHO(n_xeq), &
          IPOLe(n_xeq), G11e(n_xeq), G33e(n_xeq), SLATe(n_xeq))
       !        include 'alloc.corsrs'
-      ametre = 0.
-      shife = 0.
-      VOLe = 0.
-      FPe = 0.
-      XEQ = 0.
-      RHO = 0.
-      IPOLe = 0.
-      G11e = 0.
-      G33e = 0.
-      SLATe = 0.
+      ametre = 0.d0
+      shife = 0.d0
+      VOLe = 0.d0
+      FPe = 0.d0
+      XEQ = 0.d0
+      RHO = 0.d0
+      IPOLe = 0.d0
+      G11e = 0.d0
+      G33e = 0.d0
+      SLATe = 0.d0
 
       allocate ( &
          SN(n_xcp), SNN(n_xcp), SNTOT(n_xcp), &
@@ -241,70 +241,70 @@ contains
          PI(n_xcp), PIT(n_xcp), PITOT(n_xcp), PEI(n_xcp), &
          YPELSRS(n_xcp) )
 
-      SN = 0.
-      SNN = 0.
-      SNTOT = 0.
-      QN = 0.
-      GN = 0.
-      GNX = 0.
-      SF0 = 0.
-      SFF0 = 0.
-      SF0TOT = 0.
-      QF0 = 0.
-      GF0 = 0.
-      GF0X = 0.
-      SF1 = 0.
-      SFF1 = 0.
-      SF1TOT = 0.
-      QF1 = 0.
-      GF1 = 0.
-      GF1X = 0.
-      SF2 = 0.
-      SFF2 = 0.
-      SF2TOT = 0.
-      QF2 = 0.
-      GF2 = 0.
-      GF2X = 0.
-      SF3 = 0.
-      SFF3 = 0.
-      SF3TOT = 0.
-      QF3 = 0.
-      GF3 = 0.
-      GF3X = 0.
-      DF0 = 0.
-      VF0 = 0.
-      DF1 = 0. 
-      VF1 = 0.
-      DF2 = 0.
-      VF2 = 0.
-      DF3 = 0.
-      VF3 = 0.
-      PE = 0.
-      PET = 0.
-      PETOT = 0.
-      QE = 0.
-      QI = 0.
-      PI = 0.
-      PIT = 0.
-      PITOT = 0.
-      PEI = 0.
-      YPELSRS = 0.
+      SN = 0.d0
+      SNN = 0.d0
+      SNTOT = 0.d0
+      QN = 0.d0
+      GN = 0.d0
+      GNX = 0.d0
+      SF0 = 0.d0
+      SFF0 = 0.d0
+      SF0TOT = 0.d0
+      QF0 = 0.d0
+      GF0 = 0.d0
+      GF0X = 0.d0
+      SF1 = 0.d0
+      SFF1 = 0.d0
+      SF1TOT = 0.d0
+      QF1 = 0.d0
+      GF1 = 0.d0
+      GF1X = 0.d0
+      SF2 = 0.d0
+      SFF2 = 0.d0
+      SF2TOT = 0.d0
+      QF2 = 0.d0
+      GF2 = 0.d0
+      GF2X = 0.d0
+      SF3 = 0.d0
+      SFF3 = 0.d0
+      SF3TOT = 0.d0
+      QF3 = 0.d0
+      GF3 = 0.d0
+      GF3X = 0.d0
+      DF0 = 0.d0
+      VF0 = 0.d0
+      DF1 = 0.d0
+      VF1 = 0.d0
+      DF2 = 0.d0
+      VF2 = 0.d0
+      DF3 = 0.d0
+      VF3 = 0.d0
+      PE = 0.d0
+      PET = 0.d0
+      PETOT = 0.d0
+      QE = 0.d0
+      QI = 0.d0
+      PI = 0.d0
+      PIT = 0.d0
+      PITOT = 0.d0
+      PEI = 0.d0
+      YPELSRS = 0.d0
 
       allocate ( PECR(n_xcp), CUECR(n_xcp) )
       !        include 'alloc.cortran'
-      PECR = 0.
-      CUECR = 0.
+      PECR = 0.d0
+      CUECR = 0.d0
 
       allocate ( DN(n_xcp), CN(n_xcp), HE(n_xcp), XI(n_xcp), CC(n_xcp), &
                  DSI(n_xcp), DSE(n_xcp), DSN(n_xcp) )
-      DN = 0.
-      CN = 0.
-      HE = 0.
-      XI = 0.
-      CC = 0.
-      DSI = 0.
-      DSE = 0.
-      DSN = 0.
+      DN = 0.d0
+      CN = 0.d0
+      HE = 0.d0
+      XI = 0.d0
+      CC = 0.d0
+      DSI = 0.d0
+      DSE = 0.d0
+      DSN = 0.d0
 
       !====================================================== core profiles
       ne(1:n_xcp) = cp_in%profiles_1d(i_time)%electrons%density(1:n_xcp)/denA2D
@@ -313,10 +313,10 @@ contains
       MU(1:n_xcp) = 1./cp_in%profiles_1d(i_time)%q(1:n_xcp)
 
       !============================== detect hydrogen isotopes
-      F0(1:n_xcp) = 0.
-      F1(1:n_xcp) = 0.
-      F2(1:n_xcp) = 0.
-      F3(1:n_xcp) = 0.
+      F0(1:n_xcp) = 0.d0
+      F1(1:n_xcp) = 0.d0
+      F2(1:n_xcp) = 0.d0
+      F3(1:n_xcp) = 0.d0
       ispec(1:n_ion + 3) = 0
       Nhydr = 0
       istep = 0
@@ -371,8 +371,8 @@ contains
                    & (F1(1:NA1) + F2(1:NA1) + F3(1:NA1))
     !!!!!!!!!!!!!!!!!!!!!!!!!! separate ions, av mass, zeff, pei
       do j = 1, n_xcp
-         ni(j) = 0.
-         Z2NdA = 0.
+         ni(j) = 0.d0
+         Z2NdA = 0.d0
          do i = 1, n_ion
             ai = cp_in%profiles_1d(i_time)%ion(i)%element(1)%a
             zi = cp_in%profiles_1d(i_time)%ion(i)%z_ion_1D(j)
@@ -456,7 +456,7 @@ contains
       !=========================================================== time loop
       !open (1, file='out_Peltran.dat')
       TIME = TIMBEG
-      !TIMPEL = 0.
+      !TIMPEL = 0.d0
       !=============================================== OLDNEW
       TEo(1:NA1) = TE(1:NA1)
       TEx(1:NA1) = TE(1:NA1)
@@ -498,7 +498,7 @@ contains
          !        (Yushmanov 11-JUN-87)
          SVDT = TI(J)**(-0.33333333)
          SVDT = 8.972*dexp(-19.9826*SVDT)*SVDT*SVDT*&
-         &((TI(J) + 1.0134)/(1.+6.386E-3*(TI(J) + 1.0134)**2) +&
+         &((TI(J) + 1.0134)/(1.+6.386d-3*(TI(J) + 1.0134)**2) +&
          &1.877*dexp(-.16176*TI(J)*dsqrt(TI(J))))
          PDT = 5.632*f2(J)*f3(J)*SVDT
          ! PAION2 [MW/m#3]   D-T Fraction of fusion alpha power deposited to ions
@@ -538,13 +538,13 @@ contains
          XI(j) = 0.5*(1.+3.*XCP(j)**2)
          HE(j) = XI(j)
          DN(j) = (HE(j) + XI(j))/10.
-         CN(J) = 0.
+         CN(J) = 0.d0
          DF1(j) = (HE(j) + XI(j))/10.
-         VF1(J) = 0.
+         VF1(J) = 0.d0
          DF2(j) = (HE(j) + XI(j))/10.
-         VF2(J) = 0.
+         VF2(J) = 0.d0
          DF3(j) = (HE(j) + XI(j))/10.
-         VF3(J) = 0.
+         VF3(J) = 0.d0
       end do
 
       ! for Pereverzev-Corrigan scheme
@@ -556,7 +556,7 @@ contains
 
       !======================================== for neutral transport
       do j = 1, NA1
-         svcx = 0.
+         svcx = 0.d0
          if (ti(j) .gt. 0 .and. amain(j) .ge. 1.) then
             SVCX = 10.**(5.9 + 0.3*dlog10(TI(J)/AMAIN(J)))
          end if
@@ -568,7 +568,7 @@ contains
             VF0(J) = -7.6d-1*DF0(J)*(TI(NA1) - TI(NA))/HRO/(TI(J) + 1.d-9)
          end if
          IF (TE(J) .LT. .0001) THEN
-            SVRC = 0.
+            SVRC = 0.d0
          ELSE
             SVRC = 13.6E-3/TE(j)
             SVRC = 1.27*SVRC*dsqrt(SVRC)/(SVRC + .59)
@@ -576,9 +576,9 @@ contains
          SF0(J) = (F1(J) + F2(J) + F3(J))*NE(J)*SVRC
          SVIE = .0136/TE(J)
          IF (TE(J) .GT. .01) THEN
-            SVIE = 9.7E5*dexp(-SVIE)*dsqrt(SVIE/(1.+SVIE))/(SVIE + .73)
+            SVIE = 9.7d5*dexp(-SVIE)*dsqrt(SVIE/(1.+SVIE))/(SVIE + .73)
          ELSE
-            SVIE = 2.958E5*dexp(-SVIE)*dsqrt(SVIE)
+            SVIE = 2.958d5*dexp(-SVIE)*dsqrt(SVIE)
          END IF
          SFF0(J) = -NEo(j)*SVIE
          !              SFF1(J)=-NEo(J)*SVRC
@@ -604,7 +604,7 @@ contains
          VF0, DF0, F0o, F0, F0X, QNB, SF0, SFF0, SF0TOT, QF0, GF0, GF0X)
       !=================================================
       do j = 1, NA1
-         svcx = 0.
+         svcx = 0.d0
          if (ti(j) .gt. 0 .and. amain(j) .ge. 1.) then
             SVCX = 10.**(5.9 + 0.3*dlog10(TI(J)/AMAIN(J)))
          end if
@@ -616,17 +616,17 @@ contains
             VF0(J) = -7.6d-1*DF0(J)*(TI(NA1) - TI(NA))/HRO/(TI(J) + 1.d-9)
          end if
          IF (TE(J) .LT. .0001) THEN
-            SVRC = 0.
+            SVRC = 0.d0
          ELSE
-            SVRC = 13.6E-3/TE(j)
+            SVRC = 13.6d-3/TE(j)
             SVRC = 1.27*SVRC*dsqrt(SVRC)/(SVRC + .59)
          END IF
          SF0(J) = (F1(J) + F2(J) + F3(J))*NE(J)*SVRC
          SVIE = .0136/TE(J)
          IF (TE(J) .GT. .01) THEN
-            SVIE = 9.7E5*dexp(-SVIE)*dsqrt(SVIE/(1.+SVIE))/(SVIE + .73)
+            SVIE = 9.7d5*dexp(-SVIE)*dsqrt(SVIE/(1.+SVIE))/(SVIE + .73)
          ELSE
-            SVIE = 2.958E5*dexp(-SVIE)*dsqrt(SVIE)
+            SVIE = 2.958d5*dexp(-SVIE)*dsqrt(SVIE)
          END IF
          SFF0(J) = -NEo(j)*SVIE
          !              SFF1(J)=-NEo(J)*SVRC
@@ -687,10 +687,10 @@ contains
       !        Write(*,*) 'before pellet'
       !        time=time + TAU
       TIMPEL = TIMPEL + TAU
-      YDABL = 0.0
-      YDDEP = 0.0
+      YDABL = 0.d0
+      YDDEP = 0.d0
       if (TIMPEL .ge. (dtau - 1.d-7)) then
-         TIMPEL = 0.
+         TIMPEL = 0.d0
          !== Pellet Ablation Model: SMART
          if (smart_in%sw_smart .ne. 0) then
             call pelIMAS1(smart_in%YAM, smart_in%YVP, smart_in%YVOL, &
@@ -831,12 +831,12 @@ SUBROUTINE ECH2a(YR0, YDR, YQ, YEFF, YP, YC, NA1, RHO, VR)
    !        if(ym.le.1.d-7.or.ys.le.1.d-7) then
 
    if (ys .le. 0.) then
-      YP(1:na1) = 0.
+      YP(1:na1) = 0.d0
    else
       YP(1:na1) = YQ/(YS + 1.d-7)*YP(1:na1)
    end if
    if (ym .le. 0.) then
-      YC(1:na1) = 0.
+      YC(1:na1) = 0.d0
    else
       YC(1:na1) = YP(1:na1)*YEFF/(YM + 1.d-7)
    end if
@@ -855,7 +855,7 @@ double precision function VINTa(ARR, YR, RHO, VR, NA1)
    implicit none
    double precision ARR(*), VR(*), RHO(*), YR, YDR, YR1, HRO, HROA
    integer JK, J, NA1, NA
-   VINTa = 0.
+   VINTa = 0.d0
    if (YR .le. 0.) return
    NA = NA1 - 1
    HRO = RHO(3) - RHO(2)
