@@ -507,7 +507,7 @@ c*6-OCT-15 vvvv
          enddo
 c*19-NOV-2013 vvvvvvvvvvvvvvvvvv
 
-         YDABL=1.d0-(1.d0*dble(JABS))/dble(NA1)
+         YDABL=1.d0 - dble(JABS)/dble(NA1)
          YDDEP=1.d0 - dble(JMIN)/dble(NA1)
 c write(*,*) 'JABS,JMIN,rp= ',JABS,JMIN,rp
          YDABL=dmax1(YDABL,1.d-8)
