@@ -144,7 +144,7 @@ c*6-OCT-15
             write(*,*) ' pellet mass must be H/D/T/HD/DT only'
             return
          endif
-         if((YAM*YVP*YRP*(yshape-.999)*YEFF).le.0..or.dabs(YCOS0).gt.1.d0)
+         if((YAM*YVP*YRP*(yshape-0.999d0)*YEFF).le.0.d0.or.dabs(YCOS0).gt.1.d0)
      .   then
             write(*,*) 'Warning from SMART: wrong input parameters'
             return
