@@ -20,7 +20,7 @@ elif [[ $COMPILER =~ ^(gfortran|g++|gcc|GCC)$ ]]
 then
   ml purge
   ml IMAS-AL-Fortran/5.3.0-foss-2023b-DD-3.42.0
-  ml IMAS-AL-Python/5.3.0-foss-2023b-DD-3.42.0
+  ml IMAS-AL-Python/5.3.1-foss-2023b-DD-3.42.0
   ml XMLlib/3.3.2-GCC-13.2.0
 #
 else
