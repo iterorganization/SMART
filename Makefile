@@ -1,30 +1,29 @@
-include ./compiler.mk
 # SET COMPILER OPTIONS
-ifeq ($(F90), ifx)
+ifeq ($(FC), ifx)
 # INTEL - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
-  F90FLAGS=-fPIC -fpp -extend-source # FPIC AND PREPROCESSING OPTIONS
+  FCFLAGS=-fPIC -fpp -extend-source # FPIC AND PREPROCESSING OPTIONS
   #F90FLAGS+=-g -debug -O0 -fpe-all=0 -no-ftz -traceback -check bounds
-else ifeq ($(F90), ifort)
+else ifeq ($(FC), ifort)
 # INTEL - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
-  F90FLAGS=-fPIC -fpp -extend-source# FPIC AND PREPROCESSING OPTIONS
+  FCFLAGS=-fPIC -fpp -extend-source# FPIC AND PREPROCESSING OPTIONS
   #F90FLAGS+=-g -O0 # For debug
-  F90FLAGS+=-check all -warn all -gen_interfaces -fpe0 -ftrapuv -traceback -g # For debug
-else ifeq ($(F90), gfortran)
+  FCFLAGS+=-check all -warn all -gen_interfaces -fpe0 -ftrapuv -traceback -g # For debug
+else ifeq ($(FC), gfortran)
 # GFORTRAN - LINKS TO THE IMAS LIBRARY AND INCLUDE DIRECTORY
-  F90FLAGS=-fPIC -cpp -ffixed-line-length-none # FPIC AND PREPROCESSING OPTIONS
-  F90FLAGS+=-Wall -g -fcheck=bounds -O0 -ffpe-trap=invalid,zero,overflow -Wuninitialized
+  FCFLAGS=-fPIC -cpp -ffixed-line-length-none # FPIC AND PREPROCESSING OPTIONS
+  FCFLAGS+=-Wall -g -fcheck=bounds -O0 -ffpe-trap=invalid,zero,overflow -Wuninitialized
 else
-  $(error Unsupported Fortran compiler $(F90); exit 1)
+  $(error Unsupported Fortran compiler $(FC); exit 1)
 endif
-F90INC=-I. `pkg-config al-fortran --cflags`
-F90LIB=`pkg-config al-fortran --libs`
+FCINC=-I. `pkg-config al-fortran --cflags`
+FCLIB=`pkg-config al-fortran --libs`
 
 # XMLLIB LIBRARIES
-F90LIB+=`pkg-config xmllib --libs`
-F90INC+=`pkg-config xmllib --cflags`
+FCLIB+=`pkg-config xmllib --libs`
+FCINC+=`pkg-config xmllib --cflags`
 
 # Constants
-F90INC+=`pkg-config fundamental-constants --cflags`
+FCINC+=`pkg-config fundamental-constants --cflags`
 
 # LIST OF FORTRAN FILES
 OBJS_ACTOR = codeparam_smart.o smart.o pelIMAS1.o SMTH.o stepup.o runnt.o
@@ -38,7 +37,7 @@ exe: smart
 
 # STANDALONE COMPILATION
 smart: libsmart.a ${OBJS_STDA}
-	$(F90) ${F90FLAGS} -o smart ${OBJS_STDA} $(F90LIB) -L. -lsmart
+	$(FC) ${FCFLAGS} -o smart ${OBJS_STDA} $(FCLIB) -L. -lsmart
 
 # LIBRARY COMPILATION
 libsmart.a: ${OBJS_ACTOR}
@@ -53,15 +52,15 @@ validate:
 
 # COMPILE THE FC2K ACTOR
 actor: libsmart.a 
-	sed 's/__COMPILER__/${F90}/g' smart_template.yaml > smart.yaml
+	sed 's/__COMPILER__/${FC}/g' smart_template.yaml > smart.yaml
 	iwrap -f smart.yaml -i $(ACTOR_FOLDER)
 
 # RULES FOR ALL OBJECT FILES
 %.o:%.f90
-	$(F90) ${F90FLAGS} -c  $< $(F90INC)
+	$(FC) ${FCFLAGS} -c  $< $(FCINC)
 
 %.o:%.f
-	$(F90) ${F90FLAGS} -c  $< $(F90INC)
+	$(FC) ${FCFLAGS} -c  $< $(FCINC)
 
 # CLEAN DIRECTORY
 clean:
