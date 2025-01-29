@@ -26,9 +26,6 @@ else
   return
 fi
 
-# IMASPy
-ml IMASPy
-
 # Constants
 ml Fundamental-Constants
 
