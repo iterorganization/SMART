@@ -61,7 +61,7 @@ $ make actor
 * Edit `input/standalone.xml` and/or `input/smart.xml` accordingly
 * Run the command
 ```
-$ ./smart.exe
+$ ./smart
 ```
 #### The IMAS actor using `run_smart.py`
 * Edit `input/scenario.yaml` and/or  `input/smart.xml` accordingly
