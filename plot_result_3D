@@ -9,6 +9,8 @@ else:
     matplotlib.use('TKagg')
 import matplotlib.pyplot as plt
 
+#plt.style.use('dark_background')
+
 # ---------------------------------------------------------------
 def find_nearest(a, a0):
     'Element in nd array `a` closest to the scalar value `a0`'
@@ -80,38 +82,55 @@ output.close()
 #plt.ylabel('Volume-averaged electron density [m-3]')
 
 
-[t_no_pellet,idx_no_pellet] = find_nearest(core_profiles.time,config['time_no_more_pellet'])
-plt.figure()
-plt.plot(core_profiles_ref.profiles_1d[0].grid.rho_tor_norm,
-         core_profiles_ref.profiles_1d[0].electrons.density,
-         linewidth=2,color='g',label='Initial t = %.2f s'%core_profiles_ref.time[0])
-print("len time=",len(core_profiles.time))
-for i in range(len(core_profiles.time)):
-    if i==0:
-        plt.plot(core_profiles.profiles_1d[i].grid.rho_tor_norm,
-                 core_profiles.profiles_1d[i].electrons.density,
-                 linewidth=2,color='magenta',label='SMART at t = %.2f s'%core_profiles.time[i])
-    elif i==len(core_profiles.time)-1:
-        plt.plot(core_profiles.profiles_1d[i].grid.rho_tor_norm,
-                 core_profiles.profiles_1d[i].electrons.density,
-                 linewidth=2,color='r',linestyle='--',label='SMART at t = %.2f s'%core_profiles.time[i])
-    elif i==idx_no_pellet:
-        plt.plot(core_profiles.profiles_1d[i].grid.rho_tor_norm,
-                 core_profiles.profiles_1d[i].electrons.density,
-                 linewidth=4,color='b',label='Pellets no more t = %.2f s'%core_profiles.time[i])
-    else:
-        plt.plot(core_profiles.profiles_1d[i].grid.rho_tor_norm,
-                 core_profiles.profiles_1d[i].electrons.density,
-                 linewidth=0.5,color='dimgray')
-        
-plt.grid()
-plt.legend(loc='upper right')
-ymin = plt.gca().get_ylim()[0]
-ymax = plt.gca().get_ylim()[1]
-plt.xlim(0.,1.)
-plt.ylim(0,ymax*1.2)
+from mpl_toolkits.mplot3d import axes3d
+from matplotlib import cm
 
-plt.xlabel('Normalised rho_tor')
-plt.ylabel('Electron density profile [m-3]')
+ax = plt.figure().add_subplot(projection='3d')
+
+dimx = len(core_profiles.profiles_1d[0].grid.rho_tor_norm)
+dimy = len(core_profiles.time)
+dimz = len(core_profiles.profiles_1d[0].electrons.density)
+
+X = np.empty((dimx,dimy), dtype=float, order='C')
+Y = np.empty((dimx,dimy), dtype=float, order='C')
+Z = np.empty((dimx,dimy), dtype=float, order='C')
+
+for j in range(dimy):
+    X[:,j] = core_profiles.profiles_1d[j].grid.rho_tor_norm[:]
+    Z[:,j] = core_profiles.profiles_1d[j].electrons.density[:]
+
+for i in range(dimx):
+    Y[i,:] = core_profiles.time[:]
+
+# Axis limits
+xmin = X.min()
+xmax = X.max()
+ymin = Y.min()
+ymax = Y.max()
+zmin = Z.min()
+zmax = Z.max()
+xwidth = abs(xmax-xmin)
+ywidth = abs(ymax-ymin)
+zwidth = abs(zmax-zmin)
+r = 0.25
+
+# Plot the 3D surface
+ax.plot_surface(X, Y, Z, edgecolor='royalblue', lw=0.5, rstride=int(dimx/10.0), cstride=2,
+                alpha=0.3)
+ax.set_title("SMART")
+
+# Plot projections of the contours for each dimension.  By choosing offsets
+# that match the appropriate axes limits, the projected contours will sit on
+# the 'walls' of the graph
+ax.contourf(X, Y, Z, zdir='z', offset=zmin - r*zwidth, cmap='Blues')
+#ax.contourf(X, Y, Z, zdir='x', offset=xmin - r*xwidth, cmap='viridis')
+ax.contourf(X, Y, Z, zdir='y', offset=ymax + r*ywidth, cmap='Blues')
+
+ax.set(#xlim=(xmin-r*xwidth, xmax+r*xwidth),
+       xlim=(xmin, xmax),
+       ylim=(ymin-r*ywidth, ymax+r*ywidth),
+       zlim=(zmin-r*zwidth, zmax+r*zwidth),
+       xlabel='rho_tor_norm', ylabel='Time [s]', zlabel='Electron Density [m-3]')
+
 
 plt.show()
