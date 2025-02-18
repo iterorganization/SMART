@@ -1,9 +1,9 @@
 #!/bin/bash
+source /etc/profile.d/modules.sh
 source ./ci-sdcc/utils.sh
 ##########################################################################################
 #                     Set environment based on toolchain                                 #
 ##########################################################################################
-. /etc/profile.d/modules.sh
 module use /work/imas/etc/modules/all
 
 module purge
