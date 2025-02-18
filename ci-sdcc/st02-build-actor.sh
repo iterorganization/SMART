@@ -18,7 +18,7 @@ fi
 
 set -x
 # create actor
-make actor F90="$FCOMPILER"
+make actor FC="$FC"
 
 # Run actor standalone program
 # python run_smart --src "imas:mdsplus?user=public;pulse=130012;run=115;database=TEST;version=3" --dest "imas:mdsplus?user=$USERNAME;pulse=130012;run=23;database=ITER;version=3" --time 200.0
