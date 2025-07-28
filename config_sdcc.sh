@@ -10,15 +10,15 @@ export FC=ifx
 if [[ $FC =~ ^(ifort|intel|ifx|)$ ]]
 then
   ml purge
-  ml IMAS-AL-Fortran/5.3.0-intel-2023b-DD-3.42.0
-  ml IMAS-AL-Python/5.3.1-intel-2023b-DD-3.42.0
+  ml IMAS-AL-Fortran/5.4.0-intel-2023b-DD-3.42.0
+  ml IMAS-AL-Python/5.4.0-intel-2023b-DD-3.42.0
   ml XMLlib/3.3.2-intel-compilers-2023.2.1
 # foss
 elif [[ $FC =~ ^(gfortran|g++)$ ]]
 then
   ml purge
-  ml IMAS-AL-Fortran/5.3.0-foss-2023b-DD-3.42.0
-  ml IMAS-AL-Python/5.3.1-foss-2023b-DD-3.42.0
+  ml IMAS-AL-Fortran/5.4.0-foss-2023b-DD-3.42.0
+  ml IMAS-AL-Python/5.4.0-foss-2023b-DD-3.42.0
   ml XMLlib/3.3.2-GCC-13.2.0
 #
 else
