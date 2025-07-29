@@ -7,7 +7,7 @@ export FC=ifx
 
 # IMAS and iWrap
 # intel
-if [[ $FC =~ ^(ifort|intel|ifx|)$ ]]
+if [[ $FC =~ ^(ifort|intel|ifx)$ ]]
 then
   ml purge
   ml IMAS-AL-Fortran/5.4.0-intel-2023b-DD-3.42.0
@@ -22,7 +22,7 @@ then
   ml XMLlib/3.3.2-GCC-13.2.0
 #
 else
-  echo "Set environt variable as ifx/gfortran"
+  echo "Set environment variable FC as ifx/gfortran"
   return
 fi
 
