@@ -13,6 +13,7 @@
      >    YHRO,HROA,QNB
          double precision, allocatable ::
      >     YWA(:),YWB(:),YWC(:),DSN(:)
+      external RUNNa
          allocate(
      >     YWA(NA1),YWB(NA1),YWC(NA1),DSN(NA1)
      >      )
@@ -85,6 +86,7 @@ C **** Density equation
      >    YHRO,HROA,NEB
          double precision, allocatable ::
      >     YWA(:),YWB(:),YWC(:)
+           external RUNNa
          allocate(
      >     YWA(NA1),YWB(NA1),YWC(NA1)
      >      )
@@ -137,29 +139,32 @@ C **** Density equation
          return
       end
 !===================================================
-      subroutine STEPUPT(
-     > NA1,NB1,TAU,HRO,VRo,VR,G11,SLAT,RHO,
-     > XI,HE,DSI,DSE,
-     > PE,PET,PETOT,PI,PIT,PITOT,PEI,
-     > TEX,TE,TEo,TEB,TIX,TI,TIo,TIB,
-     > NEo,NE,NIo,NI,Qe,Qi,GNX,
-     > GN2E,GN2I
-     > )
+!      subroutine STEPUPT(TAU, HRO, TEB, TIB, GN2E, GN2I, NA1, NB1,
+            subroutine STEPUPT(
+     >  NA1,NB1,TAU,HRO,VRo,VR,G11,SLAT,RHO,
+     >  XI,HE,DSI,DSE,
+     >  PE,PET,PETOT,PI,PIT,PITOT,Z2NdA,
+     >  TEX,TE,TEo,TEB,TIX,TI,TIo,TIB,
+     >  NEX,NEo,NE,NIX,NIo,NI,Qe,Qi,GNX,
+     >  GN2E,GN2I)
+
          !  use physics_module_level1
 
          implicit none
          integer NA,NA1,ND,ND1,NA1E,NA1I,NB1,J
          double precision
-     >    TAU,HRO,VRo(*),VR(*),G11(*),SLAT(*),RHo(*),
+     >    TAU,HRO,TEB,TIB,YHRO,HROA,GN2E,GN2I
+         double precision VRo(*),VR(*),G11(*),SLAT(*),RHo(*),
      >    XI(*),HE(*),GNX(*),QE(*),QI(*),DSE(*),DSI(*),
      >    PE(*),PET(*),PETOT(*),
-     >    PI(*),PIT(*),PITOT(*),PEI(*),
-     >    TEX(*),TE(*),TEo(*),TEB,TIX(*),TI(*),TIo(*),TIB,
-     >    NEo(*),NE(*),NIo(*),NI(*),
-     >    YHRO,HROA,GN2E,GN2I
+     >    PI(*),PIT(*),PITOT(*)
+         double precision
+     >    TEX(*),TE(*),TEo(*),TIX(*),TI(*),TIo(*),
+     >    NEX(*),NEo(*),NE(*),NIX(*),NIo(*),NI(*),Z2NdA(*)
          double precision, allocatable ::
      >     YWA(:),YWB(:),YWC(:),YWD(:),
      >     PDI(:),PDE(:),WORK1(:,:)
+         external RUNTTa,NURTTa
          allocate(
      >     YWA(NA1),YWB(NA1),YWC(NA1),YWD(NA1),
      >     PDI(NA1),PDE(NA1),WORK1(NA1,24)
@@ -171,7 +176,8 @@ C **** Density equation
          PDI = 0.d0
          PDE = 0.d0
          WORK1 = 0.d0
-
+         GN2E=0.d0   !tmp
+         GN2I=0.d0   !tmp
 C **** Electron temperature equation
 !      callmarkloc("TE equation"//char(0))
          NA=NA1-1
@@ -211,7 +217,8 @@ C **** Electron temperature equation
          YWD(ND1)=0.d0
          DSE(ND1)=0.d0
          call RUNTTa(YWA,YWB,PET,YWC,NEO,NE,TEO,
-     >    ND,TAU,HRO,QE(1),YWD,DSE,VRO,VR,G11,WORK1,PEI)
+     >    ND,TAU,HRO,QE(1),YWD,DSE,VRO,VR,G11,WORK1,Z2NdA,TE,NE)
+!     >    ND,TAU,HRO,QE(1),YWD,DSE,VRO,VR,G11,WORK1,PEI)
          do J=ND1,NB1
             PDE(j) = 0.d0
          enddo
@@ -254,7 +261,8 @@ C      callmarkloc("TI equation"//char(0))
          YWD(ND1)=0.d0
          DSI(ND1)=0.d0
          call RUNTTa(YWA,YWB,PIT,YWC,NIO,NI,TIO,
-     >   ND,TAU,HRO,QI(1),YWD,DSI,VRO,VR,G11,WORK1,PEI)
+     >   ND,TAU,HRO,QI(1),YWD,DSI,VRO,VR,G11,WORK1,Z2NdA,TE,NE)
+!     >   ND,TAU,HRO,QI(1),YWD,DSI,VRO,VR,G11,WORK1,PEI)
          do J=ND1,NB1
             PDI(j) = 0.d0
          enddo
@@ -273,4 +281,57 @@ C      callmarkloc("TI equation"//char(0))
      >      )
          return
       end
-C **** Current profile adjustment
+
+!==================================================
+      subroutine stepupf(NA1,RHO,TAU,RTOR,BTOR,IPL,
+     > CUBS,CD,CC,G22,G33,IPOL,
+     > FP,FPo,MU,CU,UPL,ULON,FV) ! output
+      implicit none
+      integer j,NA1,NA
+      double precision HRO,ROC,TAU,RTOR,BTOR,IPL,HROA,
+     > CUBS(*),CD(*),CC(*),G22(*),G33(*),IPOL(*),
+     > FP(*),FPo(*),MU(*),CU(*),UPL(*),ULON(*),RHO(*),FV(*)
+        double precision YD,YC,YYD,GP,ARRNA1
+        double precision, allocatable ::
+     >  YWA(:),YWB(:),YWC(:),YWD(:)
+      external RUNF,CUOFPy,ARRNA1
+	allocate(
+     >  YWA(NA1),YWB(NA1),YWC(NA1),YWD(NA1)
+     >   )
+        NA=NA1-1
+        HRO=RHO(3)-RHO(2)
+        ROC=RHO(NA1)
+        NA=NA1-1
+        HROA=ROC-RHO(NA)
+        GP=3.14159263359d0
+      YD=-0.8*GP*GP*RTOR
+      YC=.4*GP
+      do 2225 J=1,NA1
+            YYD=CUBS(J)+CD(J)
+        YWD(J)=YYD*YD/(IPOL(J)**3*G33(J))
+        YWB(J)=CC(J)*YC/IPOL(J)**2
+ 2225 continue
+
+C Prescribed plasma current:
+      FP(NA)=.4*GP*HROA*RTOR/(G22(NA)*IPOL(NA1))
+      FP(NA1)=(HROA-.5*HRO)*ROC*CC(NA1)/RTOR/IPOL(NA1)/TAU
+      FP(NA1)=0.
+      FP(NA-1)=1.+FP(NA)*FP(NA1)
+      FP(NA1)=FP(NA)*(IPL+FPO(NA1)*FP(NA1))
+      FP(NA)=-1.
+      call RUNF(G22,YWB,YWC,YWD,FPO,NA,TAU,HRO,HROA,FP,FV)
+!                AK,B,C,D,FO,N,GT,H,HB,F,FV
+      do 2226 J=1,NA1
+      UPL(J)=YWD(J)
+      ULON(J)=IPOL(J)*G33(J)*UPL(J)
+ 2226 continue
+      UPL(NA1)=ARRNA1(UPL(NA-2),HROA/HRO)
+      ULON(NA1)=IPOL(NA1)*G33(NA1)*UPL(NA1)
+      call CUOFPy(NA1,RHO,RTOR,BTOR,FP,MU,CU,G22,G33,IPOL)
+      deallocate(
+     >  YWA,YWB,YWC,YWD
+     >   )
+      return
+      end
+======
+

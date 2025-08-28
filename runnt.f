@@ -119,7 +119,7 @@ C          P1 = P1+YJ                           ! (A/h)*f(\xi) is done
 
 C======================================================================|
       subroutine RUNTTA(
-     >  A,B,C,D,NO,NN,TO,N,GT,H,HB,DV,DS,VO,VN,G11,W,PEI
+     >  A,B,C,D,NO,NN,TO,N,GT,H,HB,DV,DS,VO,VN,G11,W,PEI,TE,NE
      >  )
 C----------------------------------------------------------------------|
 C     call RUNTT (YWA,YWB,PET,YWC,NEO,NE,TEO,
@@ -163,7 +163,7 @@ C----------------------------------------------------------------------|
          integer N,j,N0,N1
 !       double precision GETPEI,W(N,*)
 !       external GETPEI
-         double precision PEI(*),W(N,*)
+         double precision PEI(*),TE(*),NE(*),W(N,*)
 
 !        save icall,N0
 !        data icall/0/
@@ -222,7 +222,8 @@ C----------------------------------------------------------------------|
                W(j,17) = P1*G11(j)
                W(j,18) = Q1*G11(j)
 !              W(j,10) = -GETPEI(J)
-               W(j,10) = -PEI(J)
+               W(j,10) = -0.00246*(15.9 - .5*dlog(NE(j)) + dlog(TE(j)))
+     >          *NE(j)*Z2NdA(j)/TE(j)/dsqrt(TE(j))
             else
                if (N0.ne.N) goto 98
                W(j,19) = P1*G11(j)
@@ -377,3 +378,64 @@ C Define RHSs:
          enddo
       end
 !==================================
+C======================================================================|
+	subroutine
+     >		RUNF(AK,B,C,D,FO,N,GT,H,HB,F,FV)
+C----------------------------------------------------------------------|
+C	The subroutine provides inversion of the matrix equation for FP
+C       The boundary condition is supplied in the following form:
+C       	F(N-1)*Psi(N+1)+F(N)*Psi(N)=F(N+1)
+C           where F(N-1), F(N) and F(N+1) are input parameters.
+C	Scheme:
+C	Input:	H	- radial step (m)
+C		HB	- edge radial step (m)
+C		N+1	- number of grid points
+C		GT	- time step (sec)
+C		AK(N)	- G22
+C		B(N)	- conductivity
+C		D(N)	- external (+bootstrap) current
+C		FO(N)	- old poloidal flux
+C		F(N-1),F(N),F(N+1)	- edge conditions
+C	Output:	F(1:N+1)- new poloidal flux
+C		C(1:N+1)- (1/rho)d{K*dF/d(rho)}/d(rho) ~ current density
+C		B(1:N+1)- (1/rho)dF/d(rho)	~ rotational transform
+C		D(1:N+1)- dF/dt	toroidal loop voltage
+C----------------------------------------------------------------------|
+	implicit none
+	integer	N,j
+	double precision
+     1		AK(N+1),B(N+1),C(N+1),D(N+1),FV(N+1),F(N+1),FO(N+1),
+     2		H,HB,GT,HH,AJ,BJ,CJ,DJ,RJ,RJHH,YHB
+	HH = H*H
+	AJ = 0.
+	RJ = -0.5*H
+	do	1	J=1,N
+	   CJ = AJ
+	   RJ = RJ+H
+	   RJHH = RJ*HH
+	   if (j .eq. N)	then
+	      CJ = CJ*HB/H
+	      RJHH = RJ*HB*H
+	   endif
+	   AJ = AK(J)
+	   DJ = RJHH*B(J)/GT
+	   BJ = AJ+CJ+DJ
+	   DJ = DJ*FO(J)+RJHH*D(J)-AJ*(FV(J+1)-FV(J))
+	   if(J .ne. 1)	then
+	      BJ = BJ-CJ*C(J-1)
+	      DJ = DJ+CJ*(D(J-1)-FV(J-1)+FV(J))
+	   endif
+	   C(J) = AJ/BJ
+	   D(J) = DJ/BJ
+ 1	continue
+	F(N+1) = (F(N+1)-F(N)*D(N))/(F(N-1)+F(N)*C(N))
+	do	2	J=N,1,-1
+	F(J) = C(J)*F(J+1)+D(J)
+ 2	continue
+	do	j=1,N+1
+	   D(j) = (F(j)-FO(j))/GT
+C	   FO(j) = F(j)
+	enddo
+	end
+C======================================================================|
+
