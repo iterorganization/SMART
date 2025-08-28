@@ -119,7 +119,7 @@ C          P1 = P1+YJ                           ! (A/h)*f(\xi) is done
 
 C======================================================================|
       subroutine RUNTTA(
-     >  A,B,C,D,NO,NN,TO,N,GT,H,HB,DV,DS,VO,VN,G11,W,PEI,TE,NE
+     >  A,B,C,D,NO,NN,TO,N,GT,H,HB,DV,DS,VO,VN,G11,W,Z2NdA,TE,NE
      >  )
 C----------------------------------------------------------------------|
 C     call RUNTT (YWA,YWB,PET,YWC,NEO,NE,TEO,
@@ -163,7 +163,7 @@ C----------------------------------------------------------------------|
          integer N,j,N0,N1
 !       double precision GETPEI,W(N,*)
 !       external GETPEI
-         double precision PEI(*),TE(*),NE(*),W(N,*)
+         double precision Z2NdA(*),TE(*),NE(*),W(N,*)
 
 !        save icall,N0
 !        data icall/0/
