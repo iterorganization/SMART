@@ -116,7 +116,6 @@ C          P1 = P1+YJ                           ! (A/h)*f(\xi) is done
      &   "  RHO =",Y1,"  node =",j,"   D =",YA
 !        call IFKEY(ichar(' '))
       end
-
 C======================================================================|
       subroutine RUNTTA(
      >  A,B,C,D,NO,NN,TO,N,GT,H,HB,DV,DS,VO,VN,G11,W,Z2NdA,TE,NE

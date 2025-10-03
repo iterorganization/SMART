@@ -138,8 +138,7 @@ C **** Density equation
      >      )
          return
       end
-!===================================================
-!      subroutine STEPUPT(TAU, HRO, TEB, TIB, GN2E, GN2I, NA1, NB1,
+!=====
             subroutine STEPUPT(
      >  NA1,NB1,TAU,HRO,VRo,VR,G11,SLAT,RHO,
      >  XI,HE,DSI,DSE,
@@ -333,5 +332,5 @@ C Prescribed plasma current:
      >   )
       return
       end
-======
 
+!===================================================

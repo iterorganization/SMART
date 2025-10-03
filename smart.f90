@@ -30,17 +30,20 @@ contains
       logical:: from_pellets_ids = .False.
       character(len=:), pointer, intent(out) :: error_message
 
-      integer :: i, j, i_time, j_time, n_xcp, n_xeq, n_ion, nrd, NA1, jtime
-
+      integer :: i, j, i_time, j_time, n_xcp, n_xeq, n_ion, nrd, NA1, jtime, jend
+      integer:: iH, iD, iT, na, nb1, Khydr, JABS, istep, NABEG, NEBEG, NE1
+      integer:: jheat, jdens, jpsi, jpel, jprint, nbnd1, nbnd2, IMIX, jmix
+      integer:: nkey4control
       double precision &
          denA2D, temA2D, presA2D, cuA2D, &
          HRO, ROC, BTOR, SHIFT, ABC, RTOR, ALFA, &
          YDABL, YDDEP, ai, zi, Dtpel, &
-         NEB, TEB, TIB, F0B, F1B, F2B, F3B, F4B, F5B, F01B, F02B, F03B, &
+         NEB, TEB, TIB, F0B, F1B, F2B, F3B, F4B, F5B, F6B, F7B, F8B, F9B, F01B, F02B, F03B, &
          GN2E, GN2I, SVRCy, SVCXy, SVIEy, RHOEC, RHODR, QECR, YEFFec, &
          y, y1, y2, y3, y4, pdt, PAIONy, VINTa, QNB, IINTa, IPL, &
-         SVD1y, SVD2y, SVDBHy, stbrny, PENLIy, PDD1, PDD2, PDD3, TAUSp
-
+         SVD1y, SVD2y, SVDBHy, stbrny, PENLIy, PDD1, PDD2, PDD3, TAUSp, FTLLMRy
+      double precision &
+         elon, trian, sign_psi
       !
       double precision &
          TAU, dtau, TIME, TIMBEG
@@ -48,15 +51,18 @@ contains
 
       integer, allocatable :: ispec(:)
       !
-      integer:: iH, iD, iT, na, nb1, Nhydr, JABS, istep
-
+      integer, allocatable :: key4control(:)
       double precision, allocatable :: &
-         ne(:), ni(:), Te(:), Ti(:), TN(:), F0(:), F1(:), F2(:), F3(:), F4(:), F5(:), FP(:), &
-         neo(:), nio(:), Teo(:), Tio(:), F0o(:), F1o(:), F2o(:), F3o(:), F4o(:), F5o(:), FPo(:), &
-         neX(:), niX(:), TeX(:), TiX(:), F0x(:), F1x(:), F2x(:), F3x(:), F4x(:), F5x(:), NN(:), &
+         ne(:), ni(:), Te(:), Ti(:), TN(:), &
+         F0(:), F1(:), F2(:), F3(:), F4(:), F5(:), F6(:), F7(:), F8(:), F9(:), FP(:), &
+         neo(:), nio(:), Teo(:), Tio(:), &
+         F0o(:), F1o(:), F2o(:), F3o(:), F4o(:), F5o(:), F6o(:), F7o(:), F8o(:), F9o(:), FPo(:), &
+         neX(:), niX(:), TeX(:), TiX(:), &
+         F0x(:), F1x(:), F2x(:), F3x(:), F4x(:), F5x(:), F6x(:), F7x(:), F8x(:), F9x(:), NN(:), &
          cu(:), cutor(:), cd(:), cubs(:), UPL(:), ULON(:), EZ(:), FV(:), &
          ZEF(:), AMAIN(:), Z2NdA(:), ZMAIN(:), SQEPS(:), PBLON(:), PBPER(:), PFAST(:), &
-         F1fast(:),  F2fast(:),  F3fast(:),  F4fast(:), F5fast(:)
+         F1fast(:),  F2fast(:),  F3fast(:),  F4fast(:), F5fast(:), VTOR(:), &
+         NHYDR(:),NDEUT(:),NTRIT(:),NALF(:),NHE3(:)
 
       double precision, allocatable :: &
          SN(:), SNN(:), SNTOT(:), QN(:), GN(:), GNX(:), QE(:), QI(:), &
@@ -66,15 +72,20 @@ contains
          SF3(:), SFF3(:), SF3TOT(:), QF3(:), GF3(:), GF3X(:), &
          SF4(:), SFF4(:), SF4TOT(:), QF4(:), GF4(:), GF4X(:), &
          SF5(:), SFF5(:), SF5TOT(:), QF5(:), GF5(:), GF5X(:), &
+         SF6(:), SFF6(:), SF6TOT(:), QF6(:), GF6(:), GF6X(:), &
+         SF7(:), SFF7(:), SF7TOT(:), QF7(:), GF7(:), GF7X(:), &
+         SF8(:), SFF8(:), SF8TOT(:), QF8(:), GF8(:), GF8X(:), &
+         SF9(:), SFF9(:), SF9TOT(:), QF9(:), GF9(:), GF9X(:), &
          PE(:), PET(:), PETOT(:), PI(:), PIT(:), PITOT(:), PEI(:), &
          PEECR(:), CUECR(:), YPELSRS(:), &
          PEFUS(:), PIFUS(:), PEAUX(:), PIAUX(:), PEN(:), PIN(:), PJOUL(:), PRAD(:), &
-         Sn14(:), Sn245(:)
+         Sn14(:), Sn245(:), SCUBM(:), PEICR(:), PIICR(:), PEBM(:), PIBM(:)
 
       double precision, allocatable :: &
          DF0(:), VF0(:), DF1(:), VF1(:), DF2(:), VF2(:), DF3(:), VF3(:), &
-         DF4(:), VF4(:), DF5(:), VF5(:), &
-         DN(:), CN(:), HE(:), XI(:), cc(:), DSI(:), DSE(:), DSN(:)
+         DF4(:), VF4(:), DF5(:), VF5(:), DF6(:), VF6(:), DF7(:), VF7(:), &
+         DF8(:), VF8(:), DF9(:), VF9(:), DN(:), CN(:), HE(:), XI(:), &
+         cc(:), DSI(:), DSE(:), DSN(:)
 
       double precision, allocatable :: &
          ametr(:), shif(:), mu(:), VOL(:), vr(:), VOLo(:), vro(:), &
@@ -88,7 +99,7 @@ contains
       character*14 ARRNAME(30), VARNAME(30)
 
       external SVRCy, SVCXy, SVIEy, PAIONy, VINTa, IINTa, SVD1y, SVD2y, SVDBHy, stbrny, PENLIy
-      external SMTH, ECH2a, STEPUPN, STEPUPN0, STEPUPT, STEPUPF, CUBSy, RHSEQy, ARR, PelIMAS1
+      external SMTH, ECH2a, STEPUPN, STEPUPN0, STEPUPT, STEPUPF, CUBSy, RHSEQy, ARR, PelIMAS1, FTLLMRy, MIXALL
 
       data ARRNAME/' x ',' Te ',' Ti ',' ne ',' ni ', &
       ' nHth ',' nHf ',' nDth ',' nTth ',' nTf ',' n4Heth ',' n4Hef ', ' n3Heth ',' n3Hef ', &
@@ -104,7 +115,13 @@ contains
       ! INITIALISATION OF ERROR FLAG
       error_flag = 0
       nullify (error_message) ! do this otherwise gfortran behaviour is undefined
-
+! read the externalcontrol parameters (to be replaced by XML)
+   open(1,file='key4control.dat')
+   read(1,*) nkey4control
+ allocate( key4control(nkey4control))
+   do j=1,nkey4control
+      read(1,*) key4control(j)
+   enddo
       ! ASTRA- IMAS units transfer
       !       include 'declar.units'
       denA2D = 1.d19
@@ -161,9 +178,38 @@ contains
       n_ion = size(cp_in%profiles_1d(i_time)%ion)
       n_xeq = size(eq_in%time_slice(j_time)%profiles_1d%psi)
       nrd = 2*max(n_xcp,n_xeq)
-      NA1 = n_xcp
-      NB1 = NA1
-      NA = NA1 - 1
+! temporary vvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+      nbnd1 = size(eq_in%time_slice(j_time)%boundary%outline%r)
+         write(*,*), 'nbnd1=',nbnd1
+         open(20,file='IMAS.dat')
+         write(20,*) i_time, nbnd1
+         write(20,*) j_time, timbeg
+         do j=1,nbnd1
+         write(20,*) eq_in%time_slice(j_time)%boundary%outline%r(j), &
+         eq_in%time_slice(j_time)%boundary%outline%z(j)
+         enddo
+         elon  =eq_in%time_slice(j_time)%boundary%elongation
+         trian =eq_in%time_slice(j_time)%boundary%triangularity
+         close(20)
+! temporary  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+! elimination of the fake -1/2 point for JINTRAC output
+      if(cp_in%profiles_1d(i_time)%grid%rho_tor_norm(1).le.0.d0) then
+         NABEG=2
+         NA1=n_xcp-1
+      else
+         NABEG=1
+         NA1=n_xcp
+      endif
+      if(eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(1).le.0.d0) then
+         NEBEG=2
+         NE1=n_xeq-1
+       else
+         NEBEG=1
+         NE1=n_xeq
+       endif
+
+         NB1 = NA1
+         NA = NA1 - 1
       !write (*, *) 'NA1,nrd,n_xeq', NA1, nrd, n_xeq
       !==========================
       allocate (ispec(n_ion + 3))
@@ -173,14 +219,19 @@ contains
          ne(n_xcp), ni(n_xcp), Te(n_xcp), Ti(n_xcp), &
          nex(n_xcp), nix(n_xcp), TEX(n_xcp), TIX(n_xcp), &
          F1x(n_xcp), F2x(n_xcp), F3x(n_xcp), F4x(n_xcp), F5x(n_xcp),&
-         F1(n_xcp), F2(n_xcp), F3(n_xcp), F4(n_xcp), F5(n_xcp), FP(n_xcp), FV(n_xcp),&
+         F6x(n_xcp), F7x(n_xcp), F8x(n_xcp), F9x(n_xcp), &
+         F1(n_xcp), F2(n_xcp), F3(n_xcp), F4(n_xcp), F5(n_xcp), &
+         F6(n_xcp), F7(n_xcp), F8(n_xcp), F9(n_xcp), FP(n_xcp), FV(n_xcp),&
          neo(n_xcp), nio(n_xcp), Teo(n_xcp), Tio(n_xcp), &
-         F1o(n_xcp), F2o(n_xcp), F3o(n_xcp), F4o(n_xcp), F5o(n_xcp), FPo(n_xcp), &
+         F1o(n_xcp), F2o(n_xcp), F3o(n_xcp), F4o(n_xcp), F5o(n_xcp), &
+         F6o(n_xcp), F7o(n_xcp), F8o(n_xcp), F9o(n_xcp),  FPo(n_xcp), VTOR(n_xcp),&
          F0(n_xcp), F0o(n_xcp), F0x(n_xcp), NN(n_xcp), TN(n_xcp), &
          cu(n_xcp), cutor(n_xcp), cd(n_xcp), cubs(n_xcp), &
          UPL(n_xcp), ULON(n_xcp), EZ(n_xcp), ZEF(n_xcp), AMAIN(n_xcp), Z2NdA(n_xcp), ZMAIN(n_xcp), &
          PBLON(n_xcp), PBPER(n_xcp), PFAST(n_xcp), &
-         F1fast(n_xcp),  F2fast(n_xcp),  F3fast(n_xcp),  F4fast(n_xcp), F5fast(n_xcp))
+         F1fast(n_xcp),  F2fast(n_xcp),  F3fast(n_xcp),  F4fast(n_xcp), F5fast(n_xcp), &
+         NHYDR(n_xcp), NDEUT(n_xcp),NTRIT(n_xcp), NALF(n_xcp), NHE3(n_xcp) &
+         )
       !        include 'alloc.eq'
       ne = 0.d0
       ni = 0.d0
@@ -195,11 +246,19 @@ contains
       F3x = 0.d0
       F4x = 0.d0
       F5x = 0.d0
+      F6x = 0.d0
+      F7x = 0.d0
+      F8x = 0.d0
+      F9x = 0.d0
       F1 = 0.d0
       F2 = 0.d0
       F3 = 0.d0
       F4 = 0.d0
       F5 = 0.d0
+      F6 = 0.d0
+      F7 = 0.d0
+      F8 = 0.d0
+      F9 = 0.d0
       FP = 0.d0
       neo = 0.d0
       nio = 0.d0
@@ -210,12 +269,17 @@ contains
       F3o = 0.d0
       F4o = 0.d0
       F5o = 0.d0
+      F6o = 0.d0
+      F7o = 0.d0
+      F8o = 0.d0
+      F9o = 0.d0
       FPo = 0.d0
       F0 = 0.d0
       F0o = 0.d0
       F0x = 0.d0
       NN = 0.d0
       TN = 0.d0
+      VTOR = 0.d0
       cu = 0.d0
       cutor = 0.d0
       cd = 0.d0
@@ -224,9 +288,20 @@ contains
       ULON = 0.d0
       EZ = 0.d0
       ZEF = 0.d0
-      AMAIN = 0.d0
-      Z2NdA = 0.d0
+      AMAIN = 1.d0
+      Z2NdA = 1.d0
       FV=0.d0
+      ZMAIN = 1.d0
+      NHYDR =0.d0
+      NDEUT =0.d0
+      NALF =0.d0
+      NHE3 =0.d0
+      F1fast=0.d0
+      F2fast=0.d0
+       F3fast=0.d0
+      F4fast=0.d0
+       F5fast=0.d0
+
       allocate ( &
          ametr(n_xcp), shif(n_xcp), vr(n_xcp), vro(n_xcp), &
          mu(n_xcp), VOL(n_xcp), VOLo(n_xcp), XCP(n_xcp), &
@@ -254,7 +329,6 @@ contains
       G22 = 0.d0
       EQFF = 0.d0
       EQPF = 0.d0
-
 
       allocate ( &
          ametre(n_xeq), shife(n_xeq), VOLe(n_xeq), &
@@ -295,16 +369,27 @@ contains
          QF4(n_xcp), GF4(n_xcp), GF4X(n_xcp), &
          SF5(n_xcp), SFF5(n_xcp), SF5TOT(n_xcp), &
          QF5(n_xcp), GF5(n_xcp), GF5X(n_xcp), &
+         SF6(n_xcp), SFF6(n_xcp), SF6TOT(n_xcp), &
+         QF6(n_xcp), GF6(n_xcp), GF6X(n_xcp), &
+         SF7(n_xcp), SFF7(n_xcp), SF7TOT(n_xcp), &
+         QF7(n_xcp), GF7(n_xcp), GF7X(n_xcp), &
+         SF8(n_xcp), SFF8(n_xcp), SF8TOT(n_xcp), &
+         QF8(n_xcp), GF8(n_xcp), GF8X(n_xcp), &
+         SF9(n_xcp), SFF9(n_xcp), SF9TOT(n_xcp), &
+         QF9(n_xcp), GF9(n_xcp), GF9X(n_xcp), &
          DF0(n_xcp), VF0(n_xcp), DF1(n_xcp), VF1(n_xcp), &
          DF2(n_xcp), VF2(n_xcp), DF3(n_xcp), VF3(n_xcp), &
          DF4(n_xcp), VF4(n_xcp), DF5(n_xcp), VF5(n_xcp), &
+         DF6(n_xcp), VF6(n_xcp), DF7(n_xcp), VF7(n_xcp), &
+         DF8(n_xcp), VF8(n_xcp), DF9(n_xcp), VF9(n_xcp), &
          PE(n_xcp), PET(n_xcp), PETOT(n_xcp), QE(n_xcp), QI(n_xcp), &
          PI(n_xcp), PIT(n_xcp), PITOT(n_xcp), PEI(n_xcp), &
          PEFUS(n_xcp), PIFUS(n_xcp), PEAUX(n_xcp), PIAUX(n_xcp), &
          PEN(n_xcp), PIN(n_xcp), PJOUL(n_xcp), PRAD(n_xcp), &
-         Sn14(n_xcp), Sn245(n_xcp), &
+         Sn14(n_xcp), Sn245(n_xcp), SCUBM(n_xcp), &
+	 PEICR(n_xcp), PIICR(n_xcp), PEBM(n_xcp), PIBM(n_xcp), &
          YPELSRS(n_xcp) )
-
+      IMIX =0  !
       SN = 0.d0
       SNN = 0.d0
       SNTOT = 0.d0
@@ -335,6 +420,42 @@ contains
       QF3 = 0.d0
       GF3 = 0.d0
       GF3X = 0.d0
+      SF4 = 0.d0
+      SFF4 = 0.d0
+      SF4TOT = 0.d0
+      QF4 = 0.d0
+      GF4 = 0.d0
+      GF4X = 0.d0
+      SF5 = 0.d0
+      SFF5 = 0.d0
+      SF5TOT = 0.d0
+      QF5 = 0.d0
+      GF5 = 0.d0
+      GF5X = 0.d0
+      SF6 = 0.d0
+      SFF6 = 0.d0
+      SF6TOT = 0.d0
+      QF6 = 0.d0
+      GF6 = 0.d0
+      GF6X = 0.d0
+      SF7 = 0.d0
+      SFF7 = 0.d0
+      SF7TOT = 0.d0
+      QF7 = 0.d0
+      GF7 = 0.d0
+      GF7X = 0.d0
+      SF8 = 0.d0
+      SFF8 = 0.d0
+      SF8TOT = 0.d0
+      QF8 = 0.d0
+      GF8 = 0.d0
+      GF8X = 0.d0
+      SF9 = 0.d0
+      SFF9 = 0.d0
+      SF9TOT = 0.d0
+      QF9 = 0.d0
+      GF9 = 0.d0
+      GF9X = 0.d0
       DF0 = 0.d0
       VF0 = 0.d0
       DF1 = 0.d0
@@ -343,6 +464,18 @@ contains
       VF2 = 0.d0
       DF3 = 0.d0
       VF3 = 0.d0
+      DF4 = 0.d0
+      VF4 = 0.d0
+      DF5 = 0.d0
+      VF5 = 0.d0
+      DF6 = 0.d0
+      VF6 = 0.d0
+      DF7 = 0.d0
+      VF7 = 0.d0
+      DF8 = 0.d0
+      VF8 = 0.d0
+      DF9 = 0.d0
+      VF9 = 0.d0
       PE = 0.d0
       PET = 0.d0
       PETOT = 0.d0
@@ -363,6 +496,11 @@ contains
       PRAD = 0.d0
       Sn14 = 0.d0
       Sn245 = 0.d0
+      SCUBM = 0.d0
+      PEBM = 0.d0
+      PIBM = 0.d0
+      PEICR = 0.d0
+      PIICR = 0.d0
 
       allocate ( PEECR(n_xcp), CUECR(n_xcp) )
       !        include 'alloc.cortran'
@@ -380,51 +518,59 @@ contains
       DSE = 0.d0
       DSN = 0.d0
 
-      !====================================================== core profiles
-      ne(1:n_xcp) = cp_in%profiles_1d(i_time)%electrons%density(1:n_xcp)/denA2D
-!      Te(1:n_xcp) = cp_in%profiles_1d(i_time)%electrons%temperature(1:n_xcp)/temA2D
-      Ti(1:n_xcp) = cp_in%profiles_1d(i_time)%ion(1)%temperature(1:n_xcp)/temA2D
-      Te(1:n_xcp) = Ti(1:n_xcp)
-      write(*,*), 'TE(1)', TE(1)
-!cp_in%profiles_1d(i_time)%electrons%temperature(1:n_xcp)/temA2D
-      MU(1:n_xcp) = 1./cp_in%profiles_1d(i_time)%q(1:n_xcp)
- write(*,*) 'J0, CC0 DB', cp_in%profiles_1d(i_time)%j_total(1)/cuA2D, &
-      cp_in%profiles_1d(i_time)%conductivity_parallel(1)/cuA2D
+
+      ne(1:NA1) = cp_in%profiles_1d(i_time)%electrons%density(NABEG:n_xcp)/denA2D
+      Te(1:NA1) = cp_in%profiles_1d(i_time)%electrons%temperature(NABEG:n_xcp)/temA2D
+      Ti(1:NA1) = cp_in%profiles_1d(i_time)%ion(1)%temperature(NABEG:n_xcp)/temA2D
+      MU(1:NA1) = 1./cp_in%profiles_1d(i_time)%q(NABEG:n_xcp)
+if(cp_in%profiles_1d(i_time)%grid%psi(1).lt.cp_in%profiles_1d(i_time)%grid%psi(n_xcp)) then
+	sign_psi=1.d0
+else
+	sign_psi=-1.d0
+endif
+      FP(1:NA1) = sign_psi*cp_in%profiles_1d(i_time)%grid%psi(NABEG:n_xcp)
+      CU(1:NA1) = abs(cp_in%profiles_1d(i_time)%j_total(NABEG:n_xcp)/cuA2D)
+      CUbs(1:NA1) = abs(cp_in%profiles_1d(i_time)%j_bootstrap(NABEG:n_xcp)/cuA2D)
+      CD(1:NA1) = abs(cp_in%profiles_1d(i_time)%j_non_inductive(NABEG:n_xcp)/cuA2D)
+      CC(1:NA1) = abs(cp_in%profiles_1d(i_time)%conductivity_parallel(NABEG:n_xcp)/cuA2D)
+!      UPL(1:NA1) = cp_in%profiles_1d(i_time)%e_field%toroidal(NABEG:n_xcp)*RTOR*3.1416*2.
+! write(*,*) 'J0, CC0 DB', cp_in%profiles_1d(i_time)%j_total(1)/cuA2D, &
+!      cp_in%profiles_1d(i_time)%conductivity_parallel(1)/cuA2D
       !============================== detect hydrogen isotopes
-      F0(1:n_xcp) = 0.d0
-      F1(1:n_xcp) = 0.d0
-      F2(1:n_xcp) = 0.d0
-      F3(1:n_xcp) = 0.d0
+         F0 = 0.d0
+         F1 = 0.d0
+         F2 = 0.d0
+         F3 = 0.d0
       ispec(1:n_ion + 3) = 0
-      Nhydr = 0
-      istep = 0
-      iH = 0
-      iD = 0
-      iT = 0
+         Khydr = 0
+         istep = 0
+         iH = 0
+         iD = 0
+         iT = 0
       do i = 1, n_ion
          ai = cp_in%profiles_1d(i_time)%ion(i)%element(1)%a
          zi = cp_in%profiles_1d(i_time)%ion(i)%element(1)%z_n
          if (zi .eq. 1.d0) then
             if (ai .lt. 1.5d0) then
                ispec(1) = i
-               Nhydr = Nhydr + 1
+               Khydr = Khydr + 1
             end if
             if (ai .gt. 1.d0 .and. ai .lt. 3.d0) then
                ispec(2) = i
-               Nhydr = Nhydr + 1
+               Khydr = Khydr + 1
             end if
             if (ai .gt. 2.5d0) then
                ispec(3) = i
-               Nhydr = Nhydr + 1
+               Khydr = Khydr + 1
             end if
          else
             istep = istep + 1
             ispec(3 + istep) = i
          end if
       end do
-      if (Nhydr .lt. 1) then
+      if (Khydr .lt. 1) then
          write (*, *) 'No hydrogen isotopes in the ion list'
-         write (*, *) 'Hyrogen species: iH,iD,iT Nhydr', iH, iD, iT, Nhydr
+         write (*, *) 'Hyrogen species: iH,iD,iT Khydr', iH, iD, iT, Khydr
          stop
       end if
       if (smart_in%sw_stdout .ne.0) then
@@ -432,23 +578,23 @@ contains
       end if
       if (ispec(1) .ne. 0) then
          iH = ispec(1)
-         F1(1:n_xcp) = cp_in%profiles_1d(i_time)%ion(iH)%density(1:n_xcp)/denA2D
-         F0(1:n_xcp) = F0(1:n_xcp) + cp_in%profiles_1d(i_time)%neutral(iH)%density(1:n_xcp)/denA2D
+         F1(1:NA1) = cp_in%profiles_1d(i_time)%ion(iH)%density(NABEG:n_xcp)/denA2D
+         F0(1:NA1) = F0(1:n_xcp) + cp_in%profiles_1d(i_time)%neutral(iH)%density(NABEG:n_xcp)/denA2D
       end if
       if (ispec(2) .ne. 0) then
          iD = ispec(2)
-         F2(1:n_xcp) = cp_in%profiles_1d(i_time)%ion(iD)%density(1:n_xcp)/denA2D
-         F0(1:n_xcp) = F0(1:n_xcp) + cp_in%profiles_1d(i_time)%neutral(iD)%density(1:n_xcp)/denA2D
+         F2(1:NA1) = cp_in%profiles_1d(i_time)%ion(iD)%density(NABEG:n_xcp)/denA2D
+         F0(1:NA1) = F0(1:n_xcp) + cp_in%profiles_1d(i_time)%neutral(iD)%density(1:n_xcp)/denA2D
       end if
       if (ispec(3) .ne. 0) then
          iT = ispec(3)
-         F3(1:n_xcp) = cp_in%profiles_1d(i_time)%ion(iT)%density(1:n_xcp)/denA2D
-         F0(1:n_xcp) = F0(1:n_xcp) + cp_in%profiles_1d(i_time)%neutral(iT)%density(1:n_xcp)/denA2D
+         F3(1:NA1) = cp_in%profiles_1d(i_time)%ion(iT)%density(NABEG:n_xcp)/denA2D
+         F0(1:NA1) = F0(NABEG:n_xcp) + cp_in%profiles_1d(i_time)%neutral(iT)%density(NABEG:n_xcp)/denA2D
       end if
       AMAIN(1:NA1) = (F1(1:NA1) + 2.*F2(1:NA1) + 3.*F3(1:NA1))/ &
                    & (F1(1:NA1) + F2(1:NA1) + F3(1:NA1))
     !!!!!!!!!!!!!!!!!!!!!!!!!! separate ions, av mass, zeff, pei
-      do j = 1, n_xcp
+      do j = 1, NA1
          ni(j) = 0.d0
          Z2NdA(j) = 0.d0
          ZEF(j) = 0.d0
@@ -475,7 +621,7 @@ contains
          else
             !                write(*,*) 'ne,te,j',ne(j),te(j),j
          end if
-      end do
+      end do ! na1
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! equilibrium
 !      RTOR = (eq_in%time_slice(j_time)%profiles_1d%r_outboard(n_xeq) + &
@@ -488,107 +634,176 @@ contains
 !      end if
             RTOR = eq_in%vacuum_toroidal_field%r0
             BTOR = dabs(eq_in%vacuum_toroidal_field%b0(j_time))
-         XEQ(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(1:n_xeq)
-         VOLe(1:n_xeq) = dmax1(0., eq_in%time_slice(j_time)%profiles_1d%VOLUME(1:n_xeq))
-         XCP(1:n_xcp) = max(1.d-19,cp_in%profiles_1d(i_time)%grid%rho_tor_norm(1:n_xcp))
+         XEQ(1:NE1) = eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(NEBEG:n_xeq)
+         VOLe(1:NE1) =  eq_in%time_slice(j_time)%profiles_1d%VOLUME(NEBEG:n_xeq)
+         XCP(1:NA1) = cp_in%profiles_1d(i_time)%grid%rho_tor_norm(NABEG:n_xcp)
          ROC = eq_in%time_slice(j_time)%profiles_1d%phi(n_xeq)
          ROC = dsqrt(dabs(ROC/BTOR/M_PI))
-         RHO(1:n_xcp) = ROC*XCP(1:n_xcp)
-
-         ametre(1:n_xeq) = dmax1(0., (eq_in%time_slice(j_time)%profiles_1d%r_outboard(1:n_xeq) - &
-                              & eq_in%time_slice(j_time)%profiles_1d%r_inboard(1:n_xeq))/2.)
-         shife(1:n_xeq) = (eq_in%time_slice(j_time)%profiles_1d%r_outboard(1:n_xeq) + &
-                      & eq_in%time_slice(j_time)%profiles_1d%r_inboard(1:n_xeq))/2.-RTOR
+         RHO(1:NA1) = ROC*XCP(1:NA1)
+write(*,*) 'Xe 1,2,3,NA,NA1',eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(1), &
+         eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(2), &
+         eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(3), &
+         eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(n_xeq-1), &
+         eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(n_xeq)
+write(*,*) 'X 1,2,3,NA,NA1',cp_in%profiles_1d(i_time)%grid%rho_tor_norm(1), &
+   cp_in%profiles_1d(i_time)%grid%rho_tor_norm(2), &
+   cp_in%profiles_1d(i_time)%grid%rho_tor_norm(3), &
+   cp_in%profiles_1d(i_time)%grid%rho_tor_norm(n_xcp-1), &
+   cp_in%profiles_1d(i_time)%grid%rho_tor_norm(n_xcp)
+         ametre(1:NE1) =  (eq_in%time_slice(j_time)%profiles_1d%r_outboard(NEBEG:n_xeq) - &
+                              & eq_in%time_slice(j_time)%profiles_1d%r_inboard(NEBEG:n_xeq))/2.
+         shife(1:NE1) = (eq_in%time_slice(j_time)%profiles_1d%r_outboard(NEBEG:n_xeq) + &
+                      & eq_in%time_slice(j_time)%profiles_1d%r_inboard(NEBEG:n_xeq))/2.-RTOR
 !         FPe(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq)
-!
-FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_slice(j_time)%profiles_1d%psi(1)
-         IPOLe(1:n_xeq) = dabs(eq_in%time_slice(j_time)%profiles_1d%f(1:n_xeq)/RTOR/BTOR)
-         SLATe(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%surface(1:n_xeq)
-         G11e(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%gm3(1:n_xeq)
-         G33e(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%gm1(1:n_xeq)*RTOR**2
+! temporary
+   if(eq_in%time_slice(j_time)%profiles_1d%psi(n_xeq).gt.eq_in%time_slice(j_time)%profiles_1d%psi(NEBEG)) then
+      sign_psi=1.d0
+   else
+      sign_psi=-1.d0
+   endif
+         FPe(1:NE1) = sign_psi* eq_in%time_slice(j_time)%profiles_1d%psi(NEBEG:n_xeq)
+!+ eq_in%time_slice(j_time)%profiles_1d%psi(1)
+         IPOLe(1:NE1) = dabs(eq_in%time_slice(j_time)%profiles_1d%f(NEBEG:n_xeq)/RTOR/BTOR)
+         SLATe(1:NE1) = eq_in%time_slice(j_time)%profiles_1d%surface(NEBEG:n_xeq)
+         G11e(1:NE1) = eq_in%time_slice(j_time)%profiles_1d%gm3(NEBEG:n_xeq)
+         G33e(1:NE1) = eq_in%time_slice(j_time)%profiles_1d%gm1(NEBEG:n_xeq)*RTOR**2
+         BDB02e(1:NE1) = eq_in%time_slice(j_time)%profiles_1d%gm5(NEBEG:n_xeq)/BTOR**2
+         B0DB2e(1:NE1) = eq_in%time_slice(j_time)%profiles_1d%gm4(NEBEG:n_xeq)*BTOR**2
+         G22e(1:NE1) = eq_in%time_slice(j_time)%profiles_1d%gm2(NEBEG:n_xeq)
 
-!      BMINTe(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%b_field_min(1:n_xeq)
-!      BMAXTe(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%b_field_max(1:n_xeq)
-!      BDB0e(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%b_field_average(1:n_xeq)
-         BDB02e(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%gm5(1:n_xeq)/BTOR**2
-         B0DB2e(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%gm4(1:n_xeq)*BTOR**2
-         G22e(1:n_xeq) = eq_in%time_slice(j_time)%profiles_1d%gm2(1:n_xeq)
-!   write(*,*) 'BDB02e, B0DB2e, G22e, G11e, G33e, SLATe, IPOLe'
-!   write(*,*) BDB02e(1), B0DB2e(1), G22e(1), G11e(1), G33e(1), SLATe(1), IPOLe(1)
-      !write (*, *) 'Ip =',
+  if(associated(eq_in%time_slice(j_time)%profiles_1d%b_field_min)) then
+      BMINTe(1:NE1) = eq_in%time_slice(j_time)%profiles_1d%b_field_min(NEBEG:n_xeq)
+  else
+      BMINTe(1:NE1) = BTOR*RTOR/(RTOR+SHIFe(1:NE1)+AMETRe(1:NE1))
+  endif
+  if(associated(eq_in%time_slice(j_time)%profiles_1d%b_field_max)) then
+      BMAXTe(1:NE1) = eq_in%time_slice(j_time)%profiles_1d%b_field_max(NEBEG:n_xeq)
+  else
+      BMAXTe(1:NE1) = BTOR*RTOR/(RTOR+SHIFe(1:NE1)-AMETRe(1:NE1))
+  endif
+  if(associated(eq_in%time_slice(j_time)%profiles_1d%b_field_max)) then
+      BDB0e(1:NE1) = eq_in%time_slice(j_time)%profiles_1d%b_field_max(NEBEG:n_xeq)
+  else
+      BDB0e(1:NE1) = sqrt(BDB02e(1:NE1))
+  endif
+
          IPL = dabs(eq_in%time_slice(j_time)%global_quantities%Ip/cuA2D)
-         ABC = ametre(n_xeq)
-         SHIFT = Shife(n_xeq) ! - RTOR
+         ABC = ametre(NE1)
+         SHIFT = Shife(NE1) ! - RTOR
          HRO = (XCP(3) - XCP(2))*ROC
          ALFA = 0.001d0
       !SMTH(ALFA,NO,FO,XO,N,FN,XN) mapping from EQ to CP grids
       !        write(*,*) 'trace 184'
-!      if (n_xeq .ne. n_xcp) then
-         call SMTH(ALFA, n_xeq, VOLe, XEQ, n_xcp, VOL, XCP, NRD)
-         call SMTH(ALFA, n_xeq, ametre, XEQ, n_xcp, ametr, XCP, NRD)
-         call SMTH(ALFA, n_xeq, FPe, XEQ, n_xcp, FP, XCP, NRD)
-         call SMTH(ALFA, n_xeq, shife, XEQ, n_xcp, shif, XCP, NRD)
-         call SMTH(ALFA, n_xeq, IPOLe, XEQ, n_xcp, IPOL, XCP, NRD)
-         call SMTH(ALFA, n_xeq, G11e, XEQ, n_xcp, G11, XCP, NRD)
-         call SMTH(ALFA, n_xeq, G33e, XEQ, n_xcp, G33, XCP, NRD)
-         call SMTH(ALFA, n_xeq, SLATe, XEQ, n_xcp, SLAT, XCP, NRD)
-!         call SMTH(ALFA, n_xeq, BMINTe, XEQ, n_xcp,BMINT, XCP, NRD)
-!         call SMTH(ALFA, n_xeq, BMAXTe, XEQ, n_xcp,BMAXT, XCP, NRD)
-!         call SMTH(ALFA, n_xeq, BDB0e, XEQ, n_xcp, BDB0, XCP, NRD)
-         call SMTH(ALFA, n_xeq, BDB02e, XEQ, n_xcp, BDB02, XCP, NRD)
-         call SMTH(ALFA, n_xeq, B0DB2e, XEQ, n_xcp, B0DB2, XCP, NRD)
-         call SMTH(ALFA, n_xeq, G22e, XEQ, n_xcp, G22, XCP, NRD)
-         VR(1) = VOL(2)/HRO
-         G11(1) = VR(1)*G11(1)
-      do j = 2, n_xcp
+   if (n_xeq .ne. n_xcp) then
+         call SMTH(ALFA, NE1, VOLe, XEQ, NA1, VOL, XCP, NRD)
+         call SMTH(ALFA, NE1, ametre, XEQ, NA1, ametr, XCP, NRD)
+ !        call SMTH(ALFA, NE1, FPe, XEQ, NA1, FP, XCP, NRD)
+         call SMTH(ALFA, NE1, shife, XEQ, NA1, shif, XCP, NRD)
+         call SMTH(ALFA, NE1, IPOLe, XEQ, NA1, IPOL, XCP, NRD)
+         call SMTH(ALFA, NE1, G11e, XEQ, NA1, G11, XCP, NRD)
+         call SMTH(ALFA, NE1, G33e, XEQ, NA1, G33, XCP, NRD)
+         call SMTH(ALFA, NE1, SLATe, XEQ, NA1, SLAT, XCP, NRD)
+         call SMTH(ALFA, n_xeq, BMINTe, XEQ, n_xcp,BMINT, XCP, NRD)
+         call SMTH(ALFA, n_xeq, BMAXTe, XEQ, n_xcp,BMAXT, XCP, NRD)
+         call SMTH(ALFA, n_xeq, BDB0e, XEQ, n_xcp, BDB0, XCP, NRD)
+         call SMTH(ALFA, NE1, BDB02e, XEQ, NA1, BDB02, XCP, NRD)
+         call SMTH(ALFA, NE1, B0DB2e, XEQ, NA1, B0DB2, XCP, NRD)
+         call SMTH(ALFA, NE1, G22e, XEQ, NA1, G22, XCP, NRD)
+ else
+     IPOL  = IPOLe
+     VOL = VOLE
+     shif = shife
+     AMETR = AMETRe
+     G11 = G11e
+     G33 = G33e
+     G22 = G22e
+     SLAT = SLATe
+     BMINT = BMINTe
+     BMAXT = BMAXTe
+     BDB0 = BDB0e
+     BDB02 = BDB02e
+     B0DB2 = B0DB2e
+     FP = FPe
+
+         endif
+
+
+!============================temporary ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      do j = 2, NA1
          VR(j) = (VOL(j) - VOL(j - 1))/HRO
          G11(j) = VR(j)*G11(j)
       end do
-		G22(1:n_xcp)= &
-     	VR(1:n_xcp)*G22(1:n_xcp)/IPOL(1:n_xcp)*RTOR/4./M_PI**2
+         VR(1) = VR(2)/3.
+         G11(1) = VR(1)*G11(1)
+         write(*,*) 'VR',(VR(j),j=1,5)
+		G22(1:NA1)= &
+     	VR(1:NA1)*G22(1:NA1)/IPOL(1:NA1)*RTOR/4./M_PI**2
+		SQEPS(1:NA1)  = SQRT(AMETR(1:NA1)/(RTOR+SHIF(1:NA1)))
+		if(SQEPS(1).le.1.d-2) SQEPS(1)=SQEPS(2)/1.4
+        write(*,*) 'SQEPS',(SQEPS(j),j=1,5)
+        write(*,*) 'AMETR',(AMETR(j),j=1,5)
+        write(*,*) 'AMETRe',(AMETRe(j),j=1,5)
+        write(*,*) 'G11',(G11(j),j=1,5)
+        write(*,*) 'G22',(G22(j),j=1,5)
+        write(*,*) 'G33',(G33(j),j=1,5)
+        write(*,*) 'BMINT',(BMINT(j),j=1,5)
+        write(*,*) 'BMAXT',(BMAXT(j),j=1,5)
+        write(*,*) 'BDB0',(BDB0(j),j=1,5)
 
-!		SHIF(1:n_xcp)=SHIF(1:n_xcp)-SHIFT
-		SQEPS(1) = SQRT(AMETR(2)*0.5/(RTOR+SHIF(1)))
-		SQEPS(2:n_xcp)  = SQRT(AMETR(2:n_xcp)/(RTOR+SHIF(2:n_xcp)))
-
-      do j=1,n_xcp
-         BMAXT(j) = BTOR*RTOR/(RTOR+SHIF(j)-AMETR(j)) ! temporary
+      do j=1,NA1
          y=min(.99d0,BTOR*RTOR/BMAXT(j)/(RTOR+SHIF(j)))
 		FOFB(j) = B0DB2(j)*(1.-sqrt(1.d0-y)*(1.+0.5*y))
       enddo
-          write(*,*) 'BMAXT(1), BMAXT(NA1)',BMAXT(1), BMAXT(NA1)
-      write(*,*) 'FOFB(1), FOFB(NA1)', FOFB(1), FOFB(NA1)
-       write(*,*) 'G22(1), G22(NA1)', G22(1), G22(NA1)
-      write(*,*) 'G33(1), G33(NA1)', G33(1), G33(NA1)
-      write(*,*) 'G11(1), G11(NA1)', G11(1), G11(NA1)
-         write(*,*) 'IPOL(1), IPOL(NA1)', IPOL(1), IPOL(NA1)
+
+ write(*,*) 'VOLe',(VOLE(j),j=1,5)
+ write(*,*) 'VOL',(VOL(j),j=1,5)
+ write(*,*) 'XCP',(XCP(j),j=1,5)
+ write(*,*) 'XEQ',(XEQ(j),j=1,5)
          write(*,*) 'RTOR, AMETR(NA1),SHIF(1),SHIF(NA1)', RTOR, AMETR(NA1),SHIF(1),SHIF(NA1)
          write(*,*) 'q(0), q(na1), BTOR, VOL ',1./MU(1), 1./MU(NA1), BTOR, VOL(NA1)
-!         FP(1:n_xcp) = -(cp_in%profiles_1d(i_time)%grid%psi(1:n_xcp) &
-!                  - cp_in%profiles_1d(i_time)%grid%psi(1))
-
-!   write(*,*) 'BDB02, B0DB2, G22, G11, G33, SLAT, IPOL'
-!   write(*,*) BDB02(1), B0DB2e(1), G22(1), G11(1), G33(1), SLAT(1), IPOL(1)
-   write(*,*) 'FP(1), FP(n_xcp)', FP(1), FP(n_xcp), FP(1)- FP(n_xcp)
-   write(*,*) 'FPe(1), FPe(n_xeq)', FPe(1), FPe(n_xeq), FPe(1)- FPe(n_xeq)
+   write(*,*) 'FP(1), FP(NA1)', FP(1), FP(NA1), FP(1)- FP(NA1)
+   write(*,*) 'FPe(1), FPe(NE1)', FPe(1), FPe(NE1), FPe(1)- FPe(NE1)
       TAU = smart_in%TAU
       dtau = smart_in%dtau
-      write(*,*) 'NA1', NA1,n_xcp
-         write(*,*) 'FP(1), FP(n_xcp)', FP(1), FP(n_xcp), FP(1)- FP(n_xcp)
-         write(*,*) 'CU',(CU(j),j=1,NA1,30)
-         write(*,*) 'CUbs',(CUbs(j),j=1,NA1,30)
-         write(*,*) 'q',(1./MU(j),j=1,NA1,30)
-         write(*,*) 'Fp',(FP(j),j=1,NA1,30)
-         write(*,*) 'CC',(CC(j),j=1,NA1,30)
-      !=========================================================== time loop
+! temporay vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv lines 768 -791 should be commented for external time loop control
+      open(20,file='tau.dat')
+      read(20,*) TAU
+      close(20)
+      write(*,*) 'NA1', NA1,NE1
+!         write(*,*) 'FP(1), FP(n_xcp)', FP(1), FP(n_xcp), FP(1)- FP(n_xcp)
+         write(*,*) 'XCP',(XCP(j),j=1,NA1,30),XCP(NA1)
+         write(*,*) 'RHO',(RHO(j),j=1,NA1,30),RHO(NA1)
+         write(*,*) 'AMETR',(AMETR(j),j=1,NA1,30),AMETR(NA1)
+         write(*,*) 'shif',(shif(j),j=1,NA1,30),shif(NA1)
+         write(*,*) 'VOL',(VOL(j),j=1,NA1,30),VOL(NA1)
+         write(*,*) 'VR',(VR(j),j=1,NA1,30),VR(NA1)
+         write(*,*) 'SLAT',(SLAT(j),j=1,NA1,30),SLAT(NA1)
+         write(*,*) 'SQEPS',(SQEPS(j),j=1,NA1,30),SQEPS(NA1)
+         write(*,*) 'CU',(CU(j),j=1,NA1,30),CU(NA1)
+         write(*,*) 'CUbs',(CUbs(j),j=1,NA1,30),CUbs(NA1)
+         write(*,*) 'q',(1./MU(j),j=1,NA1,30),1./MU(NA1)
+         write(*,*) 'Fp',(FP(j),j=1,NA1,30),FP(NA1)p
+         write(*,*) 'CC',(CC(j),j=1,NA1,30),CC(NA1)
+         write(*,*) 'CD',(CD(j),j=1,NA1,30),CD(NA1)
+         write(*,*) 'G33',(G33(j),j=1,NA1,30),G33(NA1)
+         write(*,*) 'G22',(G22(j),j=1,NA1,30),G22(NA1)p
+         write(*,*) 'IPOL',(IPOL(j),j=1,NA1,30),IPOL(NA1)
+         write(*,*) 'Ipl', IINTa(CU,ROC,RHO,G33,IPOL,NA1)
+!=========================================================== time loop
       !open (1, file='out_Peltran.dat')
       TIME = TIMBEG
       !TIMPEL = 0.d0
       open(1,file='out_VAR.dat')
       write(1,997) VARNAME
  997  format(30A14)
- write(*,*) 'TE(1), TI(1)=', TE(1), TI(1)
-      do jtime=1,20
+if(jprint.eq.1) write(*,*) 'TE(1), TI(1)=', TE(1), TI(1)
+      open(20,file='jtime.dat')
+      read(20,*) jend
+      close(20)
+      open(20,file='jprint.dat')
+      read(20,*) jprint
+      close(20)
+      do jtime=1,jend   ! the line should be commented when external time loop is used
       !=============================================== OLDNEW
       TEo(1:NA1) = TE(1:NA1)
       TEx(1:NA1) = TE(1:NA1)
@@ -618,17 +833,20 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
       enddo
       !================================================== auxilliary H&CD
       !=================================================== EC heating
+         if(jprint.eq.1) write(*,*) 'Peecr1', VINTa(PEECR,ROC,RHO,VR,NA1)
       if (smart_in%sw_ech2a .ne. 0) then
          RHOEC  = smart_in%ROCEC*ROC ! EC location
          RHODR  = smart_in%ROCDR*ROC ! EC width
-         QECR   = 0.d0
+!         QECR   = 0.d0
          !smart_in%QECR      ! QEC= 10 MW
          YEFFec = smart_in%YEFFec    ! IEC/QEC MA/MW
 
       !  ECH2a(YR0,YDR,YQ,YEFF,YP,YC,NA1,RHO,VR)
-         call ECH2a&
+ if(key4control(13).ne.0)        call ECH2a&
             (RHOEC, RHODR, QECR, YEFFec, PEECR, CUECR, NA1, RHO, VR, G33, IPOL, TE, NE)
+!            YR0,  YDR,  YQ,   Y  EFF1,    YP,   YC,   NA1,  RHO,  VR,   G33,  IPOL, TE,NE
 !         PE(1:NA1) = PEECR(1:NA1)
+ if(jprint.eq.1)     write(*,*) 'Peecr2', VINTa(PEECR,ROC,RHO,VR,NA1)
       endif
 !write(*,*) 'after ECH2, SQEPS', SQEPS(1)
       !=============================================== boundary conditions
@@ -647,13 +865,18 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
       F3B = F3(NA1)
       F4B = F4(NA1)
       F5B = F5(NA1)
+      F6B = F6(NA1)
+      F7B = F7(NA1)
+      F8B = F8(NA1)
+      F9B = F9(NA1)
 
       F0B = F01B + F02B + F03B
       !F0B is used only for normalization: puffing is controlled by QNB
       !fractions of neutral species: nH0B=  F01B/F0B, nD0B=  F02B/F0B, nT0B= F03B/F0B
-      !        write(*,*) 'F0B=',F0B
+if(jprint.eq.1)               write(*,*) 'F0B=',F0B
       !========================================================transport coefficients
       !======================================== charged species
+! to be replaced by external transport coefficients vvvvvvvvv
       do j = 1, NA1
          XI(j) = 0.5*(1.+3.*XCP(j)**2)
          HE(j) = XI(j)
@@ -669,7 +892,17 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
          VF4(J) = 0.d0
          DF5(j) = (HE(j) + XI(j))/10.
          VF5(J) = 0.d0
+         DF6(j) = (HE(j) + XI(j))/10.
+         VF6(J) = 0.d0
+         DF7(j) = (HE(j) + XI(j))/10.
+         VF7(J) = 0.d0
+         DF8(j) = (HE(j) + XI(j))/10.
+         VF8(J) = 0.d0
+         DF9(j) = (HE(j) + XI(j))/10.
+         VF9(J) = 0.d0
+
       end do
+! to be replaced by external transport coefficients ^^^^^^^^^
 
       ! for Pereverzev-Corrigan scheme
       do j=1,NA1
@@ -677,7 +910,13 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
          DSI(J)=0.
          DSN(J)=0.
       enddo
-
+ if(jprint.eq.2)  then
+         write(*,*) 'UPL',(UPL(j),j=1,NA1,30),UPL(NA1)
+         write(*,*) 'Te',(TE(j),j=1,NA1,30),TE(NA1)
+         write(*,*) 'Ti',(Ti(j),j=1,NA1,30),Ti(NA1)
+         write(*,*) 'ne',(Ne(j),j=1,NA1,30),ne(NA1)
+         write(*,*) 'AMAIN',(AMAIN(j),j=1,NA1,30),AMAIN(NA1)
+endif
       !======================================== for neutral transport
       do j = 1, NA1
          DF0(J) = 9.584d10*(TI(J) + 1.d-9)/(SVCXy(Ti(j),AMAIN(j)) + 1.d-10)/AMAIN(J)/NE(j)
@@ -695,12 +934,25 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
       end do
       !        write(*,*) 'a1=',TEo(1:NA1)
       !==============================================density stepup
-!write(*,*) 'SF0(J), SFF0(J)=', SF0(1), SFF0(1)
+!
+ !write(*,*) 'SF0(J), SFF0(J)=', SF0(1), SFF0(1)
+ if(jprint.eq.2) then
+          write(*,*) 'DF0',(DF0(j),j=1,NA1,30),DF0(NA1)
+         write(*,*) 'VF0',(VF0(j),j=1,NA1,30),VF0(NA1)
+         write(*,*) 'SF0',(SF0(j),j=1,NA1,30),SF0(NA1)
+         write(*,*) 'SFF0',(SFF0(j),j=1,NA1,30),SFF0(NA1)
+         write(*,*) 'F0',(F0(j),j=1,NA1,30),F0(NA1)
+endif
       !======================================= neutrals
-      call STEPUPN0(&
+ if(key4control(10).ne.0)      call STEPUPN0(&
          NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO,&
          VF0, DF0, F0o, F0, F0X, QNB, SF0, SFF0, SF0TOT, QF0, GF0, GF0X)
-!write(*,*) 'VF0, DF0 TI1 TI2=',VF0(2), DF0(1), TI(1), TI(2)
+! write(*,*) 'VF0, DF0 F0(0) F0(a)=',VF0(1), DF0(1), F0(1), F0(NA1)
+if(jprint.eq.2) then
+          write(*,*) 'F0',(F0(j),j=1,NA1,30),F0(NA1)
+
+         write(*,*) 'SF0TOT', VINTa(SF0TOT,ROC,RHO,VR,NA1)
+endif
       !=================================================
       do j = 1, NA1
 ! particle sources/sinks  due to fusion and neutrals
@@ -734,6 +986,11 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
 		F3fast(j) = SF3(j)*TAUSp*3.*DLOG(1.+(Y2/TE(J))**1.5)/3.	  !fast t
 		F4fast(j) = SF4(j)*TAUSp*DLOG(1.+(Y/TE(J))**1.5)/3.	      !fast 4He
 		F5fast(j) = SF5(j)*TAUSp*0.75*DLOG(1.+(Y1/TE(J))**1.5)/3.  !fast 3He
+		NHYDR(j)  = F1(j) +F1fast(j)
+		NDEUT(j)  = F2(j) +F2fast(j)
+		NTRIT(j)  = F3(j) + F3fast(j)
+		NALF(j)   = F4(j) + F4fast(j)
+		NHE3(j)   = F5(j) + F5fast(j)
 ! fast ion pressure [keV*10^19/m3]
 		PFAST(j)=0. &
             +PDT*(1.-PAIONy(TE(J),y))*625.*TAUSp/3. &
@@ -767,13 +1024,17 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
 !write(*,*) 'AMAIN, ZMAIN, ZEF, Z2NdA ',AMAIN(1), ZMAIN(1), ZEF(1), Z2NdA(1)
 !write(*,*) 'TI, TE, MU, NE, NI ',TI(1), TE(1), MU(1), NE(1), NI(1)
 !goto 111
+!      open(20,file='jpsi.dat')
+!      read(20,*) jpsi
+!      close(20)
+!      if(jpsi.ne.0) then
 	call CUBSy( &
       NA1, RTOR, BTOR, IPL, &
       FP, MU, ZEF, TE, TI, NE, NI, AMAIN, ZMAIN, &
       BMINT, BMAXT, BDB0, BDB02, FOFB, SQEPS, RHO, &
       CUBS, CC)	! output: bootsrap current density and curent conductivity by Sauter
 !write(*,*) 'CUBS, CC ', CUBS(1), CC(1)
-      cubs(1:na1) =0.
+!      cubs(1:na1) =0.
 	call RHSEQy( &
       NA1, RTOR, BTOR, RHO, NE, NI, TE, TI, PBLON, PBPER, PFAST, &
       MU, CU, G22, G33, IPOL, AMETR, &
@@ -781,9 +1042,10 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
 
 !write(*,*) 'CUTOR, EQFF, EQPF',  CUTOR(1), EQFF(1), EQPF(1)
 !============================================ current diffusion (+equilibrium)
-      call STEPUPF( &
+ if(key4control(11).gt.0)     call STEPUPF( &
          NA1, RHO, TAU, RTOR, BTOR, IPL, CUBS, CD, CC, G22, G33, IPOL, &
          FP, FPo, MU, CU, UPL, ULON, FV)
+!         endif ! psi
 ! ======================================= Ohmic heating
 ! PJOUL=CUTOR(J)*UPL(J)/(M_PI2*RTOR)
 !		PJOUL(1:NA1)=CUTOR(1:NA1)*UPL(1:NA1)/(M_PI2*RTOR)
@@ -796,22 +1058,63 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
 ! 111 continue
 !write(*,*) 'PJOUL, CC, ULON ',PJOUL(1), CC(1), ULON(1)
 !=======================================================
-		PEAUX(1:NA1) = PEECR(1:NA1)
+		PEAUX(1:NA1) = PEBM(1:NA1)+PEECR(1:NA1)+PEICR(1:NA1)
+		PIAUX(1:NA1) = PIBM(1:NA1)+PIICR(1:NA1)
 !============================= total heat sources w/o equipartition
 		PE(1:NA1) = PEAUX(1:NA1) +PJOUL(1:NA1) +PEFUS(1:NA1) +PEN(1:NA1) -PRAD(1:NA1)
 		PI(1:NA1) = PIAUX(1:NA1) +PIFUS(1:NA1) +PIN(1:NA1)
 		CD(1:NA1) = CUECR(1:NA1)
-
+if(jprint.eq.1) then
+      write(*,*) 'Peecr', VINTa(PEECR,ROC,RHO,VR,NA1)
+      write(*,*) 'Peaux', VINTa(PEAUX,ROC,RHO,VR,NA1)
+      write(*,*) 'Piaux', VINTa(PiAUX,ROC,RHO,VR,NA1)
+      write(*,*) 'Pjoul', VINTa(Pjoul,ROC,RHO,VR,NA1)
+      write(*,*) 'Pefus', VINTa(PEFUS,ROC,RHO,VR,NA1)
+      write(*,*) 'Pifus', VINTa(Pifus,ROC,RHO,VR,NA1)
+      write(*,*) 'CD', IINTa(CD,ROC,RHO,G33,IPOL,NA1)
+      write(*,*) 'CUBS', IINTa(CUBS,ROC,RHO,G33,IPOL,NA1)
+endif
+      open(20,file='jdens.dat')
+      read(20,*) jdens
+      close(20)
+      if(jdens.ne.0) then
       !======================================= hydrogen species
-      if (iH .ne. 0) call STEPUPN( &
+!      if (iH .ne. 0)
+ if(key4control(1).gt.0) call STEPUPN( &
          NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
          VF1, DF1, DSN, F1o, F1, F1X, F1B, SF1, SFF1, SF1TOT, QF1, GF1, GF1X)
-      if (iD .ne. 0) call STEPUPN( &
+!      if (iD .ne. 0)
+ if(key4control(2).gt.0) call STEPUPN( &
          NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
          VF2, DF2, DSN, F2o, F2, F2X, F2B, SF2, SFF2, SF2TOT, QF2, GF2, GF2X)
-      if (iT .ne. 0) call STEPUPN( &
+!      if (iT .ne. 0)
+ if(key4control(3).gt.0) call STEPUPN( &
          NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
          VF3, DF3, DSN, F3o, F3, F3X, F3B, SF3, SFF3, SF3TOT, QF3, GF3, GF3X)
+
+
+ if(key4control(4).gt.0) call STEPUPN( &
+         NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
+         VF4, DF4, DSN, F4o, F4, F4X, F4B, SF4, SFF4, SF4TOT, QF4, GF4, GF4X)
+!      if (iT .ne. 0)
+ if(key4control(5).gt.0) call STEPUPN( &
+         NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
+         VF5, DF5, DSN, F5o, F5, F5X, F5B, SF5, SFF5, SF5TOT, QF5, GF5, GF5X)
+
+ if(key4control(6).gt.0) call STEPUPN( &
+         NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
+         VF6, DF6, DSN, F6o, F6, F6X, F6B, SF6, SFF6, SF6TOT, QF6, GF6, GF6X)
+
+ if(key4control(7).gt.0) call STEPUPN( &
+         NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
+         VF7, DF7, DSN, F7o, F7, F7X, F7B, SF7, SFF7, SF7TOT, QF7, GF7, GF7X)
+if(key4control(8).gt.0) call STEPUPN( &
+         NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
+         VF8, DF8, DSN, F8o, F8, F8X, F8B, SF8, SFF8, SF8TOT, QF8, GF8, GF8X)
+
+ if(key4control(9).gt.0) call STEPUPN( &
+         NA1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
+         VF9, DF9, DSN, F9o, F9, F9X, F9B, SF9, SFF9, SF9TOT, QF9, GF9, GF9X)
       !============================ electron density from quasineutrality
          ne(1:na1) = f1(1:na1) + f2(1:na1) + f3(1:na1) + 2.*(f4(1:na1) + f5(1:na1)) &
                + f1fast(1:na1) + f2fast(1:na1) + f3fast(1:na1) &
@@ -820,7 +1123,7 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
 
 !======
       if (ispec(4) .gt. 0) then
-         do j = 4, n_ion + 3 - nhydr
+         do j = 4, n_ion + 3 - Khydr
             i = ispec(j)
             ne(1:na1) = ne(1:na1) + &
                         cp_in%profiles_1d(i_time)%ion(i)%density(1:na1)/denA2D* &
@@ -836,8 +1139,13 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
       !        write(*,*) 'QF3(vint)',VINTa(SF3TOT,ROC,RHO,VR,NA1)
       !==============================================temperature stepup
       !        write(*,*) 'trace 325 before STEPUPT'
+      endif !density
 
-      call stepupt(&
+ !     open(20,file='jheat.dat')
+ !     read(20,*) jheat
+ !     close(20)
+ !     if(jheat.ne.0) &
+   if(key4control(12).ne.0) call stepupt(&
           NA1, NB1, TAU, HRO, VRo, VR, G11, SLAT, RHO, &
       XI, HE, DSI, DSE, &
       PE, PET, PETOT, PI, PIT, PITOT, Z2NdA, &
@@ -846,27 +1154,31 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
       )
       !================================================================
       if (smart_in%sw_stdout .ne.0) then
-         write (*, 100) 'QE, QI, Ge     = ', QE(NA1), QI(NA1), QF1(NA1)+QF2(NA1)+QF3(NA1)
+if(jprint.eq.1)     write (*, 100) 'QE, QI, Ge     = ', QE(NA1), QI(NA1), QF1(NA1)+QF2(NA1)+QF3(NA1)
       endif
- 
+
       !============================================= pelshot
       !        Write(*,*) 'before pellet'
       !        time=time + TAU
          TIMPEL = TIMPEL + TAU
          YDABL = 0.d0
          YDDEP = 0.d0
-      if (TIMPEL .ge. (dtau - 1.d-7)) then
+!      if (TIMPEL .ge. (dtau - 1.d-7)) then
          TIMPEL = 0.d0
          !== Pellet Ablation Model: SMART
-         if (smart_in%sw_smart .ne. 0) then
-            call pelIMAS1(smart_in%YAM, smart_in%YVP, smart_in%YVOL, &
+!         if (smart_in%sw_smart .ne. 0) then
+!      open(20,file='jpel.dat')
+!      read(20,*) jpel
+!      close(20)
+   if(key4control(14).ne.0)  call pelIMAS1(smart_in%YAM, smart_in%YVP, smart_in%YVOL, &
                           smart_in%YCOS0, smart_in%YEFF, smart_in%YDL, &
                           YDABL, YDDEP, YPELSRS, smart_in%yswitch, &
                           ne, ni, Te, Ti, F1, F2, F3, FP, &
                           ametr, shif, vr, mu, &
                           HRO, ROC, BTOR, RTOR, NA1, NRD)
-         end if
-      end if
+
+!      end if
+
       !        Write(*,*) 'after pellet'
       !======================= calculation of the delay between shoot and ablation
       !        write(*,*) 'ne-neo',(ne(1:NA1)-neo(1:NA1))
@@ -882,30 +1194,40 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
       !============================================ end of itterations
 
       if (smart_in%sw_stdout .ne.0) then
+if(jprint.eq.1) then
          write(*, 100)'Te(1),  Ti(1)  = ',Te(1),Ti(1)
          write(*, 100)'ne(1),  ni(1)  = ',ne(1),ni(1)
          write(*, 100)'n0(1),  n0(a)  = ',F0(1),F0(NA1)
-         write(*, 100)'<ne>,   QF0B   = ',VINTa(ne, ROC, RHO, VR, NA1)/VOLe(n_xeq),QNB
+         write(*, 100)'<ne>,   QF0B   = ',VINTa(ne, ROC, RHO, VR, NA1)/VOL(NA1),QNB
          write(*, 100)'<Shdt>, <Sn0>  = ',VINTa(SF3TOT, ROC, RHO, VR, NA1) + &
                                           VINTa(SF2TOT, ROC, RHO, VR, NA1) + &
                                           VINTa(SF1TOT, ROC, RHO, VR, NA1),  &
                                           VINTa(SF0TOT, ROC, RHO, VR, NA1)
+endif
       end if
+!      if(jmix.ne.0) &
+   if(key4control(15).ne.0) &
+   call MIXF19(1.4d0,1.d0,NA1,RHO,VR,AMAIN,ZEF,G33,G22,IPOL, &
+      F1,F2,F3,F4,F5,F6,F7,F8,F9,TE,TI,NE,NI,MU,PFAST,PBLON,PBPER, &
+      CU,CUTOR,EQPF,EQFF,NHYDR,NDEUT,NTRIT,NALF,NHE3,FP, &
+      RTOR,BTOR,SHIFT,IMIX)
 
  100  format(A17,5(1PE15.6))
  200  format(A17,10i5)
 
       TIME = TIME + TAU
+if(jprint.eq.1) then
                write (*, 100) 'time   = ', time
          write (*, 100) 'Pec,Pe,Pi,cc0,J0 = ', VINTa(PEECR, ROC, RHO, VR, NA1),&
-                                             VINTa(PE, ROC, RHO, VR, NA1),&
+                                             VINTa(PE, ROC, RHO, VR, NA1),&p
                                              VINTa(PI, ROC, RHO, VR, NA1), CC(1), CU(1)
          write (*, 100) 'Pei, POH, FP(a) = ', VINTa(Pei, ROC, RHO, VR, NA1),&
                                              VINTa(PJOUL, ROC, RHO, VR, NA1),FP(NA1)
          write (*, 100) '<ne>, q(0), q(a) = ', VINTa(NE, ROC, RHO, VR, NA1)/VOL(NA1),1./mu(1),1./mu(NA1)
-         write (*, 100) 'Ibs, Itot, U||(a),Icd =', IINTa(CUBS,ROC,RHO,G33,IPOL,NA1), &
-                                             IINTa(CU,ROC,RHO,G33,IPOL,NA1),ULON(NA1), &
+         write (*, 100) 'Ibs, Itot, U(0), U(a) =', IINTa(CUBS,ROC,RHO,G33,IPOL,NA1), &
+                                             IINTa(CU,ROC,RHO,G33,IPOL,NA1),UPL(1),UPL(NA1), &
                                              IINTa(CD,ROC,RHO,G33,IPOL,NA1)
+endif
  write(1,998) time,Te(1),Ti(1),ne(1),ni(1),Te(NA1),Ti(NA1),ne(NA1),ni(NA1), &
       F0(1),F0(NA1),VINTa(NE, ROC, RHO, VR, NA1)/VOL(NA1),IINTa(CUBS,ROC,RHO,G33,IPOL,NA1),&
       IINTa(CU, ROC, RHO, G33, IPOL, NA1), IINTa(CD, ROC, RHO, G33, IPOL, NA1),ULON(1),ULON(NA1),FP(1),FP(NA1), &
@@ -915,23 +1237,48 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
                                           VINTa(SF2TOT, ROC, RHO, VR, NA1) + &
                                           VINTa(SF1TOT, ROC, RHO, VR, NA1),  &
                                           VINTa(SF0TOT, ROC, RHO, VR, NA1)
- enddo
-      ! end of time loop
+ enddo      ! end of time loop . The line should de commented for external time control
  	close(1)
  998	format(30(1XPE13.6))
-         write(*,*) 'FP(1), FP(n_xcp)', FP(1), FP(n_xcp), FP(1)- FP(n_xcp)
-         write(*,*) 'CU',(CU(j),j=1,NA1,30)
-         write(*,*) 'CUbs',(CUbs(j),j=1,NA1,30)
-         write(*,*) 'CD',(CD(j),j=1,NA1,30)
-         write(*,*) 'q',(1./MU(j),j=1,NA1,30)
-         write(*,*) 'Fp',(FP(j),j=1,NA1,30)
-         write(*,*) 'CC',(CC(j),j=1,NA1,30)
+         write(*,*) 'UPL',(UPL(j),j=1,NA1,30),UPL(NA1)
+         write(*,*) 'CU',(CU(j),j=1,NA1,30),CU(NA1)
+         write(*,*) 'CUbs',(CUbs(j),j=1,NA1,30),CUbs(NA1)
+         write(*,*) 'q',(1./MU(j),j=1,NA1,30),1./MU(NA1)
+         write(*,*) 'Fp',(FP(j),j=1,NA1,30),FP(NA1)
+         write(*,*) 'CC',(CC(j),j=1,NA1,30),CC(NA1)
+         write(*,*) 'CD',(CD(j),j=1,NA1,30),CD(NA1)
+         write(*,*) 'CU(1-5)',(CU(j),j=1,5)
+         write(*,*) 'q(1-5)',(1./mu(j),j=1,5)
+         write(*,*) 'UPL(1-5)',(UPL(j),j=1,5)
+         write(*,*) 'Ipl', IINTa(CU,ROC,RHO,G33,IPOL,NA1)
+! temporary for ASTRA vvvvvvvvvvvvvv
+         write(*,*) 'ABC', time, abc
+         write(*,*) 'BTOR',time,BTOR
+         write(*,*) 'RTOR',time,rtor
+         write(*,*)  'AB', time, abc*1.1
+         write(*,*) 'ELON',time, elon
+         write(*,*) 'TRIAN',time,trian
+         write(*,*) 'ELONG',time, elon
+         write(*,*) 'TRICH',time,trian
+         write(*,*) 'IPL',time,IPL
+         write(*,*) 'AMJ',time,AMAIN(1)
+         write(*,*) 'ZMJ',time,ZMAIN(1)
+   include 'Out4ASTRA.inc'
+! temporayr for ASTRA ^^^^^^^^^^^^^^
+!         write(*,*) 'G33',(G33(j),j=1,NA1,30),G33(NA1)
+!         write(*,*) 'G22',(G22(j),j=1,NA1,30),G22(NA1)
+!         write(*,*) 'IPOL',(IPOL(j),j=1,NA1,30),IPOL(NA1)
       !========================================================
       !== conversion to IMAS units
       cp_out%time(i_time) = TIME
-
+if(NABEG.eq.1) then
       cp_out%profiles_1d(i_time)%electrons%density(1:n_xcp) = ne(1:n_xcp)*denA2D
       cp_out%profiles_1d(i_time)%electrons%temperature(1:n_xcp) = Te(1:n_xcp)*temA2D
+ 	cp_out%profiles_1d(i_time)%q(1:n_xcp) = 1./ MU(1:n_xcp)
+	cp_out%profiles_1d(i_time)%grid%psi(1:n_xcp) =sign_psi*FP(1:n_xcp)
+      	cp_out%profiles_1d(i_time)%j_total(1:n_xcp)=sign_psi*CU(1:n_xcp)*cuA2D
+	cp_out%profiles_1d(i_time)%j_bootstrap(1:n_xcp)=sign_psi*CUBS(1:n_xcp)*cuA2D
+	cp_out%profiles_1d(i_time)%j_non_inductive(NABEG:n_xcp)=sign_psi*CD(1:n_xcp)*cuA2D
       if (ispec(1) .ne. 0) then
          cp_out%profiles_1d(i_time)%ion(ispec(1))%density(1:n_xcp) = F1(1:n_xcp)*denA2D
          cp_out%profiles_1d(i_time)%neutral(ispec(1))%density(1:n_xcp) = F01B/F0B*F0(1:n_xcp)*denA2D
@@ -947,10 +1294,59 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
       do i = 1, n_ion
          cp_out%profiles_1d(i_time)%ion(i)%temperature(1:n_xcp) = Ti(1:n_xcp)*temA2D
       end do
+else
+        cp_out%profiles_1d(i_time)%electrons%density(NABEG:n_xcp) = ne(1:NA1)*denA2D
+        cp_out%profiles_1d(i_time)%electrons%temperature(NABEG:n_xcp) = Te(1:NA1)*temA2D
+ 	cp_out%profiles_1d(i_time)%q(NABEG:n_xcp) = 1./ MU(1:NA1)
+	cp_out%profiles_1d(i_time)%grid%psi(NABEG:n_xcp) =sign_psi*FP(1:NA1)
+      	cp_out%profiles_1d(i_time)%j_total(NABEG:n_xcp)=sign_psi*CU(1:NA1)*cuA2D
+	cp_out%profiles_1d(i_time)%j_bootstrap(NABEG:n_xcp)=sign_psi*CUBS(1:NA1)*cuA2D
+	cp_out%profiles_1d(i_time)%j_non_inductive(NABEG:n_xcp)=sign_psi*CD(1:NA1)*cuA2D
+      if (ispec(1) .ne. 0) then
+         cp_out%profiles_1d(i_time)%ion(ispec(1))%density(NABEG:n_xcp) = F1(1:NA1)*denA2D
+         cp_out%profiles_1d(i_time)%neutral(ispec(1))%density(NABEG:n_xcp) = F01B/F0B*F0(1:NA1)*denA2D
+      end if
+      if (ispec(2) .ne. 0) then
+         cp_out%profiles_1d(i_time)%ion(ispec(2))%density(NABEG:n_xcp) = F2(1:NA1)*denA2D
+         cp_out%profiles_1d(i_time)%neutral(ispec(2))%density(NABEG:n_xcp) = F02B/F0B*F0(1:NA1)*denA2D
+      end if
+      if (ispec(3) .ne. 0) then
+         cp_out%profiles_1d(i_time)%ion(ispec(3))%density(NEBEG:n_xcp) = F3(1:NA1)*denA2D
+         cp_out%profiles_1d(i_time)%neutral(ispec(3))%density(NABEG:n_xcp) = F03B/F0B*F0(1:NA1)*denA2D
+      end if
+      do i = 1, n_ion
+         cp_out%profiles_1d(i_time)%ion(i)%temperature(NABEG:n_xcp) = Ti(1:NA1)*temA2D
+      end do  
+do j=1,NABEG
+        cp_out%profiles_1d(i_time)%electrons%density(j) = ne(1)*denA2D
+        cp_out%profiles_1d(i_time)%electrons%temperature(j) = Te(1)*temA2D
+ 	cp_out%profiles_1d(i_time)%q(j) = 1./ MU(1)
+	cp_out%profiles_1d(i_time)%grid%psi(j) =sign_psi*FP(1)
+      	cp_out%profiles_1d(i_time)%j_total(j)=sign_psi*CU(1)*cuA2D
+	cp_out%profiles_1d(i_time)%j_bootstrap(j)=sign_psi*CUBS(1)*cuA2D
+	cp_out%profiles_1d(i_time)%j_non_inductive(j)=sign_psi*CD(1)*cuA2D
+      if (ispec(1) .ne. 0) then
+         cp_out%profiles_1d(i_time)%ion(ispec(1))%density(j) = F1(1)*denA2D
+         cp_out%profiles_1d(i_time)%neutral(ispec(1))%density(j) = F01B/F0B*F0(1)*denA2D
+      end if
+      if (ispec(2) .ne. 0) then
+         cp_out%profiles_1d(i_time)%ion(ispec(2))%density(j) = F2(1)*denA2D
+         cp_out%profiles_1d(i_time)%neutral(ispec(2))%density(j) = F02B/F0B*F0(1)*denA2D
+      end if
+      if (ispec(3) .ne. 0) then
+         cp_out%profiles_1d(i_time)%ion(ispec(3))%density(j) = F3(1)*denA2D
+         cp_out%profiles_1d(i_time)%neutral(ispec(3))%density(j) = F03B/F0B*F0(1)*denA2D
+      end if
+      do i = 1, n_ion
+         cp_out%profiles_1d(i_time)%ion(i)%temperature(j) = Ti(1)*temA2D
+      end do 
+enddo  
+endif
       !        write(*,*) 'vr, n_xcp',n_xcp, vr(1:n_xcp)
       !        write(*,*) 'vole, n_xcp',n_xcp, vr(1:n_xcp)
       !        write(*,*) 'shif, n_xcp',n_xcp, shif(1:n_xcp)
       if (smart_in%sw_stdout .ne.0) then
+if(jprint.eq.1) then
          write (*, 100) 'YDABL, YDDEP   = ', YDABL, YDDEP
          write (*, 100) 'RHOEC, RHODR   = ', RHOEC, RHODR
          write (*, 100) 'ROC, QECR      = ', ROC, QECR
@@ -958,16 +1354,17 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
          write (*, 100) 'Pecr, Pe, Pi   = ', VINTa(PEECR, ROC, RHO, VR, NA1),&
                                              VINTa(PEECR, ROC, RHO, VR, NA1),&
                                              VINTa(PI, ROC, RHO, VR, NA1)
+endif
       endif
-
-!,&
-
+      deallocate (key4control)
       deallocate (ispec)
       !        include 'dealloc.corprf
       deallocate (ne, ni, Te, Ti, nex, nix, TEX, TIX, TN, NN,&
-                  F0, F1, F2, F3, F4, F5, F0x, F1x, F2x, F3x, F4x, F5x, FP,&
-                  neo, nio, Teo, Tio, F0o, F1o, F2o, F3o, F4o, F5o, FPo,&
-                  cu, cutor, cd, cubs, UPL, ULON, EZ, ZEF, AMAIN, Z2NdA, ZMAIN &
+                  F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, &
+                  F0x, F1x, F2x, F3x, F4x, F5x, F6x, F7x, F8x, F9x, VTOR, FP,&
+                  neo, nio, Teo, Tio, F0o, F1o, F2o, F3o, F4o, F5o, F6o, F7o, F8o, F9o, FPo,&
+                  cu, cutor, cd, cubs, UPL, ULON, EZ, ZEF, AMAIN, Z2NdA, ZMAIN, &
+                  NHYDR, NDEUT, NTRIT, NALF, NHE3 &
                   )
       !        include 'dealloc.corsrs'
       deallocate (SN, SNN, SNTOT, QN, GN, GNX, PE, PET, PETOT,&
@@ -977,11 +1374,17 @@ FPe(1:n_xeq) = -eq_in%time_slice(j_time)%profiles_1d%psi(1:n_xeq) + eq_in%time_s
                   SF3, SFF3, SF3TOT, QF3, GF3, GF3X,&
                   SF4, SFF4, SF4TOT, QF4, GF4, GF4X,&
                   SF5, SFF5, SF5TOT, QF5, GF5, GF5X,&
+                  SF6, SFF6, SF6TOT, QF6, GF6, GF6X,&
+                  SF7, SFF7, SF7TOT, QF7, GF7, GF7X,&
+                  SF8, SFF8, SF8TOT, QF8, GF8, GF8X,&
+                  SF9, SFF9, SF9TOT, QF9, GF9, GF9X,&
                   PI, PIT, PITOT, PEI, QE, QI, PEECR, CUECR, YPELSRS, &
                   PEFUS, PIFUS, PEAUX, PIAUX, PEN, PIN, PJOUL, PRAD, &
-                  Sn14, Sn245 )
+		  PEBM, PIBM, PEICR, PIICR, &
+                  Sn14, Sn245, SCUBM )
       !        include 'dealloc.cortran'
       deallocate (DF0, VF0, DF1, VF1, DF2, VF2, DF3, VF3, DF4, VF4, DF5, VF5, &
+                  DF6, VF6, DF7, VF7, DF8, VF8, DF9, VF9, &
                   DN, CN, HE, XI, CC, DSE, DSI, DSN)
       !        write(*,*) '308'
       !        include 'dealloc.eq'
