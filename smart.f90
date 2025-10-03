@@ -782,11 +782,11 @@ write(*,*) 'X 1,2,3,NA,NA1',cp_in%profiles_1d(i_time)%grid%rho_tor_norm(1), &
          write(*,*) 'CU',(CU(j),j=1,NA1,30),CU(NA1)
          write(*,*) 'CUbs',(CUbs(j),j=1,NA1,30),CUbs(NA1)
          write(*,*) 'q',(1./MU(j),j=1,NA1,30),1./MU(NA1)
-         write(*,*) 'Fp',(FP(j),j=1,NA1,30),FP(NA1)p
+         write(*,*) 'Fp',(FP(j),j=1,NA1,30),FP(NA1)
          write(*,*) 'CC',(CC(j),j=1,NA1,30),CC(NA1)
          write(*,*) 'CD',(CD(j),j=1,NA1,30),CD(NA1)
          write(*,*) 'G33',(G33(j),j=1,NA1,30),G33(NA1)
-         write(*,*) 'G22',(G22(j),j=1,NA1,30),G22(NA1)p
+         write(*,*) 'G22',(G22(j),j=1,NA1,30),G22(NA1)
          write(*,*) 'IPOL',(IPOL(j),j=1,NA1,30),IPOL(NA1)
          write(*,*) 'Ipl', IINTa(CU,ROC,RHO,G33,IPOL,NA1)
 !=========================================================== time loop
@@ -1219,7 +1219,7 @@ endif
 if(jprint.eq.1) then
                write (*, 100) 'time   = ', time
          write (*, 100) 'Pec,Pe,Pi,cc0,J0 = ', VINTa(PEECR, ROC, RHO, VR, NA1),&
-                                             VINTa(PE, ROC, RHO, VR, NA1),&p
+                                             VINTa(PE, ROC, RHO, VR, NA1),& 
                                              VINTa(PI, ROC, RHO, VR, NA1), CC(1), CU(1)
          write (*, 100) 'Pei, POH, FP(a) = ', VINTa(Pei, ROC, RHO, VR, NA1),&
                                              VINTa(PJOUL, ROC, RHO, VR, NA1),FP(NA1)
