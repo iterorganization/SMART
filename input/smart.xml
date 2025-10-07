@@ -81,4 +81,11 @@
     <!-- IEC/QEC [MA/MW] -->
     <YEFFec> 0.0e0 </YEFFec>
 
+    <!--
+      ///// CONTROL KEYS /////
+    -->
+
+    <!-- Control Keys (15 integers, space separated) -->
+    <key4control> 0 0 0 0 0 0 0 0 0 0 1 0 1 1 0 </key4control>
+
 </parameters>

@@ -26,7 +26,7 @@ FCINC+=`pkg-config xmllib --cflags`
 FCINC+=`pkg-config fundamental-constants --cflags`
 
 # LIST OF FORTRAN FILES
-OBJS_ACTOR = codeparam_smart.o smart.o pelIMAS1.o SMTH.o stepup.o runnt.o
+OBJS_ACTOR = codeparam_smart.o SMTH.o runnt.o smart.o pelIMAS1.o stepup.o
 OBJS_STDA  = codeparam_standalone.o standalone.o
 
 all: lib exe

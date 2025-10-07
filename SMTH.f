@@ -698,8 +698,7 @@ C	YEFF	ECR current drive efficiency [A/W]
          if(jres.ge.na1) then
             YP(1:na1)	=0.
             YC(1:na1)	=0.
-            write(*,*)
-     >  'Warning (ECH2a in SMTH.f): ECR location is out of plasma. Rec =',YR0,'> ROC=',RHO(NA1)
+            write(*,*) 'Warning (ECH2a in SMTH.f): ECR location is out of plasma. Rec =',YR0,'> ROC=',RHO(NA1)
          return
          endif
 		YM=IINTa(YP,ROC,RHO,G33,IPOL,NA1)

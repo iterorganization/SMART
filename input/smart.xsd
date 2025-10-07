@@ -30,6 +30,17 @@
      </xs:restriction>
    </xs:simpleType>
 
+   <!-- List type for 15 integers (control keys) -->
+   <xs:simpleType name="controlKeyList15">
+     <xs:restriction>
+       <xs:simpleType>
+         <xs:list itemType="xs:integer" />
+       </xs:simpleType>
+       <!-- Cannot directly restrict length of list inside nested simpleType in XSD 1.0 using this form; use pattern -->
+       <xs:pattern value="\s*(-?\d+\s+){14}-?\d+\s*"/>
+     </xs:restriction>
+   </xs:simpleType>
+
    <!-- document element -->
    <xs:element name="parameters">
      <xs:complexType>
@@ -60,6 +71,8 @@
          <xs:element ref="ROCDR" minOccurs="0"/>
          <xs:element ref="QECR" minOccurs="0"/>
          <xs:element ref="YEFFec" minOccurs="0"/>
+         <!-- Control Keys -->
+         <xs:element ref="key4control" minOccurs="0"/>
        </xs:all>
      </xs:complexType>
    </xs:element>
@@ -238,6 +251,16 @@
       </xs:annotation>
    </xs:element>
 
+   <!--
+     ///// CONTROL KEYS /////
+   -->
+
+   <!-- Control Keys (15 integers, space separated) -->
+   <xs:element name="key4control" type="controlKeyList15">
+     <xs:annotation>
+       <xs:documentation>15 integer control keys in fixed order: 1 thermal H transport; 2 thermal D transport; 3 thermal T transport; 4 thermal 4He transport; 5 thermal 3He transport; 6-9 reserved; 10 CX neutrals; 11 poloidal flux evolution; 12 heat transport; 13 ECH&amp;CD; 14 ST mix; 15 pellet injection.</xs:documentation>
+     </xs:annotation>
+   </xs:element>
 
 </xs:schema>
- 
+
