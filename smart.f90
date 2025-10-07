@@ -5,7 +5,7 @@ module mod_smart
 contains
 
    subroutine smart(eq_in, cp_in, pellets_in, cp_out, codeparam, &
-                    error_flag, error_message)
+      error_flag, error_message)
 
       ! ---------------------------------------
       ! PELLET ABLATION MODEL FROM ASTRA: SMART
@@ -140,7 +140,7 @@ contains
             smart_in%YAM = pellets_in%time_slice(1)%pellet(1)%species(1)%a
             smart_in%YVP = pellets_in%time_slice(1)%pellet(1)%velocity_initial*1.e-3
             smart_in%YVOL = pellets_in%time_slice(1)%pellet(1)%shape%size(1)**2* &
-                            pellets_in%time_slice(1)%pellet(1)%shape%size(2)*M_PI*1.e+9
+               pellets_in%time_slice(1)%pellet(1)%shape%size(2)*M_PI*1.e+9
          else
             if (smart_in%sw_stdout .ne. 0) then
                write (*, *) 'Input pellets IDS NOT detected'
@@ -178,8 +178,8 @@ contains
       write(20,*) i_time, nbnd1
       write(20,*) j_time, timbeg
       do j=1,nbnd1
-      write(20,*) eq_in%time_slice(j_time)%boundary%outline%r(j), &
-      eq_in%time_slice(j_time)%boundary%outline%z(j)
+         write(20,*) eq_in%time_slice(j_time)%boundary%outline%r(j), &
+            eq_in%time_slice(j_time)%boundary%outline%z(j)
       enddo
       close(20)
 !
@@ -502,7 +502,7 @@ contains
       CUECR = 0.d0
 
       allocate ( DN(n_xcp), CN(n_xcp), HE(n_xcp), XI(n_xcp), CC(n_xcp), &
-                 DSI(n_xcp), DSE(n_xcp), DSN(n_xcp) )
+         DSI(n_xcp), DSE(n_xcp), DSN(n_xcp) )
       DN = 0.d0
       CN = 0.d0
       HE = 0.d0
@@ -604,14 +604,14 @@ contains
 
             end if
             ZEF(j) = ZEF(j) + cp_in%profiles_1d(i_time)%ion(i)%density(j)/denA2D*&
-                   & cp_in%profiles_1d(i_time)%ion(i)%z_ion_1D(j)**2/ne(j)
+            & cp_in%profiles_1d(i_time)%ion(i)%z_ion_1D(j)**2/ne(j)
             ZMAIN(j) = Zmain(J)+ &
                cp_in%profiles_1d(i_time)%ion(i)%density(j)/denA2D &
                *cp_in%profiles_1d(i_time)%ion(i)%z_ion_1D(j)/ne(j)
          end do                                        ! j ion
          if (ne(j) .ge. 0. .and. te(j) .gt. 0.) then
             pei(j) = 0.00246*(15.9 - .5*dlog(NE(j)) + dlog(TE(j))) &
-                   *NE(j)*Z2NdA(j)*(TE(j)-TI(j))/TE(j)/dsqrt(TE(j))
+               *NE(j)*Z2NdA(j)*(TE(j)-TI(j))/TE(j)/dsqrt(TE(j))
          else
             !                write(*,*) 'ne,te,j',ne(j),te(j),j
          end if
@@ -1196,18 +1196,18 @@ contains
          !============================================ current diffusion (+equilibrium)
          !============================================ end of itterations
 
-      if (smart_in%sw_stdout .ne.0) then
-if(jprint.eq.1) then
-         write(*, 100)'Te(1),  Ti(1)  = ',Te(1),Ti(1)
-         write(*, 100)'ne(1),  ni(1)  = ',ne(1),ni(1)
-         write(*, 100)'n0(1),  n0(a)  = ',F0(1),F0(NA1)
-         write(*, 100)'<ne>,   QF0B   = ',VINTa(ne, ROC, RHO, VR, NA1)/VOL(NA1),QNB
-         write(*, 100)'<Shdt>, <Sn0>  = ',VINTa(SF3TOT, ROC, RHO, VR, NA1) + &
-                                          VINTa(SF2TOT, ROC, RHO, VR, NA1) + &
-                                          VINTa(SF1TOT, ROC, RHO, VR, NA1),  &
-                                          VINTa(SF0TOT, ROC, RHO, VR, NA1)
-endif
-      end if
+         if (smart_in%sw_stdout .ne.0) then
+            if(jprint.eq.1) then
+               write(*, 100)'Te(1),  Ti(1)  = ',Te(1),Ti(1)
+               write(*, 100)'ne(1),  ni(1)  = ',ne(1),ni(1)
+               write(*, 100)'n0(1),  n0(a)  = ',F0(1),F0(NA1)
+               write(*, 100)'<ne>,   QF0B   = ',VINTa(ne, ROC, RHO, VR, NA1)/VOL(NA1),QNB
+               write(*, 100)'<Shdt>, <Sn0>  = ',VINTa(SF3TOT, ROC, RHO, VR, NA1) + &
+                  VINTa(SF2TOT, ROC, RHO, VR, NA1) + &
+                  VINTa(SF1TOT, ROC, RHO, VR, NA1),  &
+                  VINTa(SF0TOT, ROC, RHO, VR, NA1)
+            endif
+         end if
 !      if(jmix.ne.0) &
          if(smart_in%key4control(15).ne.0) &
             call MIXF19(1.4d0,1.d0,NA1,RHO,VR,AMAIN,ZEF,G33,G22,IPOL, &
@@ -1218,31 +1218,31 @@ endif
 100      format(A17,5(1PE15.6))
 200      format(A17,10i5)
 
-      TIME = TIME + TAU
-if(jprint.eq.1) then
-               write (*, 100) 'time   = ', time
-         write (*, 100) 'Pec,Pe,Pi,cc0,J0 = ', VINTa(PEECR, ROC, RHO, VR, NA1),&
-                                             VINTa(PE, ROC, RHO, VR, NA1),&
-                                             VINTa(PI, ROC, RHO, VR, NA1), CC(1), CU(1)
-         write (*, 100) 'Pei, POH, FP(a) = ', VINTa(Pei, ROC, RHO, VR, NA1),&
-                                             VINTa(PJOUL, ROC, RHO, VR, NA1),FP(NA1)
-         write (*, 100) '<ne>, q(0), q(a) = ', VINTa(NE, ROC, RHO, VR, NA1)/VOL(NA1),1./mu(1),1./mu(NA1)
-         write (*, 100) 'Ibs, Itot, U(0), U(a) =', IINTa(CUBS,ROC,RHO,G33,IPOL,NA1), &
-                                             IINTa(CU,ROC,RHO,G33,IPOL,NA1),UPL(1),UPL(NA1), &
-                                             IINTa(CD,ROC,RHO,G33,IPOL,NA1)
-endif
- write(1,998) time,Te(1),Ti(1),ne(1),ni(1),Te(NA1),Ti(NA1),ne(NA1),ni(NA1), &
-      F0(1),F0(NA1),VINTa(NE, ROC, RHO, VR, NA1)/VOL(NA1),IINTa(CUBS,ROC,RHO,G33,IPOL,NA1),&
-      IINTa(CU, ROC, RHO, G33, IPOL, NA1), IINTa(CD, ROC, RHO, G33, IPOL, NA1),ULON(1),ULON(NA1),FP(1),FP(NA1), &
-      VINTa(Pe, ROC, RHO, VR, NA1), VINTa(Pi, ROC, RHO, VR, NA1), VINTa(Pefus, ROC, RHO, VR, NA1), &
-      VINTa(Pifus, ROC, RHO, VR, NA1), VINTa(PJOUL, ROC, RHO, VR, NA1), VINTa(PEECR, ROC, RHO, VR, NA1), &
-      VINTa(Pei, ROC, RHO, VR, NA1), 1./mu(1), 1./mu(na1), VINTa(SF3TOT, ROC, RHO, VR, NA1) + &
-                                          VINTa(SF2TOT, ROC, RHO, VR, NA1) + &
-                                          VINTa(SF1TOT, ROC, RHO, VR, NA1),  &
-                                          VINTa(SF0TOT, ROC, RHO, VR, NA1)
- enddo      ! end of time loop . The line should de commented for external time control
- 	close(1)
- 998	format(30(1XPE13.6))
+         TIME = TIME + TAU
+         if(jprint.eq.1) then
+            write (*, 100) 'time   = ', time
+            write (*, 100) 'Pec,Pe,Pi,cc0,J0 = ', VINTa(PEECR, ROC, RHO, VR, NA1),&
+               VINTa(PE, ROC, RHO, VR, NA1),&
+               VINTa(PI, ROC, RHO, VR, NA1), CC(1), CU(1)
+            write (*, 100) 'Pei, POH, FP(a) = ', VINTa(Pei, ROC, RHO, VR, NA1),&
+               VINTa(PJOUL, ROC, RHO, VR, NA1),FP(NA1)
+            write (*, 100) '<ne>, q(0), q(a) = ', VINTa(NE, ROC, RHO, VR, NA1)/VOL(NA1),1./mu(1),1./mu(NA1)
+            write (*, 100) 'Ibs, Itot, U(0), U(a) =', IINTa(CUBS,ROC,RHO,G33,IPOL,NA1), &
+               IINTa(CU,ROC,RHO,G33,IPOL,NA1),UPL(1),UPL(NA1), &
+               IINTa(CD,ROC,RHO,G33,IPOL,NA1)
+         endif
+         write(1,998) time,Te(1),Ti(1),ne(1),ni(1),Te(NA1),Ti(NA1),ne(NA1),ni(NA1), &
+            F0(1),F0(NA1),VINTa(NE, ROC, RHO, VR, NA1)/VOL(NA1),IINTa(CUBS,ROC,RHO,G33,IPOL,NA1),&
+            IINTa(CU, ROC, RHO, G33, IPOL, NA1), IINTa(CD, ROC, RHO, G33, IPOL, NA1),ULON(1),ULON(NA1),FP(1),FP(NA1), &
+            VINTa(Pe, ROC, RHO, VR, NA1), VINTa(Pi, ROC, RHO, VR, NA1), VINTa(Pefus, ROC, RHO, VR, NA1), &
+            VINTa(Pifus, ROC, RHO, VR, NA1), VINTa(PJOUL, ROC, RHO, VR, NA1), VINTa(PEECR, ROC, RHO, VR, NA1), &
+            VINTa(Pei, ROC, RHO, VR, NA1), 1./mu(1), 1./mu(na1), VINTa(SF3TOT, ROC, RHO, VR, NA1) + &
+            VINTa(SF2TOT, ROC, RHO, VR, NA1) + &
+            VINTa(SF1TOT, ROC, RHO, VR, NA1),  &
+            VINTa(SF0TOT, ROC, RHO, VR, NA1)
+      enddo      ! end of time loop . The line should de commented for external time control
+      close(1)
+998   format(30(1XPE13.6))
       if(jprint.ne.0) then
          write(*,*) 'UPL',(UPL(j),j=1,NA1,30),UPL(NA1)
          write(*,*) 'CU',(CU(j),j=1,NA1,30),CU(NA1)
@@ -1351,41 +1351,41 @@ endif
       !        write(*,*) 'vole, n_xcp',n_xcp, vr(1:n_xcp)
       !        write(*,*) 'shif, n_xcp',n_xcp, shif(1:n_xcp)
       if (smart_in%sw_stdout .ne.0) then
-if(jprint.eq.1) then
-         write (*, 100) 'YDABL, YDDEP   = ', YDABL, YDDEP
-         write (*, 100) 'RHOEC, RHODR   = ', RHOEC, RHODR
-         write (*, 100) 'ROC, QECR      = ', ROC, QECR
-         write (*, 100) 'YEFFec         = ', YEFFec
-         write (*, 100) 'Pecr, Pe, Pi   = ', VINTa(PEECR, ROC, RHO, VR, NA1),&
-                                             VINTa(PEECR, ROC, RHO, VR, NA1),&
-                                             VINTa(PI, ROC, RHO, VR, NA1)
-endif
+         if(jprint.eq.1) then
+            write (*, 100) 'YDABL, YDDEP   = ', YDABL, YDDEP
+            write (*, 100) 'RHOEC, RHODR   = ', RHOEC, RHODR
+            write (*, 100) 'ROC, QECR      = ', ROC, QECR
+            write (*, 100) 'YEFFec         = ', YEFFec
+            write (*, 100) 'Pecr, Pe, Pi   = ', VINTa(PEECR, ROC, RHO, VR, NA1),&
+               VINTa(PEECR, ROC, RHO, VR, NA1),&
+               VINTa(PI, ROC, RHO, VR, NA1)
+         endif
       endif
       deallocate (ispec)
       !        include 'dealloc.corprf
       deallocate (ne, ni, Te, Ti, nex, nix, TEX, TIX, TN, NN,&
-                  F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, &
-                  F0x, F1x, F2x, F3x, F4x, F5x, F6x, F7x, F8x, F9x, VTOR, FP,&
-                  neo, nio, Teo, Tio, F0o, F1o, F2o, F3o, F4o, F5o, F6o, F7o, F8o, F9o, FPo,&
-                  cu, cutor, cd, cubs, UPL, ULON, EZ, ZEF, AMAIN, Z2NdA, ZMAIN, &
-                  NHYDR, NDEUT, NTRIT, NALF, NHE3 &
-                  )
+         F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, &
+         F0x, F1x, F2x, F3x, F4x, F5x, F6x, F7x, F8x, F9x, VTOR, FP,&
+         neo, nio, Teo, Tio, F0o, F1o, F2o, F3o, F4o, F5o, F6o, F7o, F8o, F9o, FPo,&
+         cu, cutor, cd, cubs, UPL, ULON, EZ, ZEF, AMAIN, Z2NdA, ZMAIN, &
+         NHYDR, NDEUT, NTRIT, NALF, NHE3 &
+         )
       !        include 'dealloc.corsrs'
       deallocate (SN, SNN, SNTOT, QN, GN, GNX, PE, PET, PETOT,&
-                  SF0, SFF0, SF0TOT, QF0, GF0, GF0X,&
-                  SF1, SFF1, SF1TOT, QF1, GF1, GF1X,&
-                  SF2, SFF2, SF2TOT, QF2, GF2, GF2X,&
-                  SF3, SFF3, SF3TOT, QF3, GF3, GF3X,&
-                  SF4, SFF4, SF4TOT, QF4, GF4, GF4X,&
-                  SF5, SFF5, SF5TOT, QF5, GF5, GF5X,&
-                  SF6, SFF6, SF6TOT, QF6, GF6, GF6X,&
-                  SF7, SFF7, SF7TOT, QF7, GF7, GF7X,&
-                  SF8, SFF8, SF8TOT, QF8, GF8, GF8X,&
-                  SF9, SFF9, SF9TOT, QF9, GF9, GF9X,&
-                  PI, PIT, PITOT, PEI, QE, QI, PEECR, CUECR, YPELSRS, &
-                  PEFUS, PIFUS, PEAUX, PIAUX, PEN, PIN, PJOUL, PRAD, &
-		  PEBM, PIBM, PEICR, PIICR, &
-                  Sn14, Sn245, SCUBM )
+         SF0, SFF0, SF0TOT, QF0, GF0, GF0X,&
+         SF1, SFF1, SF1TOT, QF1, GF1, GF1X,&
+         SF2, SFF2, SF2TOT, QF2, GF2, GF2X,&
+         SF3, SFF3, SF3TOT, QF3, GF3, GF3X,&
+         SF4, SFF4, SF4TOT, QF4, GF4, GF4X,&
+         SF5, SFF5, SF5TOT, QF5, GF5, GF5X,&
+         SF6, SFF6, SF6TOT, QF6, GF6, GF6X,&
+         SF7, SFF7, SF7TOT, QF7, GF7, GF7X,&
+         SF8, SFF8, SF8TOT, QF8, GF8, GF8X,&
+         SF9, SFF9, SF9TOT, QF9, GF9, GF9X,&
+         PI, PIT, PITOT, PEI, QE, QI, PEECR, CUECR, YPELSRS, &
+         PEFUS, PIFUS, PEAUX, PIAUX, PEN, PIN, PJOUL, PRAD, &
+         PEBM, PIBM, PEICR, PIICR, &
+         Sn14, Sn245, SCUBM )
       !        include 'dealloc.cortran'
       deallocate (DF0, VF0, DF1, VF1, DF2, VF2, DF3, VF3, DF4, VF4, DF5, VF5, &
          DF6, VF6, DF7, VF7, DF8, VF8, DF9, VF9, &
@@ -1393,10 +1393,10 @@ endif
       !        write(*,*) '308'
       !        include 'dealloc.eq'
       deallocate (IPOL, G11, G33, SLAT, ametr, shif, vr, vro, SQEPS, &
-                  mu, VOL, XCP, ametre, shife, VOLe,&
-                  FPe, XEQ, RHO, IPOLe, G11e, G33e, SLATe, &
-                  BMINT, BMAXT, BDB0, BDB02, B0DB2, FOFB, G22, EQFF, EQPF, FV, &
-                  BMINTe, BMAXTe, BDB0e, BDB02e, B0DB2e, FOFBe, G22e)
+         mu, VOL, XCP, ametre, shife, VOLe,&
+         FPe, XEQ, RHO, IPOLe, G11e, G33e, SLATe, &
+         BMINT, BMAXT, BDB0, BDB02, B0DB2, FOFB, G22, EQFF, EQPF, FV, &
+         BMINTe, BMAXTe, BDB0e, BDB02e, B0DB2e, FOFBe, G22e)
       !        write(*,*) '313'
 
    end subroutine smart
