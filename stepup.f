@@ -13,7 +13,6 @@
      >    YHRO,HROA,QNB
          double precision, allocatable ::
      >     YWA(:),YWB(:),YWC(:),DSN(:)
-      external RUNNa
          allocate(
      >     YWA(NA1),YWB(NA1),YWC(NA1),DSN(NA1)
      >      )
@@ -86,7 +85,6 @@ C **** Density equation
      >    YHRO,HROA,NEB
          double precision, allocatable ::
      >     YWA(:),YWB(:),YWC(:)
-           external RUNNa
          allocate(
      >     YWA(NA1),YWB(NA1),YWC(NA1)
      >      )
@@ -332,5 +330,4 @@ C Prescribed plasma current:
      >   )
       return
       end
-
 !===================================================
