@@ -21,14 +21,9 @@ contains
     character(len=132), pointer :: string(:)
     type(type_smart_data), intent(out) :: smart
     type(type_xml2eg_document) :: doc
-    logical :: errflag
-    integer, allocatable :: tmp(:)
-    integer :: nread, expected_keys
-
-    expected_keys = 15
 
     call xml2eg_parse_memory(string, doc)
-    call set_verbose(.True.)   ! suppress library verbosity by default
+    call set_verbose(.True.)
 
     ! Scalars
     call xml2eg_get(doc,'TAU',      smart%TAU)
@@ -58,30 +53,7 @@ contains
     call xml2eg_get(doc,'YEFFec',   smart%YEFFec)
 
     ! key4control list (space separated)
-    if (allocated(smart%key4control)) deallocate(smart%key4control)
-    call xml2eg_getAllocatable(doc,'key4control', smart%key4control, errflag)
-    if (errflag) then
-       write(6,*) 'Warning: key4control element missing or parse error – defaults applied'
-       allocate(smart%key4control(expected_keys))
-       smart%key4control = 0
-    end if
-
-    if (.not. allocated(smart%key4control)) then
-       allocate(smart%key4control(expected_keys))
-       smart%key4control = 0
-    end if
-
-    nread = size(smart%key4control)
-    if (nread /= expected_keys) then
-       allocate(tmp(expected_keys))
-       tmp = 0
-       if (nread > 0) tmp(1:min(nread,expected_keys)) = smart%key4control(1:min(nread,expected_keys))
-       if (allocated(smart%key4control)) deallocate(smart%key4control)
-       allocate(smart%key4control(expected_keys))
-       smart%key4control = tmp
-       deallocate(tmp)
-       write(6,*) 'Notice: key4control adjusted to length', expected_keys, '(input length=', nread, ')'
-    end if
+    call xml2eg_getAllocatable(doc,'key4control', smart%key4control)
 
     call xml2eg_free_doc(doc)
   end subroutine assign_codeparam

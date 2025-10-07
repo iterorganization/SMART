@@ -258,7 +258,20 @@
    <!-- Control Keys (15 integers, space separated) -->
    <xs:element name="key4control" type="controlKeyList15">
      <xs:annotation>
-       <xs:documentation>15 integer control keys in fixed order: 1 thermal H transport; 2 thermal D transport; 3 thermal T transport; 4 thermal 4He transport; 5 thermal 3He transport; 6-9 reserved; 10 CX neutrals; 11 poloidal flux evolution; 12 heat transport; 13 ECH&amp;CD; 14 ST mix; 15 pellet injection.</xs:documentation>
+       <xs:documentation>15 integer control keys in fixed order:
+         1 thermal H transport;
+         2 thermal D transport;
+         3 thermal T transport;
+         4 thermal 4He transport;
+         5 thermal 3He transport;
+         6-9 reserved;
+         10 CX neutrals;
+         11 poloidal flux evolution;
+         12 heat transport;
+         13 ECH&amp;CD;
+         14 ST mix;
+         15 pellet injection.
+       </xs:documentation>
      </xs:annotation>
    </xs:element>
 
