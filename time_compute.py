@@ -11,6 +11,7 @@ def time_compute(input,time_slice,ntimes,dt_required):
     # READ FULL TIME VECTOR OF EQUILIBRIUM IDS TO GET THE TIME BASE
     print('=> Open input datafile and to read time array from equilibrium IDS')
     time_array = input.partial_get(ids_name='equilibrium',data_path='time')
+    #time_array = input.get("equilibrium", lazy=True).time
     if time_slice == 0:
         ntimes = len(time_array)
         it = 0

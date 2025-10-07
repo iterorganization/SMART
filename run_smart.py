@@ -46,11 +46,13 @@ print('---------------------------------')
 # OPEN INPUT DATAFILE TO GET DATA FROM IMAS SCENARIO DATABASE
 print('=> Open input datafile')
 input = imas.DBEntry(imas.imasdef.HDF5_BACKEND,input_database,pulse,run_in,input_user_or_path)
+#input = imas.DBEntry(imas.ids_defs.HDF5_BACKEND,input_database,pulse,run_in,input_user_or_path)
 input.open()
 
 
 # PELLETS WRITTEN ON THE FLY (TO BE LATER FILLED VIA WAVEFORM-COOKER OR TAKEN FROM PCSSP)
 input_pellets = imas.pellets()
+#input_pellets = imas.IDSFactory().pellets()
 if use_pellets_ids == 1:
     input_pellets.ids_properties.homogeneous_time = 1
     input_pellets.ids_properties.provider = os.getenv('USER')
@@ -79,6 +81,7 @@ if os.path.isdir(local_database) == False:
 # CREATE OUTPUT DATAFILE
 print('=> Create output datafile')
 output = imas.DBEntry(imas.imasdef.HDF5_BACKEND,output_database,pulse,run_out,output_user_or_path)
+#output = imas.DBEntry(imas.imasdefs.HDF5_BACKEND,output_database,pulse,run_out,output_user_or_path)
 output.create()
 
 # READ FULL TIME VECTOR OF EQUILIBRIUM IDS TO GET THE TIME BASE
