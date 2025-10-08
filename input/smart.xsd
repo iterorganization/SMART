@@ -32,12 +32,9 @@
 
    <!-- List type for 17 integers (control keys) -->
    <xs:simpleType name="controlKeyList">
-     <xs:restriction>
-       <xs:simpleType>
-         <xs:list itemType="xs:integer" />
-       </xs:simpleType>
-       <!-- Cannot directly restrict length of list inside nested simpleType in XSD 1.0 using this form; use pattern -->
-       <xs:pattern value="\s*(-?\d+\s+){16}-?\d+\s*"/>
+     <xs:restriction base="xs:string">
+       <!-- Pattern to match exactly 17 integers separated by spaces -->
+       <xs:pattern value="\s*-?\d+(\s+-?\d+){16}\s*"/>
      </xs:restriction>
    </xs:simpleType>
 
@@ -256,7 +253,7 @@
    -->
 
    <!-- Control Keys (17 integers, space separated) -->
-   <xs:element name="key4control" type="controlKeyList17">
+   <xs:element name="key4control" type="controlKeyList">
      <xs:annotation>
        <xs:documentation>17 integer control keys in fixed order:
          1 thermal H transport;
