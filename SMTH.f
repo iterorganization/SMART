@@ -49,17 +49,20 @@
 	double precision	HH,YAJ,YCJ,GP,HRO,HROA,ROC,RTOR,BTOR,SHIFT
 	double precision YF0,YF1,YF2,YF3,YF4,YF5,YF6,YF7,YF8,YF9
 	double precision YNIZ1,YNIZ2,YNIZ3,YALF,YDEUT,YHYDR,YTRIT,YHE3
-	double precision YI(NA1),YB(NA1),YA(NA1)
+	double precision YI(NA1),YB(NA1),YA(NA1)		!,FP(NA1)
 	double precision RHO(*),VNEWR(*),AMAIN(*),ZEF(*),G33(*),IPOL(*),
      > 	F1(*),F2(*),F3(*),F4(*),F5(*),F6(*),F7(*),F8(*),F9(*),
      > 	TE(*),TI(*),NE(*),NI(*),MU(*),PFAST(*),PBLON(*),PBPER(*),
      > 	CU(*),CUTOR(*),EQPF(*),EQFF(*),G22(*),FP(*),
      >  NHYDR(*),NDEUT(*),NTRIT(*),NALF(*),NHE3(*)
-	NA=NA-1
+	NA=NA1-1
 	HRO	=RHO(3)-RHO(2)
 	HROA	=RHO(NA1)-RHO(NA)
 	ROC	=RHO(NA1)
 	GP	=3.1414926d0
+!		do j=1,na1
+!		fp(j)=fp0(j)-fp0(1)
+!		enddo
 
 !	real YARR(*),yCUA(NRD)
 	IMIX	=0
@@ -67,8 +70,8 @@
 	I	=1
 1	J	=NA1-I
      	I	=I+1
-	IF(I.GE.NA1) RETURN
-	IF(MU(J).GE.1.)	IRS=J
+	IF(I.GE.NA) RETURN
+	IF(MU(J).GE.1.d0)	IRS=J
 	IF(IRS.LE.1) GOTO 1
 		I1	=IRS*RmDRs+1
 	IF(I1.GE.NA) I1=NA
@@ -105,7 +108,7 @@ C
 	endif
 
 c	write(*,*) 'rqst>rqst1=',rqst,rqst1
-	if(rqst.gt.rqst1) return
+	if(rqst.gt.rqst1) return	!! temporary 14-OCT-2025
 		IMIX	=I1-1
 		YNE	=0.d0
 		YTE	=0.d0
@@ -132,16 +135,19 @@ c	write(*,*) 'rqst>rqst1=',rqst,rqst1
 		YHYDR	=0.d0
 		YTRIT	=0.d0
 		YHE3	=0.d0
-	IF(YESCU.NE.0.)	THEN
-	   ysurf1=0.d0
-	   ytok=0.d0
+		ysurf1	=0.d0
+		ytok	=0.d0
+	IF(YESCU.NE.0.d0)	THEN
+
 	       YCU=1.25/(GP*GP*RTOR)
 	   do j=1,IMIX
 	      y=RHO(j)*HRO/G33(J)/IPOL(J)**3
 	      ysurf1=ysurf1 + y
 	      ytok=ytok+CU(J)*y
        		YI(j)=HRO**3*(j-0.5)/(YCU*G33(J)*IPOL(J)**3)
+! 		YI(j)=HRO**3*(j)/(YCU*G33(J)*IPOL(J)**3)
 	      enddo
+
 C ==== average current density
 	      ytok=ytok/ysurf1
 	   endif
@@ -183,7 +189,7 @@ cc          CU(IMIX)= YTOK
 !====================================nporOHKA==========for fp
 		YB(1) = -YTOK*YI(1)/G22(1)
 		YA(1) = 1.d0
-	do j=2,IMIX
+	do j=2,IMIX		!
 		j1=j-1
 	y=G22(j1)*(YA(j1)-1.d0)-G22(j)
 		YA(j)=-G22(j)/y
@@ -226,11 +232,16 @@ C...If you don't want to mix Ne,i, Te,i then comment the proper lines
 	enddo
 
 call CUOFP !======================================================================!
-
+	  if(YESCU.ne.0.d0) then
 	HH = HRO*HRO
 	YAJ = 0.
 C	write(*,*)"CU"
 C	write(*,100)(CU(j),j=NA1-5,NA1)
+!	write(*,*) 'qDO',(1./MU(j),j=1,NA1,30),1./MU(NA1) !!!!!
+!		write(*,*) 'YESCU, q(mix)',YESCU, 1./mu(IRS), 1./mu(IMIX)
+!			write(*,*) 'CUDO',(CU(j),j=1,NA1,30),CU(NA1)
+!		write(*,*) 'CUDO',(CU(j),j=1,10)
+!	write(*,*) 'psiDO',(FP(j),j=1,NA1,30),FP(NA1) !!!!!
 	do	J=1,IMIX-1
 	   YCJ = YAJ
 	   if (j .lt. NA)	then
@@ -247,17 +258,20 @@ C30-11	      CU(j) = 2.*(YAJ-YCJ)/(HRO+HROA)
 	   endif
 	   CU(j) = CU(j)/(j-0.5)
  	enddo
-
+		endif
 	YCJ = 1.25/(GP*GP*RTOR)
 	YAJ = 0.5/(GP*BTOR)
-	do	J=1,IMIX-1
+
+	do	J=2,IMIX-1
 	   CU(j) = YCJ*CU(j)*G33(J)*IPOL(J)**3
            MU(J) = YAJ*MU(j)
  	enddo
+		MU(1)=MU(2)
+		CU(1)=CU(2)
 C Preparing input for equilibrium solver:
 	YCB = 1.6E-3*RTOR/(BTOR*HRO*HRO)
 	do	J=1,IMIX-1
-	   CUTOR(J) = RHO(J)/ROC
+!	   CUTOR(J) = RHO(J)/ROC
 	   if (j.eq.NA) YCB = YCB*HRO/HROA
 
 	   EQFF(J) = (NE(J+1)*TE(J+1)-NE(J)*TE(J))
@@ -279,7 +293,18 @@ C Preparing input for equilibrium solver:
 
 	enddo
 c============================================
-
+!		do j=1,na1
+!		fp0(j)=fp(j)+fp0(1)
+!		enddo
+!	write(*,*) 'qST',(1./MU(j),j=1,NA1,30),1./MU(NA1)
+!		write(*,*) 'qST',(1./MU(j),j=1,10)
+!			write(*,*) 'CUST',(CU(j),j=1,NA1,30),CU(NA1)
+!		write(*,*) 'CUST',(CU(j),j=1,10)
+!		write(*,*) 'Te',(Te(j),j=1,10)
+!	write(*,*) 'FPST',(FP(j),j=1,NA1,30),FP(NA1)
+!		write(*,*) 'IMIX, IRS, ', IMIX, IRS
+!		write(*,*) 'YESCU, q(mix)',YESCU, 1./mu(IRS), 1./mu(IMIX)
+!		write(*,*) 'ysurf1, ytok',ysurf1, ytok
 	open(1,file='mix')
 	write(1,*) IMIX
 	close(1)
@@ -319,7 +344,7 @@ C----------------------------------------------------------------------|
         NA=NA1-1
         HROA=ROC-RHO(NA)
         GP=3.14159263359d0
-        HROA=HRO
+!        HROA=HRO
 
         HH = HRO*HRO
         YAJ = 0.

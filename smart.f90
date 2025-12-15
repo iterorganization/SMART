@@ -7,7 +7,7 @@ contains
    subroutine smart(eq_in, cp_in, pellets_in, cp_out, codeparam, &
       error_flag, error_message)
 
-      ! ---------------------------------------
+      ! --------------------------------------- VERSION 08-OCT-2025
       ! PELLET ABLATION MODEL FROM ASTRA: SMART
       ! IDS INPUT: EQUILIBRIUM, CORE_PROFILES
       ! IDS OUTPUT: CORE_PROFILES
@@ -172,7 +172,8 @@ contains
       nrd = 2*max(n_xcp,n_xeq)
 ! temporary vvvvvvvvvvvvvvvvvvvvvvvvvvvvv
       nbnd1 = size(eq_in%time_slice(j_time)%boundary%outline%r)
-      if (jprint.ne.0) write(*,*), 'nbnd1=',nbnd1
+      jprint = smart_in%key4control(16)
+   if (jprint.gt.0) write(*,*), 'nbnd1=',nbnd1
 !
       open(20,file='IMAS.dat')
       write(20,*) i_time, nbnd1
@@ -634,7 +635,7 @@ contains
       ROC = eq_in%time_slice(j_time)%profiles_1d%phi(n_xeq)
       ROC = dsqrt(dabs(ROC/BTOR/M_PI))
       RHO(1:NA1) = ROC*XCP(1:NA1)
-      if(jprint.ne.0) then
+ if(jprint.gt.0) then
          write(*,*) 'Xe 1,2,3,NA,NA1',eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(1), &
             eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(2), &
             eq_in%time_slice(j_time)%profiles_1d%rho_tor_norm(3), &
@@ -645,7 +646,7 @@ contains
             cp_in%profiles_1d(i_time)%grid%rho_tor_norm(3), &
             cp_in%profiles_1d(i_time)%grid%rho_tor_norm(n_xcp-1), &
             cp_in%profiles_1d(i_time)%grid%rho_tor_norm(n_xcp)
-      endif
+ endif
       ametre(1:NE1) =  (eq_in%time_slice(j_time)%profiles_1d%r_outboard(NEBEG:n_xeq) - &
       & eq_in%time_slice(j_time)%profiles_1d%r_inboard(NEBEG:n_xeq))/2.
       shife(1:NE1) = (eq_in%time_slice(j_time)%profiles_1d%r_outboard(NEBEG:n_xeq) + &
@@ -736,7 +737,7 @@ contains
          VR(1:NA1)*G22(1:NA1)/IPOL(1:NA1)*RTOR/4./M_PI**2
       SQEPS(1:NA1)  = SQRT(AMETR(1:NA1)/(RTOR+SHIF(1:NA1)))
       if(SQEPS(1).le.1.d-2) SQEPS(1)=SQEPS(2)/1.4
-      if(jprint.ne.0) then
+ if(jprint.gt.0) then
          write(*,*) 'SQEPS',(SQEPS(j),j=1,5)
          write(*,*) 'AMETR',(AMETR(j),j=1,5)
          write(*,*) 'AMETRe',(AMETRe(j),j=1,5)
@@ -746,13 +747,13 @@ contains
          write(*,*) 'BMINT',(BMINT(j),j=1,5)
          write(*,*) 'BMAXT',(BMAXT(j),j=1,5)
          write(*,*) 'BDB0',(BDB0(j),j=1,5)
-      endif
+ endif
 
       do j=1,NA1
          y=min(.99d0,BTOR*RTOR/BMAXT(j)/(RTOR+SHIF(j)))
          FOFB(j) = B0DB2(j)*(1.-sqrt(1.d0-y)*(1.+0.5*y))
       enddo
-      if(jprint.ne.0) then
+ if(jprint.gt.0) then
          write(*,*) 'VOLe',(VOLE(j),j=1,5)
          write(*,*) 'VOL',(VOL(j),j=1,5)
          write(*,*) 'XCP',(XCP(j),j=1,5)
@@ -761,14 +762,14 @@ contains
          write(*,*) 'q(0), q(na1), BTOR, VOL ',1./MU(1), 1./MU(NA1), BTOR, VOL(NA1)
          write(*,*) 'FP(1), FP(NA1)', FP(1), FP(NA1), FP(1)- FP(NA1)
          write(*,*) 'FPe(1), FPe(NE1)', FPe(1), FPe(NE1), FPe(1)- FPe(NE1)
-      endif
+ endif
       TAU = smart_in%TAU
       dtau = smart_in%dtau
 ! temporay vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv lines 768 -791 should be commented for external time loop control
 !      open(20,file='tau.dat')
 !      read(20,*) TAU
 !      close(20)
-      if(jprint.ne.0) then
+   if(jprint.gt.0) then
          write(*,*) 'NA1', NA1,NE1
 !         write(*,*) 'FP(1), FP(n_xcp)', FP(1), FP(n_xcp), FP(1)- FP(n_xcp)
          write(*,*) 'XCP',(XCP(j),j=1,NA1,30),XCP(NA1)
@@ -789,7 +790,7 @@ contains
          write(*,*) 'G22',(G22(j),j=1,NA1,30),G22(NA1)
          write(*,*) 'IPOL',(IPOL(j),j=1,NA1,30),IPOL(NA1)
          write(*,*) 'Ipl', IINTa(CU,ROC,RHO,G33,IPOL,NA1)
-      endif
+   endif
 !=========================================================== time loop
       !open (1, file='out_Peltran.dat')
       TIME = TIMBEG
@@ -797,7 +798,8 @@ contains
       open(1,file='out_VAR.dat')
       write(1,997) VARNAME
 997   format(30A14)
-!if(jprint.eq.1) write(*,*) 'TE(1), TI(1)=', TE(1), TI(1)
+      if(jprint.lt.0) write(*,997) VARNAME
+!if(jprint.gt.0) write(*,*) 'TE(1), TI(1)=', TE(1), TI(1)
 !      open(20,file='jtime.dat')
 !      read(20,*) jend
 !      close(20)
@@ -805,6 +807,7 @@ contains
 !      read(20,*) jprint
 !      close(20)
       jend=smart_in%key4control(17)
+!      write(*,*) 'jprint,jend=',jprint,jend
       do jtime=1,jend   ! the line should be commented when external time loop is used
          !=============================================== OLDNEW
          TEo(1:NA1) = TE(1:NA1)
@@ -835,12 +838,12 @@ contains
          enddo
          !================================================== auxilliary H&CD
          !=================================================== EC heating
-         if(jprint.eq.1) write(*,*) 'Peecr1', VINTa(PEECR,ROC,RHO,VR,NA1)
+   if(jprint.gt.0) write(*,*) 'Peecr1', VINTa(PEECR,ROC,RHO,VR,NA1)
          if (smart_in%sw_ech2a .ne. 0) then
             RHOEC  = smart_in%ROCEC*ROC ! EC location
             RHODR  = smart_in%ROCDR*ROC ! EC width
-!         QECR   = 0.d0
-            !smart_in%QECR      ! QEC= 10 MW
+!
+      QECR   = smart_in%QECR      ! QEC= 10 MW
             YEFFec = smart_in%YEFFec    ! IEC/QEC MA/MW
 
             !  ECH2a(YR0,YDR,YQ,YEFF,YP,YC,NA1,RHO,VR)
@@ -848,8 +851,8 @@ contains
                (RHOEC, RHODR, QECR, YEFFec, PEECR, CUECR, NA1, RHO, VR, G33, IPOL, TE, NE)
 !            YR0,  YDR,  YQ,   Y  EFF1,    YP,   YC,   NA1,  RHO,  VR,   G33,  IPOL, TE,NE
 !         PE(1:NA1) = PEECR(1:NA1)
-            if(jprint.eq.1)     write(*,*) 'Peecr2', VINTa(PEECR,ROC,RHO,VR,NA1)
-         endif
+            if(jprint.gt.0)     write(*,*) 'Peecr2', VINTa(PEECR,ROC,RHO,VR,NA1)
+   endif
 !write(*,*) 'after ECH2, SQEPS', SQEPS(1)
          !=============================================== boundary conditions
          QNB = smart_in%QNB
@@ -875,7 +878,7 @@ contains
          F0B = F01B + F02B + F03B
          !F0B is used only for normalization: puffing is controlled by QNB
          !fractions of neutral species: nH0B=  F01B/F0B, nD0B=  F02B/F0B, nT0B= F03B/F0B
-         if(jprint.eq.1)               write(*,*) 'F0B=',F0B
+   if(jprint.gt.0)               write(*,*) 'F0B=',F0B
          !========================================================transport coefficients
          !======================================== charged species
 ! to be replaced by external transport coefficients vvvvvvvvv
@@ -912,13 +915,13 @@ contains
             DSI(J)=0.
             DSN(J)=0.
          enddo
-         if(jprint.eq.1)  then
+   if(jprint.gt.0)  then
             write(*,*) 'UPL',(UPL(j),j=1,NA1,30),UPL(NA1)
             write(*,*) 'Te',(TE(j),j=1,NA1,30),TE(NA1)
             write(*,*) 'Ti',(Ti(j),j=1,NA1,30),Ti(NA1)
             write(*,*) 'ne',(Ne(j),j=1,NA1,30),ne(NA1)
             write(*,*) 'AMAIN',(AMAIN(j),j=1,NA1,30),AMAIN(NA1)
-         endif
+   endif
          !======================================== for neutral transport
          do j = 1, NA1
             DF0(J) = 9.584d10*(TI(J) + 1.d-9)/(SVCXy(Ti(j),AMAIN(j)) + 1.d-10)/AMAIN(J)/NE(j)
@@ -938,7 +941,7 @@ contains
          !==============================================density stepup
 !
          !write(*,*) 'SF0(J), SFF0(J)=', SF0(1), SFF0(1)
-! if(jprint.eq.1) then
+! if(jprint.gt.0) then
 !          write(*,*) 'DF0',(DF0(j),j=1,NA1,30),DF0(NA1)
 !         write(*,*) 'VF0',(VF0(j),j=1,NA1,30),VF0(NA1)
 !         write(*,*) 'SF0',(SF0(j),j=1,NA1,30),SF0(NA1)
@@ -1066,7 +1069,7 @@ contains
          PE(1:NA1) = PEAUX(1:NA1) +PJOUL(1:NA1) +PEFUS(1:NA1) +PEN(1:NA1) -PRAD(1:NA1)
          PI(1:NA1) = PIAUX(1:NA1) +PIFUS(1:NA1) +PIN(1:NA1)
          CD(1:NA1) = CUECR(1:NA1)
-         if(jprint.eq.1) then
+   if(jprint.gt.0) then
             write(*,*) 'Peecr', VINTa(PEECR,ROC,RHO,VR,NA1)
             write(*,*) 'Peaux', VINTa(PEAUX,ROC,RHO,VR,NA1)
             write(*,*) 'Piaux', VINTa(PiAUX,ROC,RHO,VR,NA1)
@@ -1075,7 +1078,7 @@ contains
             write(*,*) 'Pifus', VINTa(Pifus,ROC,RHO,VR,NA1)
             write(*,*) 'CD', IINTa(CD,ROC,RHO,G33,IPOL,NA1)
             write(*,*) 'CUBS', IINTa(CUBS,ROC,RHO,G33,IPOL,NA1)
-         endif
+   endif
 !     open(20,file='jdens.dat')
 !      read(20,*) jdens
 !      close(20)
@@ -1156,7 +1159,7 @@ contains
             )
          !================================================================
          if (smart_in%sw_stdout .ne.0) then
-            if(jprint.eq.1)     write (*, 100) 'QE, QI, Ge     = ', QE(NA1), QI(NA1), QF1(NA1)+QF2(NA1)+QF3(NA1)
+            if(jprint.gt.0)     write (*, 100) 'QE, QI, Ge     = ', QE(NA1), QI(NA1), QF1(NA1)+QF2(NA1)+QF3(NA1)
          endif
 
          !============================================= pelshot
@@ -1165,7 +1168,7 @@ contains
          TIMPEL = TIMPEL + TAU
          YDABL = 0.d0
          YDDEP = 0.d0
-!      if (TIMPEL .ge. (dtau - 1.d-7)) then
+      if (TIMPEL .ge. (dtau - 1.d-7)) then
 !         TIMPEL = 0.d0
          !== Pellet Ablation Model: SMART
 !         if (smart_in%sw_smart .ne. 0) then
@@ -1179,8 +1182,9 @@ contains
                ne, ni, Te, Ti, F1, F2, F3, FP, &
                ametr, shif, vr, mu, &
                HRO, ROC, BTOR, RTOR, NA1, NRD)
+           end if
             TIMPEL = 0.d0
-         end if
+      end if
 
          !        Write(*,*) 'after pellet'
          !======================= calculation of the delay between shoot and ablation
@@ -1197,7 +1201,7 @@ contains
          !============================================ end of itterations
 
          if (smart_in%sw_stdout .ne.0) then
-            if(jprint.eq.1) then
+      if(jprint.gt.0) then
                write(*, 100)'Te(1),  Ti(1)  = ',Te(1),Ti(1)
                write(*, 100)'ne(1),  ni(1)  = ',ne(1),ni(1)
                write(*, 100)'n0(1),  n0(a)  = ',F0(1),F0(NA1)
@@ -1206,10 +1210,11 @@ contains
                   VINTa(SF2TOT, ROC, RHO, VR, NA1) + &
                   VINTa(SF1TOT, ROC, RHO, VR, NA1),  &
                   VINTa(SF0TOT, ROC, RHO, VR, NA1)
-            endif
+      endif
          end if
 !      if(jmix.ne.0) &
-         if(smart_in%key4control(15).ne.0) &
+!         if(smart_in%key4control(14).ne.0.and.time.gt.277.d0) &
+        if(smart_in%key4control(14).ne.0) &
             call MIXF19(1.4d0,1.d0,NA1,RHO,VR,AMAIN,ZEF,G33,G22,IPOL, &
             F1,F2,F3,F4,F5,F6,F7,F8,F9,TE,TI,NE,NI,MU,PFAST,PBLON,PBPER, &
             CU,CUTOR,EQPF,EQFF,NHYDR,NDEUT,NTRIT,NALF,NHE3,FP, &
@@ -1219,7 +1224,7 @@ contains
 200      format(A17,10i5)
 
          TIME = TIME + TAU
-         if(jprint.eq.1) then
+         if(jprint.gt.0) then
             write (*, 100) 'time   = ', time
             write (*, 100) 'Pec,Pe,Pi,cc0,J0 = ', VINTa(PEECR, ROC, RHO, VR, NA1),&
                VINTa(PE, ROC, RHO, VR, NA1),&
@@ -1231,7 +1236,8 @@ contains
                IINTa(CU,ROC,RHO,G33,IPOL,NA1),UPL(1),UPL(NA1), &
                IINTa(CD,ROC,RHO,G33,IPOL,NA1)
          endif
-         write(1,998) time,Te(1),Ti(1),ne(1),ni(1),Te(NA1),Ti(NA1),ne(NA1),ni(NA1), &
+   write(1,998) &
+   time,Te(1),Ti(1),ne(1),ni(1),Te(NA1),Ti(NA1),ne(NA1),ni(NA1), &
             F0(1),F0(NA1),VINTa(NE, ROC, RHO, VR, NA1)/VOL(NA1),IINTa(CUBS,ROC,RHO,G33,IPOL,NA1),&
             IINTa(CU, ROC, RHO, G33, IPOL, NA1), IINTa(CD, ROC, RHO, G33, IPOL, NA1),ULON(1),ULON(NA1),FP(1),FP(NA1), &
             VINTa(Pe, ROC, RHO, VR, NA1), VINTa(Pi, ROC, RHO, VR, NA1), VINTa(Pefus, ROC, RHO, VR, NA1), &
@@ -1240,10 +1246,22 @@ contains
             VINTa(SF2TOT, ROC, RHO, VR, NA1) + &
             VINTa(SF1TOT, ROC, RHO, VR, NA1),  &
             VINTa(SF0TOT, ROC, RHO, VR, NA1)
+   if(jprint.lt.0)    write(*,998) &
+   time,Te(1),Ti(1),ne(1),ni(1),Te(NA1),Ti(NA1),ne(NA1),ni(NA1), &
+            F0(1),F0(NA1),VINTa(NE, ROC, RHO, VR, NA1)/VOL(NA1),IINTa(CUBS,ROC,RHO,G33,IPOL,NA1),&
+            IINTa(CU, ROC, RHO, G33, IPOL, NA1), IINTa(CD, ROC, RHO, G33, IPOL, NA1),ULON(1),ULON(NA1),FP(1),FP(NA1), &
+            VINTa(Pe, ROC, RHO, VR, NA1), VINTa(Pi, ROC, RHO, VR, NA1), VINTa(Pefus, ROC, RHO, VR, NA1), &
+            VINTa(Pifus, ROC, RHO, VR, NA1), VINTa(PJOUL, ROC, RHO, VR, NA1), VINTa(PEECR, ROC, RHO, VR, NA1), &
+            VINTa(Pei, ROC, RHO, VR, NA1), 1./mu(1), 1./mu(na1), VINTa(SF3TOT, ROC, RHO, VR, NA1) + &
+            VINTa(SF2TOT, ROC, RHO, VR, NA1) + &
+            VINTa(SF1TOT, ROC, RHO, VR, NA1),  &
+            VINTa(SF0TOT, ROC, RHO, VR, NA1)
+!         write(1,*) 'time', time
       enddo      ! end of time loop . The line should de commented for external time control
       close(1)
+      write(*,*) 'jprint',jprint
 998   format(30(1XPE13.6))
-      if(jprint.ne.0) then
+   if(jprint.gt.0) then
          write(*,*) 'UPL',(UPL(j),j=1,NA1,30),UPL(NA1)
          write(*,*) 'CU',(CU(j),j=1,NA1,30),CU(NA1)
          write(*,*) 'CUbs',(CUbs(j),j=1,NA1,30),CUbs(NA1)
@@ -1267,8 +1285,7 @@ contains
          write(*,*) 'IPL',time,IPL
          write(*,*) 'AMJ',time,AMAIN(1)
          write(*,*) 'ZMJ',time,ZMAIN(1)
-      endif
-      include 'Out4ASTRA.inc'
+   endif
 ! temporayr for ASTRA ^^^^^^^^^^^^^^
 !         write(*,*) 'G33',(G33(j),j=1,NA1,30),G33(NA1)
 !         write(*,*) 'G22',(G22(j),j=1,NA1,30),G22(NA1)
@@ -1351,7 +1368,7 @@ contains
       !        write(*,*) 'vole, n_xcp',n_xcp, vr(1:n_xcp)
       !        write(*,*) 'shif, n_xcp',n_xcp, shif(1:n_xcp)
       if (smart_in%sw_stdout .ne.0) then
-         if(jprint.eq.1) then
+         if(jprint.gt.0) then
             write (*, 100) 'YDABL, YDDEP   = ', YDABL, YDDEP
             write (*, 100) 'RHOEC, RHODR   = ', RHOEC, RHODR
             write (*, 100) 'ROC, QECR      = ', ROC, QECR

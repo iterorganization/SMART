@@ -64,7 +64,8 @@ program standalone
   call al_build_uri_from_legacy_parameters(HDF5_BACKEND, pulse, run_out, local_db, local_machine, "3", "", uri, status)
   call al_begin_dataentry_action(uri, FORCE_CREATE_PULSE, idx, status);
 
-  do i=1, 100
+!  do i=1, 100
+  do i=1, 1
      ! CORE TRANPORT FOR PELLET ABRATION MODEL (SMART) WITH ECRH (ECH2a), GAS-PUFF AS B.C. AND ALPHA HEATING MODELS
      call smart(equilibrium_in,core_profiles_in,pellets_in,core_profiles_out,codeparam_smart,error_flag,error_message)
 

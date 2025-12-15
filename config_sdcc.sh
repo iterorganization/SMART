@@ -39,7 +39,8 @@ ml iWrap/1.0.0-GCCcore-13.2.0
 #ml TotalView
 
 # IMAS warning
-#export IMAS_AL_DISABLE_OBSOLESCENT_WARNING=1
+#
+export IMAS_AL_DISABLE_OBSOLESCENT_WARNING=1
 
 # Actor folder
 export ACTOR_FOLDER=~/public/PYTHON_ACTORS
