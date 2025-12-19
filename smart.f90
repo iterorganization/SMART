@@ -173,7 +173,8 @@ contains
 ! temporary vvvvvvvvvvvvvvvvvvvvvvvvvvvvv
       nbnd1 = size(eq_in%time_slice(j_time)%boundary%outline%r)
       jprint = smart_in%key4control(16)
-   if (jprint.gt.0) write(*,*), 'nbnd1=',nbnd1
+   if (jprint.gt.0) then
+   write(*,*), 'nbnd1=',nbnd1
 !
       open(20,file='IMAS.dat')
       write(20,*) i_time, nbnd1
@@ -183,6 +184,7 @@ contains
             eq_in%time_slice(j_time)%boundary%outline%z(j)
       enddo
       close(20)
+      endif
 !
       elon  =eq_in%time_slice(j_time)%boundary%elongation
       trian =eq_in%time_slice(j_time)%boundary%triangularity
@@ -795,8 +797,10 @@ contains
       !open (1, file='out_Peltran.dat')
       TIME = TIMBEG
       !TIMPEL = 0.d0
+      if(jprint.eq.1) then
       open(1,file='out_VAR.dat')
       write(1,997) VARNAME
+      endif
 997   format(30A14)
       if(jprint.lt.0) write(*,997) VARNAME
 !if(jprint.gt.0) write(*,*) 'TE(1), TI(1)=', TE(1), TI(1)
@@ -1258,8 +1262,10 @@ contains
             VINTa(SF0TOT, ROC, RHO, VR, NA1)
 !         write(1,*) 'time', time
       enddo      ! end of time loop . The line should de commented for external time control
+      if(jprint.eq.1) then
       close(1)
       write(*,*) 'jprint',jprint
+      endif
 998   format(30(1XPE13.6))
    if(jprint.gt.0) then
          write(*,*) 'UPL',(UPL(j),j=1,NA1,30),UPL(NA1)
@@ -1286,6 +1292,7 @@ contains
          write(*,*) 'AMJ',time,AMAIN(1)
          write(*,*) 'ZMJ',time,ZMAIN(1)
    endif
+!      include 'Out4ASTRA.inc'
 ! temporayr for ASTRA ^^^^^^^^^^^^^^
 !         write(*,*) 'G33',(G33(j),j=1,NA1,30),G33(NA1)
 !         write(*,*) 'G22',(G22(j),j=1,NA1,30),G22(NA1)

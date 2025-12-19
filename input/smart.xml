@@ -98,12 +98,12 @@
  0  ! 13 ECH&CD
  0  ! 14 ST mix analysis
  1  ! 15 pellet if =1 shoot a pellet
- 1  ! 16 jprint =0/1/-1 no print/print to screen
+ 0  ! 16 jprint =0/1/-1 no print/print to screen
  100  ! 17 number of timesteps in one call
     -->
 
     <!-- Control Keys (17 integers, space separated) -->
              <!-- 1 2 3 4 5 6 7 8 9 1011121314151617 -->
-    <key4control> 1 1 1 1 1 0 0 0 0 1 1 1 1 1 1 -1 100 </key4control>
+    <key4control> 1 1 1 1 1 0 0 0 0 1 1 1 1 1 1 -0 1 </key4control>
 
 </parameters>
