@@ -378,63 +378,63 @@ C Define RHSs:
       end
 !==================================
 C======================================================================|
-	subroutine
-     >		RUNF(AK,B,C,D,FO,N,GT,H,HB,F,FV)
+        subroutine
+     >          RUNF(AK,B,C,D,FO,N,GT,H,HB,F,FV)
 C----------------------------------------------------------------------|
-C	The subroutine provides inversion of the matrix equation for FP
+C       The subroutine provides inversion of the matrix equation for FP
 C       The boundary condition is supplied in the following form:
-C       	F(N-1)*Psi(N+1)+F(N)*Psi(N)=F(N+1)
+C               F(N-1)*Psi(N+1)+F(N)*Psi(N)=F(N+1)
 C           where F(N-1), F(N) and F(N+1) are input parameters.
-C	Scheme:
-C	Input:	H	- radial step (m)
-C		HB	- edge radial step (m)
-C		N+1	- number of grid points
-C		GT	- time step (sec)
-C		AK(N)	- G22
-C		B(N)	- conductivity
-C		D(N)	- external (+bootstrap) current
-C		FO(N)	- old poloidal flux
-C		F(N-1),F(N),F(N+1)	- edge conditions
-C	Output:	F(1:N+1)- new poloidal flux
-C		C(1:N+1)- (1/rho)d{K*dF/d(rho)}/d(rho) ~ current density
-C		B(1:N+1)- (1/rho)dF/d(rho)	~ rotational transform
-C		D(1:N+1)- dF/dt	toroidal loop voltage
+C       Scheme:
+C       Input:  H       - radial step (m)
+C               HB      - edge radial step (m)
+C               N+1     - number of grid points
+C               GT      - time step (sec)
+C               AK(N)   - G22
+C               B(N)    - conductivity
+C               D(N)    - external (+bootstrap) current
+C               FO(N)   - old poloidal flux
+C               F(N-1),F(N),F(N+1)      - edge conditions
+C       Output: F(1:N+1)- new poloidal flux
+C               C(1:N+1)- (1/rho)d{K*dF/d(rho)}/d(rho) ~ current density
+C               B(1:N+1)- (1/rho)dF/d(rho)      ~ rotational transform
+C               D(1:N+1)- dF/dt toroidal loop voltage
 C----------------------------------------------------------------------|
-	implicit none
-	integer	N,j
-	double precision
-     1		AK(N+1),B(N+1),C(N+1),D(N+1),FV(N+1),F(N+1),FO(N+1),
-     2		H,HB,GT,HH,AJ,BJ,CJ,DJ,RJ,RJHH,YHB
-	HH = H*H
-	AJ = 0.
-	RJ = -0.5*H
-	do	1	J=1,N
-	   CJ = AJ
-	   RJ = RJ+H
-	   RJHH = RJ*HH
-	   if (j .eq. N)	then
-	      CJ = CJ*HB/H
-	      RJHH = RJ*HB*H
-	   endif
-	   AJ = AK(J)
-	   DJ = RJHH*B(J)/GT
-	   BJ = AJ+CJ+DJ
-	   DJ = DJ*FO(J)+RJHH*D(J)-AJ*(FV(J+1)-FV(J))
-	   if(J .ne. 1)	then
-	      BJ = BJ-CJ*C(J-1)
-	      DJ = DJ+CJ*(D(J-1)-FV(J-1)+FV(J))
-	   endif
-	   C(J) = AJ/BJ
-	   D(J) = DJ/BJ
- 1	continue
-	F(N+1) = (F(N+1)-F(N)*D(N))/(F(N-1)+F(N)*C(N))
-	do	2	J=N,1,-1
-	F(J) = C(J)*F(J+1)+D(J)
- 2	continue
-	do	j=1,N+1
-	   D(j) = (F(j)-FO(j))/GT
-C	   FO(j) = F(j)
-	enddo
-	end
+        implicit none
+        integer N,j
+        double precision
+     1          AK(N+1),B(N+1),C(N+1),D(N+1),FV(N+1),F(N+1),FO(N+1),
+     2          H,HB,GT,HH,AJ,BJ,CJ,DJ,RJ,RJHH,YHB
+        HH = H*H
+        AJ = 0.
+        RJ = -0.5*H
+        do      1       J=1,N
+           CJ = AJ
+           RJ = RJ+H
+           RJHH = RJ*HH
+           if (j .eq. N)        then
+              CJ = CJ*HB/H
+              RJHH = RJ*HB*H
+           endif
+           AJ = AK(J)
+           DJ = RJHH*B(J)/GT
+           BJ = AJ+CJ+DJ
+           DJ = DJ*FO(J)+RJHH*D(J)-AJ*(FV(J+1)-FV(J))
+           if(J .ne. 1) then
+              BJ = BJ-CJ*C(J-1)
+              DJ = DJ+CJ*(D(J-1)-FV(J-1)+FV(J))
+           endif
+           C(J) = AJ/BJ
+           D(J) = DJ/BJ
+ 1      continue
+        F(N+1) = (F(N+1)-F(N)*D(N))/(F(N-1)+F(N)*C(N))
+        do      2       J=N,1,-1
+        F(J) = C(J)*F(J+1)+D(J)
+ 2      continue
+        do      j=1,N+1
+           D(j) = (F(j)-FO(j))/GT
+C          FO(j) = F(j)
+        enddo
+        end
 C======================================================================|
 

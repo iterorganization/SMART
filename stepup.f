@@ -292,7 +292,7 @@ C      callmarkloc("TI equation"//char(0))
         double precision, allocatable ::
      >  YWA(:),YWB(:),YWC(:),YWD(:)
       external RUNF,CUOFPy,ARRNA1
-	allocate(
+        allocate(
      >  YWA(NA1),YWB(NA1),YWC(NA1),YWD(NA1)
      >   )
         NA=NA1-1

@@ -7,7 +7,7 @@ C===============================
      >  HRO,ROC,BTOR,RTOR,NA1,NRD)
 ! no common blocks, all inputs are explicit Polevoi 22-11-2022
 !     Subroutine pelIMAS1 version 05-OCT-2023
-!     >	(YAM,YVP,YVOL,YCOS0,YEFF,YDL,YDABL,YDDEP,YPELSRS,yswitch)
+!     > (YAM,YVP,YVOL,YCOS0,YEFF,YDL,YDABL,YDDEP,YPELSRS,yswitch)
 !       Subroutine pelnew(YAM,YVP,YVOL,YCOS0,YEFF,YDL,YDABL,YDDEP,yswitch)
 !       Subroutine pelinj(YAM,YVP,YRP,YCOS0,YEFF,YSHAPE)
 !       Subroutine psmar2(YAM,YVP,YRP,YCOS0,YEFF,YSHAPE)
@@ -123,8 +123,8 @@ C     . YAM,YVP,YRP,YCOS0,YEFF,YSHAPE
          ABC=AMETR(NA1)
 c
 c======================================================================
-C	write(*,*) 'YAM,YVP,YRP,YCOS0,YEFF,YSHAPE',
-C     .	YAM,YVP,YRP,YCOS0,YEFF,YSHAPE
+C       write(*,*) 'YAM,YVP,YRP,YCOS0,YEFF,YSHAPE',
+C     . YAM,YVP,YRP,YCOS0,YEFF,YSHAPE
 c*19-NOV-2013 vvvvvvvvvvvvvvvvvv
          yshape=1.d0
          yrp=1.d-1*(.75d0/M_PI*yvol)**.333333 !YRP [cm]

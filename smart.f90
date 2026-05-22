@@ -965,35 +965,35 @@ contains
          !=================================================
          do j = 1, NA1
 ! particle sources/sinks  due to fusion and neutrals
-            Y	= f2(J)*f3(J)*SVDBHy(TI(j))		! n(14MeV)+4He(3.52MeV)
-            Y1	= F2(j)*F2(j)*SVD1y(TI(j))/2.	! n2.45(MeV)+3He(0.817MeV)
-            Y2	= F2(j)*F2(j)*SVD2y(TI(j))/2.	! t(1MeV)+p(3MeV)
-            Y3	= F2(j)*stbrny(TE(j),NE(j),Z2NdA(j)) ! probability of burn out t(1MeV+dth=> 4He+n14MeV
-            SF1(j)	= NEo(J)*(SVIEy(TE(J))*F0(J)*F01B/F0B-SVRCy(TE(J))*F1o(J)) + Y2
-            SF2(j)	= NEo(J)*(SVIEy(TE(J))*F0(J)*F02B/F0B-SVRCy(TE(J))*F2o(J)) - Y - Y1 - Y2*Y3
-            SF3(j)	= NEo(J)*(SVIEy(TE(J))*F0(J)*F03B/F0B-SVRCy(TE(J))*F3o(J)) -Y + Y2*(1.-Y3)
-            SF4(j)	= Y + Y2*Y3
-            SF5(j)	= Y1
-            Sn14(j)	= Y + Y2*Y3
+            Y   = f2(J)*f3(J)*SVDBHy(TI(j))             ! n(14MeV)+4He(3.52MeV)
+            Y1  = F2(j)*F2(j)*SVD1y(TI(j))/2.   ! n2.45(MeV)+3He(0.817MeV)
+            Y2  = F2(j)*F2(j)*SVD2y(TI(j))/2.   ! t(1MeV)+p(3MeV)
+            Y3  = F2(j)*stbrny(TE(j),NE(j),Z2NdA(j)) ! probability of burn out t(1MeV+dth=> 4He+n14MeV
+            SF1(j)      = NEo(J)*(SVIEy(TE(J))*F0(J)*F01B/F0B-SVRCy(TE(J))*F1o(J)) + Y2
+            SF2(j)      = NEo(J)*(SVIEy(TE(J))*F0(J)*F02B/F0B-SVRCy(TE(J))*F2o(J)) - Y - Y1 - Y2*Y3
+            SF3(j)      = NEo(J)*(SVIEy(TE(J))*F0(J)*F03B/F0B-SVRCy(TE(J))*F3o(J)) -Y + Y2*(1.-Y3)
+            SF4(j)      = Y + Y2*Y3
+            SF5(j)      = Y1
+            Sn14(j)     = Y + Y2*Y3
             Sn245(j)= Y1
 
 ! distributions of fusion products
-            PDT 	= 5.632*Sn14(j)	! 3.52*1.6
-            PDD1 	= 1.3072*Y1		! 0.817*1.6
-            PDD2 	= 1.6128*Y2		!1.008*1.6
-            PDD3	= 4.8*Y2		!3.*1.6
+            PDT         = 5.632*Sn14(j) ! 3.52*1.6
+            PDD1        = 1.3072*Y1             ! 0.817*1.6
+            PDD2        = 1.6128*Y2             !1.008*1.6
+            PDD3        = 4.8*Y2                !3.*1.6
 
-            Y4	=	(NE(j)/Z2NdA(j))**.66667
-            Y	=	60.27*Y4			! 3520/14.6/4
-            Y1	=	18.653*Y4			! 817./14.6/3.
-            Y2	= 	23.01*Y4			! 1008/14.6/3
-            Y3	= 	205.48*Y4			! 3000/14.6/1
-!		TAUSp=2.d0*yABEAM/yNEJ*yTEJ*DSQRT(yTEJ)/YLE slowing down of proton
-            TAUSp	=2.d0/NE(J)*TE(J)*DSQRT(TE(J))/(15.85d0+DLOG(TE(J)/DSQRT(NE(J))))
+            Y4  =       (NE(j)/Z2NdA(j))**.66667
+            Y   =       60.27*Y4                        ! 3520/14.6/4
+            Y1  =       18.653*Y4                       ! 817./14.6/3.
+            Y2  =       23.01*Y4                        ! 1008/14.6/3
+            Y3  =       205.48*Y4                       ! 3000/14.6/1
+!               TAUSp=2.d0*yABEAM/yNEJ*yTEJ*DSQRT(yTEJ)/YLE slowing down of proton
+            TAUSp       =2.d0/NE(J)*TE(J)*DSQRT(TE(J))/(15.85d0+DLOG(TE(J)/DSQRT(NE(J))))
 ! nfast = S*tauSp*Afast/Zfast**2*ln(1+(Vb/Vc)**3)/3 fast ion desnity
-            F1fast(j) = SF1(j)*TAUSp*DLOG(1.+(Y3/TE(J))**1.5)/3.	  !fast protons
-            F3fast(j) = SF3(j)*TAUSp*3.*DLOG(1.+(Y2/TE(J))**1.5)/3.	  !fast t
-            F4fast(j) = SF4(j)*TAUSp*DLOG(1.+(Y/TE(J))**1.5)/3.	      !fast 4He
+            F1fast(j) = SF1(j)*TAUSp*DLOG(1.+(Y3/TE(J))**1.5)/3.          !fast protons
+            F3fast(j) = SF3(j)*TAUSp*3.*DLOG(1.+(Y2/TE(J))**1.5)/3.       !fast t
+            F4fast(j) = SF4(j)*TAUSp*DLOG(1.+(Y/TE(J))**1.5)/3.       !fast 4He
             F5fast(j) = SF5(j)*TAUSp*0.75*DLOG(1.+(Y1/TE(J))**1.5)/3.  !fast 3He
             NHYDR(j)  = F1(j) +F1fast(j)
             NDEUT(j)  = F2(j) +F2fast(j)
@@ -1041,13 +1041,13 @@ contains
             NA1, RTOR, BTOR, IPL, &
             FP, MU, ZEF, TE, TI, NE, NI, AMAIN, ZMAIN, &
             BMINT, BMAXT, BDB0, BDB02, FOFB, SQEPS, RHO, &
-            CUBS, CC)	! output: bootsrap current density and curent conductivity by Sauter
+            CUBS, CC)   ! output: bootsrap current density and curent conductivity by Sauter
 !write(*,*) 'CUBS, CC ', CUBS(1), CC(1)
 !      cubs(1:na1) =0.
          call RHSEQy( &
             NA1, RTOR, BTOR, RHO, NE, NI, TE, TI, PBLON, PBPER, PFAST, &
             MU, CU, G22, G33, IPOL, AMETR, &
-            CUTOR, EQFF, EQPF)	!out: toroidal current density, RHS for equilibrium equation
+            CUTOR, EQFF, EQPF)  !out: toroidal current density, RHS for equilibrium equation
 
 !write(*,*) 'CUTOR, EQFF, EQPF',  CUTOR(1), EQFF(1), EQPF(1)
 !============================================ current diffusion (+equilibrium)
@@ -1057,10 +1057,10 @@ contains
 !         endif ! psi
 ! ======================================= Ohmic heating
 ! PJOUL=CUTOR(J)*UPL(J)/(M_PI2*RTOR)
-!		PJOUL(1:NA1)=CUTOR(1:NA1)*UPL(1:NA1)/(M_PI2*RTOR)
-! POH [MW/m#3]:	Power of Ohmic Heating
-!	P=sigma*Ez**2
-!		(Pereverzev 12-FEB-90)
+!               PJOUL(1:NA1)=CUTOR(1:NA1)*UPL(1:NA1)/(M_PI2*RTOR)
+! POH [MW/m#3]: Power of Ohmic Heating
+!       P=sigma*Ez**2
+!               (Pereverzev 12-FEB-90)
          do j=1,NA1
             PJOUL(j) =CC(j)*(ULON(j)/(2.*M_PI*RTOR*IPOL(j)))**2/G33(j)
          enddo
