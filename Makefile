@@ -51,9 +51,11 @@ validate:
 	xmllint --noout --schema input/smart.xsd input/smart.xml
 
 # COMPILE THE FC2K ACTOR
-actor: libsmart.a 
+# Invoke iWrap via a small Python shim that synthesises an imas.IDSName
+# enum for IMAS-Python 2.x compatibility.  See ci-sdcc/iwrap_shim.py.
+actor: libsmart.a
 	sed 's/__COMPILER__/${FC}/g' smart_template.yaml > smart.yaml
-	iwrap -f smart.yaml -i $(ACTOR_FOLDER)
+	python3 ci-sdcc/iwrap_shim.py -f smart.yaml -i $(ACTOR_FOLDER)
 
 # RULES FOR ALL OBJECT FILES
 %.o:%.f90
