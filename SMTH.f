@@ -73,7 +73,7 @@
         IF(I.GE.NA) RETURN
         IF(MU(J).GE.1.d0)       IRS=J
         IF(IRS.LE.1) GOTO 1
-                I1      =IRS*RmDRs+1
+                I1      =int(IRS*RmDRs)+1
         IF(I1.GE.NA) I1=NA
         IF(I1.LT.3) RETURN
 c       write(*,*) 'Jrs=',Jrs
@@ -384,7 +384,6 @@ C       CU(NA1)=CUBS(NA1)+CD(NA1)+CC(NA1)*ULON(NA1)/(RTOR*GP2)
 C       write(*,100)Time
 C       write(*,100)(CU(j),j=NA1-5,NA1)
 C       write(*,100)(MU(j),j=NA1-5,NA1)
- 100    format(3(2F10.5,2X))
         end
 C======================================================================|
         double precision function ARRNA1(ARR,H)
@@ -397,9 +396,9 @@ C       ARRNA1 = ARR(1)+H*(2.*ARR(1)+ARR(-2)-3.*ARR(-1))
      >          ARR(2)*H*(2+H)
         end
 C======================================================================|
-      Subroutine CUBSy(NA1,RTOR,BTOR,IPL,
+      Subroutine CUBSy(NA1,RTOR,BTOR,
      > FP,MU,ZEF,TE,TI,NE,NI,AMAIN,ZMAIN,
-     > BMINT,BMAXT,BDB0,BDB02,FOFB,SQEPS,RHO,
+     > BMAXT,BDB0,BDB02,FOFB,SQEPS,RHO,
      > CUBS,CC) !output bootstrap [MA/m2] current conductivity [1/mkOM*m]
 ! Bootsrap current and current conductvity by Sauter
 !                       Sauter, Angioni, Lin-Liu
@@ -408,15 +407,15 @@ C======================================================================|
         implicit none
         integer j,NA,NA1
         double precision
-     > YC,YD,YA,ZZ,ZDF,ZFT,ZFTE,ZFTE1,ZFTE2,ZFTE3,ZFTE4,
-     > ZFTI,ZFTI1,ZFTI2,ZFTI3,ZFTI4,A0,A1,ALP,
+     > YC,YD,YA,ZZ,ZDF,ZFT,ZFTE,ZFTE2,ZFTE3,ZFTE4,
+     > ZFTI,ZFTI2,ZFTI3,ZFTI4,A0,A1,ALP,
      > BETPL,COULG,NUEE,NUES,NUI,NUIS,HCEE,HCEI,
      > DCSA,HCSA,XCSA,CCSP,CNSA
         double precision
      > FP(*),MU(*),CUBS(*),CC(*),ZEF(*),TE(*),TI(*),NE(*),NI(*),
-     > BMINT(*),BMAXT(*),BDB0(*),BDB02(*),FOFB(*),
+     > BMAXT(*),BDB0(*),BDB02(*),FOFB(*),
      > RHO(*),SQEPS(*),AMAIN(*),ZMAIN(*)
-        double precision HRO,HROA,RTOR,BTOR,GP,FTLLMRy,HC,XC,DC,ROC,IPL
+        double precision HRO,HROA,RTOR,BTOR,GP,FTLLMRy,HC,XC,DC,ROC
         external FTLLMRy
         HRO=RHO(3)-RHO(2)
         ROC=RHO(NA1)
@@ -669,7 +668,7 @@ C Y.R.Lin-Liu and R.L.Miller, Phys.Plasmas 2(5), May 1995, pp.1666-1668
 C made from fnc/ftllm.f         Polevoi 21-JUL-2025
         double precision function FTLLMRy(BTOR,BMAXT,BDB0,BDB02,FOFB)
         implicit none
-        double precision YR,YYR,YH,YFTUP,YFTLO,BTOR,BMAXT,BDB0,BDB02,FOFB
+        double precision YH,YFTUP,YFTLO,BTOR,BMAXT,BDB0,BDB02,FOFB
         FTLLMRy=0.1
         IF (ABS(BMAXT).LT.0.0001 .OR.
      +      ABS(BDB0).LT.0.0001) THEN
@@ -758,21 +757,22 @@ C                       (Yushmanov 26-DEC-90)
         implicit none
         double precision ARR(*),VR(*),RHO(*),YR,YDR,YR1,HRO,HROA
         integer JK,J,NA1,NA
+                VINTa=0.
         if(YR.le.0.)    return
                 NA=NA1-1
                 HRO=RHO(3)-RHO(2)
                 HROA=RHO(NA1)-RHO(NA)
         if(YR.le. RHO(NA))      then
-                JK = YR/HRO+1
+                JK = int(YR/HRO)+1
                 YR1 =  YR
         else
                 JK = NA
                 YR1 = min(YR,RHO(NA)+.5d0*HROA)
         endif
                 YDR=(JK-YR1/HRO)*VR(JK)
-                VINTa=0.
-        do 1 J=1,JK
- 1              VINTa=VINTa+ARR(J)*VR(J)
+        do J=1,JK
+                VINTa=VINTa+ARR(J)*VR(J)
+        enddo
                 VINTa=HRO*(VINTa-ARR(JK)*YDR)
         end
 C======================================================================|
@@ -799,7 +799,7 @@ C                       (Pereverzev 23-OCT-99)
         GP2=2.*GP
                 IINTa = 0.
         if (YR .le. 0.) return
-                JK = YR/HRO+1.-1.E-4
+                JK = int(YR/HRO+1.-1.E-4)
         if (JK .gt. NA) JK = NA
                 YA = 0.
         do   1  J=1,JK
@@ -872,7 +872,7 @@ c       EBEAM = 1008.
 
         double precision function STBRNy(TE,NE,Z2NdA)
         implicit none
-        integer j,jk
+        integer jk
         double precision TE,NE,Z2NdA
         double precision YECM,YSQ,YECDEB,YXC3,YX,YX2,YX3,YS2,YE,YSIG
                 YECM    =1008.d0*.4d0

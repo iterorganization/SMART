@@ -404,7 +404,7 @@ C----------------------------------------------------------------------|
         integer N,j
         double precision
      1          AK(N+1),B(N+1),C(N+1),D(N+1),FV(N+1),F(N+1),FO(N+1),
-     2          H,HB,GT,HH,AJ,BJ,CJ,DJ,RJ,RJHH,YHB
+     2          H,HB,GT,HH,AJ,BJ,CJ,DJ,RJ,RJHH
         HH = H*H
         AJ = 0.
         RJ = -0.5*H

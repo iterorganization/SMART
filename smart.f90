@@ -174,7 +174,7 @@ contains
       nbnd1 = size(eq_in%time_slice(j_time)%boundary%outline%r)
       jprint = smart_in%key4control(16)
    if (jprint.gt.0) then
-   write(*,*), 'nbnd1=',nbnd1
+   write(*,*) 'nbnd1=',nbnd1
 !
       open(20,file='IMAS.dat')
       write(20,*) i_time, nbnd1
@@ -1038,9 +1038,9 @@ contains
 !      close(20)
 !      if(jpsi.ne.0) then
          call CUBSy( &
-            NA1, RTOR, BTOR, IPL, &
+            NA1, RTOR, BTOR, &
             FP, MU, ZEF, TE, TI, NE, NI, AMAIN, ZMAIN, &
-            BMINT, BMAXT, BDB0, BDB02, FOFB, SQEPS, RHO, &
+            BMAXT, BDB0, BDB02, FOFB, SQEPS, RHO, &
             CUBS, CC)   ! output: bootsrap current density and curent conductivity by Sauter
 !write(*,*) 'CUBS, CC ', CUBS(1), CC(1)
 !      cubs(1:na1) =0.
@@ -1266,7 +1266,7 @@ contains
       close(1)
       write(*,*) 'jprint',jprint
       endif
-998   format(30(1XPE13.6))
+998   format(30(1X,1PE13.6))
    if(jprint.gt.0) then
          write(*,*) 'UPL',(UPL(j),j=1,NA1,30),UPL(NA1)
          write(*,*) 'CU',(CU(j),j=1,NA1,30),CU(NA1)
