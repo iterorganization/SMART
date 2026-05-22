@@ -137,10 +137,60 @@ contains
 
          if (from_pellets_ids .eqv. .true.) then ! REPLACE PELLET INFORMATION
             write (*, *) 'Input pellets IDS detected'
+            ! Guard against an incomplete pellets IDS: every level must be filled
+            ! before we index into it.
+            if (size(pellets_in%time_slice) < 1 .or. &
+                size(pellets_in%time_slice(1)%pellet) < 1 .or. &
+                size(pellets_in%time_slice(1)%pellet(1)%species) < 1) then
+               error_flag = -1
+               allocate (character(64):: error_message)
+               error_message = 'Error in SMART: pellets IDS missing time_slice/pellet/species'
+               return
+            end if
             smart_in%YAM = pellets_in%time_slice(1)%pellet(1)%species(1)%a
             smart_in%YVP = pellets_in%time_slice(1)%pellet(1)%velocity_initial*1.e-3
-            smart_in%YVOL = pellets_in%time_slice(1)%pellet(1)%shape%size(1)**2* &
-               pellets_in%time_slice(1)%pellet(1)%shape%size(2)*M_PI*1.e+9
+            ! Compute pellet volume YVOL [mm^3] from shape; the length of the
+            ! shape%size array depends on the shape%type%index:
+            !   1 = spherical    : size has 1 element (radius)
+            !   2 = cylindrical  : size has 2 elements (radius, height)
+            !   3 = rectangular  : size has 3 elements (a, b, c)
+            select case (pellets_in%time_slice(1)%pellet(1)%shape%type%index)
+            case (1) ! spherical
+               if (size(pellets_in%time_slice(1)%pellet(1)%shape%size) < 1) then
+                  error_flag = -1
+                  allocate (character(64):: error_message)
+                  error_message = 'Error in SMART: spherical pellet shape%size < 1'
+                  return
+               end if
+               smart_in%YVOL = (4.d0/3.d0)*M_PI* &
+                  pellets_in%time_slice(1)%pellet(1)%shape%size(1)**3*1.e+9
+            case (2) ! cylindrical
+               if (size(pellets_in%time_slice(1)%pellet(1)%shape%size) < 2) then
+                  error_flag = -1
+                  allocate (character(64):: error_message)
+                  error_message = 'Error in SMART: cylindrical pellet shape%size < 2'
+                  return
+               end if
+               smart_in%YVOL = M_PI* &
+                  pellets_in%time_slice(1)%pellet(1)%shape%size(1)**2* &
+                  pellets_in%time_slice(1)%pellet(1)%shape%size(2)*1.e+9
+            case (3) ! rectangular
+               if (size(pellets_in%time_slice(1)%pellet(1)%shape%size) < 3) then
+                  error_flag = -1
+                  allocate (character(64):: error_message)
+                  error_message = 'Error in SMART: rectangular pellet shape%size < 3'
+                  return
+               end if
+               smart_in%YVOL = &
+                  pellets_in%time_slice(1)%pellet(1)%shape%size(1)* &
+                  pellets_in%time_slice(1)%pellet(1)%shape%size(2)* &
+                  pellets_in%time_slice(1)%pellet(1)%shape%size(3)*1.e+9
+            case default
+               error_flag = -1
+               allocate (character(64):: error_message)
+               error_message = 'Error in SMART: unsupported pellet shape%type%index'
+               return
+            end select
          else
             if (smart_in%sw_stdout .ne. 0) then
                write (*, *) 'Input pellets IDS NOT detected'
@@ -546,7 +596,8 @@ contains
       iT = 0
       do i = 1, n_ion
          ai = cp_in%profiles_1d(i_time)%ion(i)%element(1)%a
-         zi = cp_in%profiles_1d(i_time)%ion(i)%element(1)%z_n
+         ! z_n is INT_0D in DD >= 4.0 (was FLT_0D in DD <= 3.42); cast explicitly.
+         zi = dble(cp_in%profiles_1d(i_time)%ion(i)%element(1)%z_n)
          if (zi .eq. 1.d0) then
             if (ai .lt. 1.5d0) then
                ispec(1) = i
