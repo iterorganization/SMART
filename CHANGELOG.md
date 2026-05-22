@@ -6,7 +6,7 @@ All notable changes to SMART are documented here. The format is based on
 
 ## [Unreleased]
 
-## [1.0.0] — First public release
+## [1.0.0] — 2026-05-22 — First public release
 
 ### Added
 

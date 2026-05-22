@@ -21,11 +21,11 @@ IMAS Access Layer. To build and run you need:
 | Dependency | Purpose | Where to obtain |
 | ---------- | ------- | --------------- |
 | A Fortran compiler (`ifx`, `ifort`, or `gfortran`) | Build SMART | vendor / distribution |
-| IMAS Access Layer (Fortran + Python bindings) | IDS I/O | https://github.com/iterorganization/IMAS-AL-Core (and language bindings) |
+| IMAS Access Layer (Fortran + Python bindings) | IDS I/O | https://github.com/iterorganization/IMAS-Core (and language bindings) |
 | MDSplus or HDF5 | IDS backend | https://www.mdsplus.org / https://www.hdfgroup.org |
-| XMLlib | XML parsing in Fortran | https://github.com/iterorganization (XMLlib) |
-| Fundamental-Constants | Physical constants module | https://github.com/iterorganization (Fundamental-Constants) |
-| iWrap (optional) | Generates the IMAS Python actor from `libsmart.a` | https://github.com/iterorganization (iWrap) |
+| XMLlib | XML parsing in Fortran | https://github.com/iterorganization/XMLlib |
+| Fundamental-Constants | Physical constants module | https://github.com/iterorganization/Fundamental-Constants |
+| iWrap (optional) | Generates the IMAS Python actor from `libsmart.a` | https://github.com/iterorganization/iWrap |
 | `pkg-config` | Discovers compile/link flags | distribution package |
 | `xmllint` (optional) | XSD validation of input files | `libxml2-utils` |
 

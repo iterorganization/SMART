@@ -4,6 +4,8 @@ message: >-
   publication (preferred-citation) and this software repository.
 title: "SMART — Simplified Mass Ablation and Relocation Treatment for pellet injection"
 type: software
+version: 1.0.0
+date-released: 2026-05-22
 abstract: >-
   SMART is an IMAS actor and standalone Fortran code implementing a
   reduced-physics model of high-field-side / low-field-side pellet
