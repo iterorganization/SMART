@@ -2,9 +2,16 @@
 # Bamboo CI script to build code and create library
 # Execute script from root directory
 
+# Capture positional args before sourcing st00 (which sets $1/$2 during
+# its execution).  $1 = toolchain (foss-2023b, intel-2023b, ...), $2 = AL
+# major version (5).  The artifact filename below embeds both because the
+# Bamboo plan publishes them as e.g. lib-foss-2023b-al5.
+TOOLCHAIN="${1:-foss-2023b}"
+AL_MAJOR="${2:-5}"
+
 # setup environment
 # Get toolchain version
-source ./ci-sdcc/st00-header.sh $1 $2
+source ./ci-sdcc/st00-header.sh "$TOOLCHAIN" "$AL_MAJOR"
 
 # Note Disable set -e option when using on local as it will exit the shell on error
 
@@ -26,7 +33,7 @@ if [ ! -f "$libfilepath" ]; then
     # exit 1
 fi
 
-ARTIFACT="lib-${TOOLCHAIN_VERSION}.tar.gz"
+ARTIFACT="lib-${TOOLCHAIN_VERSION}-al${AL_MAJOR}.tar.gz"
 echo "Checking if artifact exists..."
 if [ -f "$ARTIFACT" ]; then
     rm "$ARTIFACT"

@@ -2,7 +2,11 @@
 # Bamboo CI script to build actor and run standalone program
 # Execute script from root directory
 
-source ./ci-sdcc/st00-header.sh $1 $2
+# Capture positional args before sourcing st00 (see st01-build-code.sh).
+TOOLCHAIN="${1:-foss-2023b}"
+AL_MAJOR="${2:-5}"
+
+source ./ci-sdcc/st00-header.sh "$TOOLCHAIN" "$AL_MAJOR"
 #USERNAME=$(whoami)
 # Note Disable set -e option when using on local as it will exit the shell on error
 if [[ "$(uname -n)" == *"bamboo"* ]]; then
@@ -28,7 +32,7 @@ set +x
 find $ACTOR_FOLDER -type d -name '__pycache__' -exec rm -rf {} +
 
 # Create acrtifact
-ARTIFACT="actor-${TOOLCHAIN_VERSION}.tar.gz"
+ARTIFACT="actor-${TOOLCHAIN_VERSION}-al${AL_MAJOR}.tar.gz"
 tar -cvzf "$ARTIFACT" "$ACTOR_FOLDER" >/dev/null 2>&1
 
 set -x
