@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import imas, argparse, yaml
+import argparse, os, yaml
 import numpy as np
-import matplotlib, os
+import imas
+import matplotlib
 if 'DISPLAY' not in os.environ:
     matplotlib.use('agg')
 else:
@@ -32,42 +33,32 @@ if config_folder is None:
 
 # Read scenario.yaml used for the simulation to know where to find
 # the IMAS output datafile
-scenario_file = open(config_folder+'/scenario.yaml', 'r')
-config = yaml.load(scenario_file,Loader=yaml.CLoader)
-scenario_file.close()
+with open(config_folder + '/scenario.yaml', 'r') as f:
+    config = yaml.load(f, Loader=yaml.CLoader)
 
-# Backen
-if config['scenario_backend'] == 'hdf5':
-    sc_backend = imas.imasdef.HDF5_BACKEND
-else:
-    sc_backend = imas.imasdef.MDSPLUS_BACKEND
-    
-# Find output datafile from the configuration parameters
+scenario_backend = config.get('scenario_backend', 'hdf5')
+
 if config['output_user_or_path'] == 'default':
-    output_user_or_path = os.getenv('USER')
     config['output_user_or_path'] = os.getenv('USER')
-else:
-    output_user_or_path = config['output_user_or_path']
 
-# Read the equilibrium and core_profiles IDSs from the input datafile
-input = imas.DBEntry(sc_backend,
-         config['input_database'],
-         config['pulse'],
-         config['run_in'],
-         config['input_user_or_path'])
-input.open()
-core_profiles_ref = input.get_slice('core_profiles',config['time_slice'],1)
-input.close()
+# Read the input scenario core_profiles IDS
+input_uri = (
+    f"imas:{scenario_backend}?user={config['input_user_or_path']}"
+    f";database={config['input_database']};version=3"
+    f";pulse={config['pulse']};run={config['run_in']}"
+)
+with imas.DBEntry(input_uri, 'r') as input_entry:
+    core_profiles_ref = input_entry.get_slice(
+        'core_profiles', config['time_slice'], imas.ids_defs.CLOSEST_INTERP)
 
 # Read the output core_profiles IDS
-output = imas.DBEntry(imas.imasdef.HDF5_BACKEND,
-          config['output_database'],
-          config['pulse'],
-          config['run_out'],
-          config['output_user_or_path'])
-output.open()
-core_profiles = output.get('core_profiles')
-output.close()
+output_uri = (
+    f"imas:hdf5?user={config['output_user_or_path']}"
+    f";database={config['output_database']};version=3"
+    f";pulse={config['pulse']};run={config['run_out']}"
+)
+with imas.DBEntry(output_uri, 'r') as output_entry:
+    core_profiles = output_entry.get('core_profiles')
 
 #plt.figure()
 #plt.plot(core_profiles_ref.time,core_profiles_ref.global_quantities.n_e_volume_average,
@@ -103,7 +94,7 @@ for i in range(len(core_profiles.time)):
         plt.plot(core_profiles.profiles_1d[i].grid.rho_tor_norm,
                  core_profiles.profiles_1d[i].electrons.density,
                  linewidth=0.5,color='dimgray')
-        
+
 plt.grid()
 plt.legend(loc='upper right')
 ymin = plt.gca().get_ylim()[0]
