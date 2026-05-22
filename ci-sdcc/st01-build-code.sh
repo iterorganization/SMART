@@ -33,7 +33,7 @@ if [ ! -f "$libfilepath" ]; then
     # exit 1
 fi
 
-ARTIFACT="lib-${TOOLCHAIN_VERSION}-al${AL_MAJOR}.tar.gz"
+ARTIFACT="lib.tar.gz"
 echo "Checking if artifact exists..."
 if [ -f "$ARTIFACT" ]; then
     rm "$ARTIFACT"

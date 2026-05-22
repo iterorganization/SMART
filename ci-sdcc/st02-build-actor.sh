@@ -32,7 +32,7 @@ set +x
 find $ACTOR_FOLDER -type d -name '__pycache__' -exec rm -rf {} +
 
 # Create acrtifact
-ARTIFACT="actor-${TOOLCHAIN_VERSION}-al${AL_MAJOR}.tar.gz"
+ARTIFACT="actor.tar.gz"
 tar -cvzf "$ARTIFACT" "$ACTOR_FOLDER" >/dev/null 2>&1
 
 set -x
