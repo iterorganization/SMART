@@ -28,11 +28,12 @@ set +x
 find $ACTOR_FOLDER -type d -name '__pycache__' -exec rm -rf {} +
 
 # Create acrtifact
-tar -cvzf actor.tar.gz $ACTOR_FOLDER >/dev/null 2>&1
+ARTIFACT="actor-${TOOLCHAIN_VERSION}.tar.gz"
+tar -cvzf "$ARTIFACT" "$ACTOR_FOLDER" >/dev/null 2>&1
 
 set -x
 # show contents of artifact
-tar -tzvf actor.tar.gz
+tar -tzvf "$ARTIFACT"
 
 set +x
 

@@ -26,7 +26,7 @@ if [ ! -f "$libfilepath" ]; then
     # exit 1
 fi
 
-ARTIFACT="lib.tar.gz"
+ARTIFACT="lib-${TOOLCHAIN_VERSION}.tar.gz"
 echo "Checking if artifact exists..."
 if [ -f "$ARTIFACT" ]; then
     rm "$ARTIFACT"

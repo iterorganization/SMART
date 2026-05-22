@@ -1,0 +1,5 @@
+IMAS-Fortran/5.6.0-intel-2025b-DD-4.1.1
+IMAS-Python/2.2.0-intel-2025b
+iWrap/1.0.0-GCCcore-14.3.0
+XMLlib/3.3.2-intel-compilers-2025.2.0
+Fundamental-Constants/0.2.0
