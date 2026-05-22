@@ -1,0 +1,51 @@
+cff-version: 1.2.0
+message: >-
+  If you use SMART in published work, please cite both the primary
+  publication (preferred-citation) and this software repository.
+title: "SMART — Simplified Mass Ablation and Relocation Treatment for pellet injection"
+type: software
+abstract: >-
+  SMART is an IMAS actor and standalone Fortran code implementing a
+  reduced-physics model of high-field-side / low-field-side pellet
+  injection into a tokamak plasma. It couples a Kuteev/Parks pellet
+  ablation model to a Strauss-style post-ablation mass relocation
+  treatment along the magnetic field, following Polevoi & Shimada
+  (PPCF 43, 2001, 1525).
+license: LGPL-3.0-or-later
+repository-code: "https://github.com/iterorganization/smart"
+keywords:
+  - tokamak
+  - ITER
+  - pellet injection
+  - plasma fuelling
+  - IMAS
+  - integrated modelling
+authors:
+  - family-names: Polevoi
+    given-names: Alexei R.
+    affiliation: ITER Organization
+  - family-names: Hosokawa
+    given-names: Masanari
+    affiliation: ITER Organization
+  - family-names: Schneider
+    given-names: Mireille
+    affiliation: ITER Organization
+  - family-names: Pinches
+    given-names: Simon D.
+    affiliation: ITER Organization
+preferred-citation:
+  type: article
+  title: "Simplified mass ablation and relocation treatment for pellet injection optimization"
+  authors:
+    - family-names: Polevoi
+      given-names: Alexei R.
+      affiliation: ITER Organization
+    - family-names: Shimada
+      given-names: Michiya
+      affiliation: ITER Organization
+  journal: "Plasma Physics and Controlled Fusion"
+  volume: 43
+  issue: 11
+  start: 1525
+  year: 2001
+  doi: 10.1088/0741-3335/43/11/308

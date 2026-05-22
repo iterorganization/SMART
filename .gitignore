@@ -3,7 +3,13 @@
 *.a
 *.exe
 *~
+smart
 smart.yaml
 __pycache__
 *.png
 *.dat
+
+# Editor and tooling
+.claude/
+.vscode/
+.idea/
