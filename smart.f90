@@ -32,7 +32,7 @@ contains
 
       integer :: i, j, i_time, j_time, n_xcp, n_xeq, n_ion, nrd, NA1, jtime, jend
       integer:: iH, iD, iT, na, nb1, Khydr, JABS, istep, NABEG, NEBEG, NE1
-      integer:: jheat, jdens, jpsi, jpel, jprint, nbnd1, nbnd2, IMIX, jmix
+      integer:: jprint, nbnd1, IMIX
       double precision &
          denA2D, temA2D, presA2D, cuA2D, &
          HRO, ROC, BTOR, SHIFT, ABC, RTOR, ALFA, &
@@ -1210,7 +1210,7 @@ contains
             XI, HE, DSI, DSE, &
             PE, PET, PETOT, PI, PIT, PITOT, Z2NdA, &
             TEX, TE, TEo, TEB, TIX, TI, TIo, TIB, &
-            NEX, NEo, NE, NIX, NIo, NI, Qe, Qi, GNX, GN2E, GN2I &
+            NEo, NE, NIo, NI, Qe, Qi, GNX, GN2E, GN2I &
             )
          !================================================================
          if (smart_in%sw_stdout .ne.0) then

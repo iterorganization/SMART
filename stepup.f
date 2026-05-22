@@ -142,7 +142,7 @@ C **** Density equation
      >  XI,HE,DSI,DSE,
      >  PE,PET,PETOT,PI,PIT,PITOT,Z2NdA,
      >  TEX,TE,TEo,TEB,TIX,TI,TIo,TIB,
-     >  NEX,NEo,NE,NIX,NIo,NI,Qe,Qi,GNX,
+     >  NEo,NE,NIo,NI,Qe,Qi,GNX,
      >  GN2E,GN2I)
 
          !  use physics_module_level1
@@ -157,7 +157,7 @@ C **** Density equation
      >    PI(*),PIT(*),PITOT(*)
          double precision
      >    TEX(*),TE(*),TEo(*),TIX(*),TI(*),TIo(*),
-     >    NEX(*),NEo(*),NE(*),NIX(*),NIo(*),NI(*),Z2NdA(*)
+     >    NEo(*),NE(*),NIo(*),NI(*),Z2NdA(*)
          double precision, allocatable ::
      >     YWA(:),YWB(:),YWC(:),YWD(:),
      >     PDI(:),PDE(:),WORK1(:,:)
